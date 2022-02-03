@@ -43,10 +43,10 @@ func CreateNode() {
 		},
 	}
 
-	output, err := client.RunInstances(&rii)
+	_, err := client.RunInstances(&rii)
 	util.Check(err)
 
-	fmt.Println(*output.Instances[0].InstanceId)
+	fmt.Println(instanceName)
 }
 
 func DefaultDeviceName(client *ec2.EC2, cfg config.InstanceConfiguration) *string {

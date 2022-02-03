@@ -25,5 +25,5 @@ func CreateKeyPair() {
 	keyFileName := fmt.Sprintf("%v.pem", keyName)
 
 	ioutil.WriteFile(keyFileName, []byte(*response.KeyMaterial), 0400)
-	fmt.Println("created " + keyFileName)
+	fmt.Println(keyFileName)
 }

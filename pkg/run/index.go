@@ -12,30 +12,25 @@ import (
 func Program() {
 	defer handlePanic()
 
-	switch args.Poll() {
-	case "create":
-		switch args.Poll() {
-		case "node":
-			create.CreateNode()
-		case "keypair":
-			create.CreateKeyPair()
+	f := args.Poll
+
+	switch f() {
+	case "create": switch f() {
+		case "node": 				create.CreateNode()
+		case "keypair": 			create.CreateKeyPair()
 		}
-	case "show":
-		switch args.Poll() {
-		case "config":
-			show.ShowConfig()
+	case "show": switch f() {
+		case "config":				show.ShowConfig()
 		}
-	case "get":
-		switch args.Poll() {
-		case "nodes":
-			get.PrintNodes()
+	case "get": switch f() {
+		case "nodes":				get.PrintNodes()
+		case "keypairs":			get.PrintKeyPairs()
 		}
-	case "delete":
-		switch args.Poll() {
-		case "node":
-			delete.DeleteNodes()
-		case "nodes":
-			delete.DeleteNodes()
+	case "delete":switch f() {
+		case "node":				delete.DeleteNodes()
+		case "nodes":				delete.DeleteNodes()
+		case "keypair":				delete.DeleteKeyPairs()
+		case "keypairs":			delete.DeleteKeyPairs()
 		}
 	default:
 		help.Print()
