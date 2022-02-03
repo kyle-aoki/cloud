@@ -1,0 +1,3 @@
+
+cloud create node <name>
+cloud create keypair
