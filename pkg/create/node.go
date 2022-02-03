@@ -13,40 +13,39 @@ import (
 
 func CreateNode() {
 	configurationName := args.Poll()
-	instanceName := args.Poll()
-
+	instanceNames := args.Collect()
+	
 	cfgWithVars := config.FindInstanceConfiguration(configurationName)
-
 	cfg := config.ReplaceVariables(cfgWithVars)
-
 	client := amazon.EC2Client()
-
 	defaultDeviceName := DefaultDeviceName(client, cfg)
-
-	rii := ec2.RunInstancesInput{
-		BlockDeviceMappings: []*ec2.BlockDeviceMapping{{
-			Ebs:        &ec2.EbsBlockDevice{VolumeSize: ParseStorageSize(cfg)},
-			DeviceName: defaultDeviceName,
-		}},
-		KeyName:          &cfg.KeyPair,
-		ImageId:          &cfg.Ami,
-		MinCount:         util.IntToInt64Ptr(1),
-		MaxCount:         util.IntToInt64Ptr(1),
-		SecurityGroupIds: util.StrSlicePtr(cfg.SecurityGroups),
-		SubnetId:         &cfg.Subnet,
-		InstanceType:     &cfg.InstanceType,
-		TagSpecifications: []*ec2.TagSpecification{
-			{
-				ResourceType: util.StrPtr("instance"),
-				Tags:         []*ec2.Tag{{Key: util.StrPtr("Name"), Value: &instanceName}},
+	
+	for _, instanceName := range instanceNames {
+		rii := ec2.RunInstancesInput{
+			BlockDeviceMappings: []*ec2.BlockDeviceMapping{{
+				Ebs:        &ec2.EbsBlockDevice{VolumeSize: ParseStorageSize(cfg)},
+				DeviceName: defaultDeviceName,
+			}},
+			KeyName:          &cfg.KeyPair,
+			ImageId:          &cfg.Ami,
+			MinCount:         util.IntToInt64Ptr(1),
+			MaxCount:         util.IntToInt64Ptr(1),
+			SecurityGroupIds: util.StrSlicePtr(cfg.SecurityGroups),
+			SubnetId:         &cfg.Subnet,
+			InstanceType:     &cfg.InstanceType,
+			TagSpecifications: []*ec2.TagSpecification{
+				{
+					ResourceType: util.StrPtr("instance"),
+					Tags:         []*ec2.Tag{{Key: util.StrPtr("Name"), Value: &instanceName}},
+				},
 			},
-		},
+		}
+
+		_, err := client.RunInstances(&rii)
+		util.Check(err)
+
+		fmt.Println(instanceName)
 	}
-
-	_, err := client.RunInstances(&rii)
-	util.Check(err)
-
-	fmt.Println(instanceName)
 }
 
 func DefaultDeviceName(client *ec2.EC2, cfg config.InstanceConfiguration) *string {

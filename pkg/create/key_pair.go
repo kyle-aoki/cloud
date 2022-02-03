@@ -3,6 +3,7 @@ package create
 import (
 	"cloud/pkg/amazon"
 	"cloud/pkg/args"
+	"cloud/pkg/config"
 	"cloud/pkg/util"
 	"fmt"
 	"io/ioutil"
@@ -11,19 +12,23 @@ import (
 )
 
 func CreateKeyPair() {
-	keyName := args.Poll()
-	
-	client := amazon.EC2Client()
+	keyNames := args.Collect()
 
-	kpr := ec2.CreateKeyPairInput{
-		KeyName: &keyName,
+	for _, keyName := range keyNames {
+		client := amazon.EC2Client()
+
+		kpr := ec2.CreateKeyPairInput{
+			KeyName: &keyName,
+		}
+
+		response, err := client.CreateKeyPair(&kpr)
+		util.Check(err)
+
+		keyFileName := fmt.Sprintf("%v/%v.pem", config.KeyDir(), keyName)
+
+		err = ioutil.WriteFile(keyFileName, []byte(*response.KeyMaterial), 0400)
+		util.Check(err)
+
+		fmt.Println(keyFileName)
 	}
-
-	response, err := client.CreateKeyPair(&kpr)
-	util.Check(err)
-
-	keyFileName := fmt.Sprintf("%v.pem", keyName)
-
-	ioutil.WriteFile(keyFileName, []byte(*response.KeyMaterial), 0400)
-	fmt.Println(keyFileName)
 }

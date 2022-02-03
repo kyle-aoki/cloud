@@ -5,13 +5,11 @@ import (
 )
 
 func ReplaceVariables(ic InstanceConfiguration) InstanceConfiguration {
-
 	ic.Subnet = replaceVariable(ic.Subnet, Vars.Variables.Subnets)
 	for i, sg := range ic.SecurityGroups {
 		ic.SecurityGroups[i] = replaceVariable(sg, Vars.Variables.SecurityGroups)
 	}
 	ic.Ami = replaceVariable(ic.Ami, Vars.Variables.AMIs)
-
 	return ic
 }
 

@@ -13,6 +13,7 @@ type InstanceConfiguration struct {
 	InstanceType   string   `json:"InstanceType"`
 	StorageSize    string   `json:"StorageSize"`
 	Ami            string   `json:"AMI"`
+	Username       string   `json:"Username"`
 }
 
 type Variables struct {

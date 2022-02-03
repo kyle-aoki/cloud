@@ -8,13 +8,13 @@ import (
 	"os"
 )
 
-const ConfigDir = ".cloud"
+const ConfigDirName = ".cloud"
 const ConfigFileName = "config.json"
 
 func FullPath() string {
 	hd, err := os.UserHomeDir()
 	util.Check(err)
-	return fmt.Sprintf("%v/%v/%v", hd, ConfigDir, ConfigFileName)
+	return fmt.Sprintf("%v/%v/%v", hd, ConfigDirName, ConfigFileName)
 }
 
 var Vars ConfigFile
@@ -23,8 +23,8 @@ func init() {
 	homedir, err := os.UserHomeDir()
 	util.Check(err)
 
-	configDirPath := fmt.Sprintf("%v/%v", homedir, ConfigDir)
-	exists, err := fsObjectExists(configDirPath)
+	configDirPath := fmt.Sprintf("%v/%v", homedir, ConfigDirName)
+	exists, err := FsObjectExists(configDirPath)
 	util.Check(err)
 
 	if !exists {
@@ -33,7 +33,7 @@ func init() {
 	}
 
 	configFilePath := fmt.Sprintf("%v/%v", configDirPath, ConfigFileName)
-	exists, err = fsObjectExists(configFilePath)
+	exists, err = FsObjectExists(configFilePath)
 	util.Check(err)
 
 	if !exists {
@@ -49,7 +49,7 @@ func init() {
 	util.Check(err)
 }
 
-func fsObjectExists(path string) (bool, error) {
+func FsObjectExists(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil {
 		return true, nil

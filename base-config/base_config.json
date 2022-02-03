@@ -22,7 +22,8 @@
       "KeyPair": "kp1",
       "InstanceType": "t2.nano",
       "StorageSize": "8gb",
-      "AMI": "Ubuntu_21_10_US_West_1"
+      "AMI": "Ubuntu_21_10_US_West_1",
+      "Username": "ubuntu"
     },
     {
       "Name": "public",
@@ -31,7 +32,8 @@
       "KeyPair": "kp1",
       "InstanceType": "t2.nano",
       "StorageSize": "8gb",
-      "AMI": "Ubuntu_21_10_US_West_1"
+      "AMI": "Ubuntu_21_10_US_West_1",
+      "Username": "ubuntu"
     },
     {
       "Name": "<name>",
@@ -40,7 +42,8 @@
       "KeyPair": "kp1",
       "InstanceType": "t2.nano",
       "StorageSize": "8gb",
-      "AMI": "Ubuntu_21_10_US_West_1"
+      "AMI": "Ubuntu_21_10_US_West_1",
+      "Username": "ubuntu"
     }
   ]
 }
