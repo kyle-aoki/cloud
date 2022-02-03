@@ -16,7 +16,7 @@
   },
   "InstanceConfigurations": [
     {
-      "Name": "default",
+      "Name": "private",
       "Subnet": "PRIVATE_SUBNET",
       "SecurityGroups": ["ALL_TRAFFIC"],
       "KeyPair": "kp1",
@@ -26,7 +26,7 @@
     },
     {
       "Name": "public",
-      "Subnet": "PUBLIC",
+      "Subnet": "PUBLIC_SUBNET",
       "SecurityGroups": ["SSH_ONLY", "UDP_500", "UDP_4500"],
       "KeyPair": "kp1",
       "InstanceType": "t2.nano",
