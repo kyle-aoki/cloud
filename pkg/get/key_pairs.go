@@ -8,12 +8,17 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-func PrintKeyPairs() {
+func GetKeyPairs() *ec2.DescribeKeyPairsOutput {
 	client := amazon.EC2Client()
 
 	dkp, err := client.DescribeKeyPairs(&ec2.DescribeKeyPairsInput{})
 	util.Check(err)
 
+	return dkp
+}
+
+func PrintKeyPairs() {
+	dkp := GetKeyPairs()
 	for _, kp := range dkp.KeyPairs {
 		fmt.Println(*kp.KeyName)
 	}

@@ -1,7 +1,7 @@
 package config
 
 func FindInstanceConfiguration(name string) InstanceConfiguration {
-	for _, ic := range Vars.InstanceConfigurations {
+	for _, ic := range Vars.NodeConfigs {
 		if ic.Name == name {
 			return ic
 		}

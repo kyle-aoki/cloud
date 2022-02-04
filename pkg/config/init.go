@@ -11,6 +11,7 @@ import (
 const ConfigDirName = ".cloud"
 const ConfigFileName = "config.json"
 
+// ~/.cloud/config.json
 func FullPath() string {
 	hd, err := os.UserHomeDir()
 	util.Check(err)

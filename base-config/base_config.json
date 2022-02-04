@@ -14,7 +14,7 @@
       { "Name": "Ubuntu_21_10_US_West_1", "Value": "ami-091130e4e91d7bb45" }
     ]
   },
-  "InstanceConfigurations": [
+  "NodeConfigurations": [
     {
       "Name": "private",
       "Subnet": "PRIVATE_SUBNET",
@@ -22,8 +22,7 @@
       "KeyPair": "kp1",
       "InstanceType": "t2.nano",
       "StorageSize": "8gb",
-      "AMI": "Ubuntu_21_10_US_West_1",
-      "Username": "ubuntu"
+      "AMI": "Ubuntu_21_10_US_West_1"
     },
     {
       "Name": "public",
@@ -32,8 +31,7 @@
       "KeyPair": "kp1",
       "InstanceType": "t2.nano",
       "StorageSize": "8gb",
-      "AMI": "Ubuntu_21_10_US_West_1",
-      "Username": "ubuntu"
+      "AMI": "Ubuntu_21_10_US_West_1"
     },
     {
       "Name": "<name>",
@@ -42,8 +40,7 @@
       "KeyPair": "kp1",
       "InstanceType": "t2.nano",
       "StorageSize": "8gb",
-      "AMI": "Ubuntu_21_10_US_West_1",
-      "Username": "ubuntu"
+      "AMI": "Ubuntu_21_10_US_West_1"
     }
   ]
 }

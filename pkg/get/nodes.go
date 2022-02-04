@@ -2,10 +2,9 @@ package get
 
 import (
 	"cloud/pkg/amazon"
+	"cloud/pkg/tab"
 	"cloud/pkg/util"
 	"fmt"
-	"os"
-	"text/tabwriter"
 
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
@@ -28,17 +27,16 @@ func GetNodes() (nodes []*ec2.Instance) {
 func PrintNodes() {
 	nodes := GetNodes()
 
-	w := tabwriter.NewWriter(os.Stdout, 1, 1, 4, ' ', 0)
-	fmt.Fprintln(w, "name\tstate\tprivate-ip\tpublic-ip")
+	
+	tab.Print("name\tstate\tprivate-ip\tpublic-ip")
 
 	for _, node := range nodes {
 		l := fmt.Sprintf("%v\t%v\t%v\t%v",
 			Name(node), State(node), PrivateIp(node), PublicIp(node),
 		)
-		fmt.Fprintln(w, l)
+		tab.Print(l)
 	}
-
-	w.Flush()
+	tab.Flush()
 }
 
 func State(inst *ec2.Instance) string {

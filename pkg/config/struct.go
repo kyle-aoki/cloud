@@ -2,7 +2,7 @@ package config
 
 type ConfigFile struct {
 	Variables              Variables               `json:"Variables"`
-	InstanceConfigurations []InstanceConfiguration `json:"InstanceConfigurations"`
+	NodeConfigs []InstanceConfiguration `json:"InstanceConfigurations"`
 }
 
 type InstanceConfiguration struct {
