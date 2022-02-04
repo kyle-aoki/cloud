@@ -1,10 +1,11 @@
 package util
 
 import (
-	"cloud/pkg/errs"
 	"fmt"
 )
 
+const PleaseVerify = "Please verify config at ~/.cloud is correct."
+
 func PanicVerify(format string, a ...any) {
-	panic(fmt.Sprintf("%v\n%v", fmt.Sprintf(format, a...), errs.PleaseVerify))
+	panic(fmt.Sprintf("%v\n%v", fmt.Sprintf(format, a...), PleaseVerify))
 }

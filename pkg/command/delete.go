@@ -1,9 +1,8 @@
-package delete
+package command
 
 import (
 	"cloud/pkg/amazon"
 	"cloud/pkg/args"
-	"cloud/pkg/get"
 	"cloud/pkg/tags"
 	"cloud/pkg/util"
 	"fmt"
@@ -13,7 +12,7 @@ import (
 
 func DeleteNodes() {
 	names := args.Collect()
-	nodes := get.GetNodes()
+	nodes := GetNodes()
 	var instanceIds []*string
 
 	for _, node := range nodes {
@@ -28,7 +27,7 @@ func DeleteNodes() {
 	tio, err := amazon.EC2Client().TerminateInstances(&ec2.TerminateInstancesInput{
 		InstanceIds: instanceIds,
 	})
-	util.Check(err)
+	util.MustExec(err)
 
 	for _, ti := range tio.TerminatingInstances {
 		fmt.Println(*ti.InstanceId)

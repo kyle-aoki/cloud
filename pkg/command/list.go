@@ -1,4 +1,4 @@
-package get
+package command
 
 import (
 	"cloud/pkg/amazon"
@@ -13,7 +13,7 @@ func GetNodes() (nodes []*ec2.Instance) {
 	client := amazon.EC2Client()
 
 	di, err := client.DescribeInstances(&ec2.DescribeInstancesInput{})
-	util.Check(err)
+	util.MustExec(err)
 
 	for _, res := range di.Reservations {
 		for _, inst := range res.Instances {

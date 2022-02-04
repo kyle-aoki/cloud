@@ -1,6 +1,6 @@
 package util
 
-func Check(err error) {
+func MustExec(err error) {
 	if err != nil {
 		panic(err)
 	}

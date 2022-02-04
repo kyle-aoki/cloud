@@ -1,50 +1,37 @@
 package config
 
-const configFileCreationMessage = "Config file has been created at ~/.cloud/config.json.\nPlease open this file and update it with your security groups and subnets."
+const configFileCreationMessage = `
+This is your first time running this program.
+Therefore, a config file has been created at ~/.cloud
+Please open this file and update it with your security groups names and subnet name tags.
+
+IMPORTANT: Security group names are **not** their name tags but their actual *names*.
+IMPORTANT: Subnet names are their *name tags* AND not their IDs.
+
+Use 'cloud config' to print out your config.
+
+`
 
 const baseConfig = `{
-  "Variables": {
-    "Subnets": [
-      { "Name": "PRIVATE_SUBNET", "Value": "subnet-xxxxxxxxxxxxxxxxx" },
-      { "Name": "PUBLIC_SUBNET", "Value": "subnet-xxxxxxxxxxxxxxxxx" }
-    ],
-    "SecurityGroups": [
-      { "Name": "SSH_ONLY", "Value": "sg-xxxxxxxxxxxxxxxxx" },
-      { "Name": "UDP_500", "Value": "sg-xxxxxxxxxxxxxxxxx" },
-      { "Name": "UDP_4500", "Value": "sg-xxxxxxxxxxxxxxxxx" },
-      { "Name": "ALL_TRAFFIC", "Value": "sg-xxxxxxxxxxxxxxxxx" }
-    ],
-    "AMIs": [
-      { "Name": "Ubuntu_21_10_US_West_1", "Value": "ami-091130e4e91d7bb45" }
-    ]
-  },
-  "InstanceConfigurations": [
+  "ShowTerminatedNodes": true,
+  "NodeConfigurations": [
     {
-      "Name": "default",
-      "Subnet": "PRIVATE_SUBNET",
-      "SecurityGroups": ["ALL_TRAFFIC"],
+      "ConfigurationName": "public-node",
+      "SubnetNameTag": "PUBLIC",
+      "SecurityGroupNames": ["SSH", "UDP_500", "UDP_4500"],
+      "AMI": "ami-091130e4e91d7bb45",
       "KeyPair": "kp1",
       "InstanceType": "t2.nano",
-      "StorageSize": "8gb",
-      "AMI": "Ubuntu_21_10_US_West_1"
+      "StorageSize": "8gb"
     },
     {
-      "Name": "public",
-      "Subnet": "PUBLIC",
-      "SecurityGroups": ["SSH_ONLY", "UDP_500", "UDP_4500"],
+      "ConfigurationName": "private-node",
+      "SubnetNameTag": "private",
+      "SecurityGroupNames": ["ALL_TRAFFIC"],
+      "AMI": "ami-091130e4e91d7bb45",
       "KeyPair": "kp1",
       "InstanceType": "t2.nano",
-      "StorageSize": "8gb",
-      "AMI": "Ubuntu_21_10_US_West_1"
-    },
-    {
-      "Name": "<name>",
-      "Subnet": "PRIVATE_SUBNET",
-      "SecurityGroups": ["SSH_ONLY"],
-      "KeyPair": "kp1",
-      "InstanceType": "t2.nano",
-      "StorageSize": "8gb",
-      "AMI": "Ubuntu_21_10_US_West_1"
+      "StorageSize": "8gb"
     }
   ]
 }

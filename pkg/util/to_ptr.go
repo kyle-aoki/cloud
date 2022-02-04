@@ -10,8 +10,8 @@ func IntToInt64Ptr(i int) *int64 {
 }
 
 func StrSlicePtr(s []string) (sptrs []*string) {
-	for _, str := range s {
-		sptrs = append(sptrs, &str)
+	for i := range s {
+		sptrs = append(sptrs, &s[i])
 	}
 	return sptrs
 }

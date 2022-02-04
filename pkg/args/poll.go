@@ -1,6 +1,7 @@
 package args
 
 import (
+	"cloud/pkg/help"
 	"os"
 )
 
@@ -14,7 +15,7 @@ func init() {
 
 func Poll() string {
 	if len(args) == 0 {
-		panic("Not enough arguments. Try 'cloud --help'")
+		help.Print()
 	}
 	next := args[0]
 	args = args[1:]
