@@ -3,7 +3,6 @@ package command
 import (
 	"cloud/pkg/amazon"
 	"cloud/pkg/args"
-	"cloud/pkg/tags"
 	"cloud/pkg/util"
 	"fmt"
 
@@ -16,7 +15,7 @@ func DeleteNodes() {
 	var instanceIds []*string
 
 	for _, node := range nodes {
-		nodeName := tags.GetName(node)
+		nodeName := GetName(node)
 		for _, name := range names {
 			if nodeName == name {
 				instanceIds = append(instanceIds, node.InstanceId)

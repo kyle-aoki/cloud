@@ -27,12 +27,14 @@ func GetNodes() (nodes []*ec2.Instance) {
 func PrintNodes() {
 	nodes := GetNodes()
 
-	
-	tab.Print("name\tstate\tprivate-ip\tpublic-ip")
+	tab.Print("id\tname\tstate\tprivate-ip\tpublic-ip")
 
 	for _, node := range nodes {
-		l := fmt.Sprintf("%v\t%v\t%v\t%v",
-			Name(node), State(node), PrivateIp(node), PublicIp(node),
+		if State(node) == "terminated" {
+			continue
+		}
+		l := fmt.Sprintf("%v\t%v\t%v\t%v\t%v",
+			Id(node), Name(node), State(node), PrivateIp(node), PublicIp(node),
 		)
 		tab.Print(l)
 	}
@@ -67,4 +69,8 @@ func Name(inst *ec2.Instance) string {
 		}
 	}
 	return ""
+}
+
+func Id(inst *ec2.Instance) string {
+	return *inst.InstanceId
 }
