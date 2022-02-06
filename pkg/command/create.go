@@ -14,12 +14,6 @@ func Create() {
 	instanceName := args.Poll()
 	client := amazon.EC2Client()
 
-	client.CreateLaunchTemplate(&ec2.CreateLaunchTemplateInput{
-		LaunchTemplateData: &ec2.RequestLaunchTemplateData{
-			
-		},
-	})
-
 	rio, err := client.RunInstances(&ec2.RunInstancesInput{
 		MinCount: util.IntToInt64Ptr(1),
 		MaxCount: util.IntToInt64Ptr(1),
