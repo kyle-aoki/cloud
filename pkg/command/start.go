@@ -10,9 +10,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-func Start() {
+func GetIds() []string {
 	names := args.Collect()
-	client := amazon.EC2Client()
 
 	nodeNames := GetNodeNames(GetNodes())
 	var nodesToStart []NodeName
@@ -25,13 +24,37 @@ func Start() {
 		}
 	}
 
-	ids := GetIds(nodesToStart)
+	var ids []string
+	for i := range nodesToStart {
+		ids = append(ids, nodesToStart[i].Id)
+	}
+
+	return ids
+}
+
+func Stop() {
+	ids := GetIds()
+	client := amazon.EC2Client()
+
+	sii, err := client.StopInstances(&ec2.StopInstancesInput{
+		InstanceIds: util.StrSlicePtr(ids),
+	})
+	util.MustExec(err)
+
+	for i := range sii.StoppingInstances {
+		fmt.Println(*sii.StoppingInstances[i].InstanceId)
+	}
+}
+
+func Start() {
+	ids := GetIds()
+	client := amazon.EC2Client()
 
 	sio, err := client.StartInstances(&ec2.StartInstancesInput{
 		InstanceIds: util.StrSlicePtr(ids),
 	})
 	util.MustExec(err)
-	
+
 	for i := range sio.StartingInstances {
 		fmt.Println(*sio.StartingInstances[i].InstanceId)
 	}
@@ -40,13 +63,6 @@ func Start() {
 type NodeName struct {
 	Name string
 	Id   string
-}
-
-func GetIds(nns []NodeName) (ids []string) {
-	for i := range nns {
-		ids = append(ids, nns[i].Id)
-	}
-	return ids
 }
 
 func GetNodeNames(nodes []*ec2.Instance) (nodeNames []NodeName) {

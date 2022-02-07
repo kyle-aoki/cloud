@@ -15,6 +15,7 @@ func main() {
 		case "create":         command.Create()
 		case "list":           command.PrintNodes()
         case "start":          command.Start()
+        case "stop":           command.Stop()
 		default:               help.Print()
 	}
 }
