@@ -14,6 +14,7 @@ func main() {
 		case "delete":         command.DeleteNodes()
 		case "create":         command.Create()
 		case "list":           command.PrintNodes()
+        case "start":          command.Start()
 		default:               help.Print()
 	}
 }
