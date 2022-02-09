@@ -3,6 +3,7 @@ package command
 import (
 	"cloud/pkg/amazon"
 	"cloud/pkg/args"
+	"cloud/pkg/config"
 	"cloud/pkg/util"
 	"fmt"
 
@@ -10,24 +11,35 @@ import (
 )
 
 func Create() {
-	launchTemp := args.Poll()
+	configType := args.Poll()
 	instanceNames := args.Collect()
 	client := amazon.EC2Client()
 
-	for i := range instanceNames {
+	nc := config.Vars.Find(configType)
+
+	for _, instanceName := range instanceNames {
 		rio, err := client.RunInstances(&ec2.RunInstancesInput{
-			MinCount: util.IntToInt64Ptr(1),
-			MaxCount: util.IntToInt64Ptr(1),
-			LaunchTemplate: &ec2.LaunchTemplateSpecification{
-				LaunchTemplateName: util.StrPtr(launchTemp),
+			BlockDeviceMappings: []*ec2.BlockDeviceMapping{
+				{
+					DeviceName: nc.DefaultDeviceName(),
+					Ebs: &ec2.EbsBlockDevice{
+						VolumeSize: nc.StorageSizeToInt64(),
+					}},
 			},
-			TagSpecifications: []*ec2.TagSpecification{{
-				ResourceType: util.StrPtr("instance"),
-				Tags: []*ec2.Tag{{
-					Key:   util.StrPtr("Name"),
-					Value: util.StrPtr(instanceNames[i]),
+			ImageId:          &nc.AMI,
+			MinCount:         util.IntToInt64Ptr(1),
+			MaxCount:         util.IntToInt64Ptr(1),
+			KeyName:          &nc.KeyPair,
+			SecurityGroupIds: nc.SecurityGroupIds(),
+			InstanceType:     &nc.InstanceType,
+			SubnetId:         nc.SubnetId(),
+			TagSpecifications: []*ec2.TagSpecification{
+				{ResourceType: util.StrPtr("instance"), Tags: []*ec2.Tag{
+					{Key: util.StrPtr("Name"), Value: util.StrPtr(instanceName)},
 				}},
-			}},
+			},
+			PrivateIpAddress: nc.GetPrivateIp(),
+			UserData: nc.GetUserData(),
 		})
 		util.MustExec(err)
 

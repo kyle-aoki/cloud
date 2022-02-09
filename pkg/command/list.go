@@ -2,6 +2,7 @@ package command
 
 import (
 	"cloud/pkg/amazon"
+	"cloud/pkg/config"
 	"cloud/pkg/tab"
 	"cloud/pkg/util"
 	"fmt"
@@ -30,7 +31,7 @@ func PrintNodes() {
 	tab.Print("id\tname\tstate\tprivate-ip\tpublic-ip")
 
 	for _, node := range nodes {
-		if State(node) == "terminated" {
+		if !config.Vars.ShowTerminatedNodes && State(node) == "terminated" {
 			continue
 		}
 		l := fmt.Sprintf("%v\t%v\t%v\t%v\t%v",
