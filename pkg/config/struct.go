@@ -11,24 +11,24 @@ import (
 )
 
 type ConfigVars struct {
-	ShowTerminatedNodes bool
-	NodeConfigurations  []NodeConfiguration
+	ShowTerminatedNodes bool `yaml:"ShowTerminatedNodes"`
+	Configurations  []Configuration `yaml:"Configurations"`
 }
 
-type NodeConfiguration struct {
-	ConfigName         string   `json:"ConfigName"`
-	VPCNameTag         string   `json:"VPCNameTag"`
-	SubnetNameTag      string   `json:"SubnetNameTag"`
-	SecurityGroupNames []string `json:"SecurityGroupNames"`
-	AMI                string   `json:"AMI"`
-	KeyPair            string   `json:"KeyPair"`
-	InstanceType       string   `json:"InstanceType"`
-	StorageSize        string   `json:"StorageSize"`
-	PrivateIp          string   `json:"PrivateIp"`
-	UserData           []string `json:"UserData"`
+type Configuration struct {
+	ConfigName         string   `yaml:"Name"`
+	VPCNameTag         string   `yaml:"VPCNameTag"`
+	SubnetNameTag      string   `yaml:"SubnetNameTag"`
+	SecurityGroupNames []string `yaml:"SecurityGroupNames"`
+	AMI                string   `yaml:"AMI"`
+	KeyPair            string   `yaml:"KeyPair"`
+	InstanceType       string   `yaml:"InstanceType"`
+	StorageSize        string   `yaml:"StorageSize"`
+	PrivateIp          string   `yaml:"PrivateIp"`
+	UserData           []string `yaml:"UserData"`
 }
 
-func (nc NodeConfiguration) VPC() *string {
+func (nc Configuration) VPC() *string {
 	client := amazon.EC2Client()
 	dvo, err := client.DescribeVpcs(&ec2.DescribeVpcsInput{})
 	util.MustExec(err)
@@ -44,7 +44,7 @@ func (nc NodeConfiguration) VPC() *string {
 	panic("VPC not found.")
 }
 
-func (nc NodeConfiguration) StorageSizeToInt64() *int64 {
+func (nc Configuration) StorageSizeToInt64() *int64 {
 	ss := strings.Replace(nc.StorageSize, "gb", "", 1)
 	num, err := strconv.Atoi(ss)
 	util.MustExec(err)
@@ -52,7 +52,7 @@ func (nc NodeConfiguration) StorageSizeToInt64() *int64 {
 	return &i64
 }
 
-func (nc NodeConfiguration) DefaultDeviceName() *string {
+func (nc Configuration) DefaultDeviceName() *string {
 	client := amazon.EC2Client()
 	dio, err := client.DescribeImages(&ec2.DescribeImagesInput{
 		ImageIds: []*string{&nc.AMI},
@@ -62,7 +62,7 @@ func (nc NodeConfiguration) DefaultDeviceName() *string {
 	return dio.Images[0].RootDeviceName
 }
 
-func (nc NodeConfiguration) SubnetId() *string {
+func (nc Configuration) SubnetId() *string {
 	client := amazon.EC2Client()
 	dso, err := client.DescribeSubnets(&ec2.DescribeSubnetsInput{})
 	util.MustExec(err)
@@ -84,7 +84,7 @@ func (nc NodeConfiguration) SubnetId() *string {
 	panic("Subnet not found")
 }
 
-func (nc NodeConfiguration) SecurityGroupIds() []*string {
+func (nc Configuration) SecurityGroupIds() []*string {
 	client := amazon.EC2Client()
 	dsgo, err := client.DescribeSecurityGroups(&ec2.DescribeSecurityGroupsInput{})
 	util.MustExec(err)
@@ -106,8 +106,8 @@ func contains(names []string, sg string) bool {
 	return false
 }
 
-func (cv ConfigVars) Find(configName string) NodeConfiguration {
-	for _, nc := range cv.NodeConfigurations {
+func (cv ConfigVars) Find(configName string) Configuration {
+	for _, nc := range cv.Configurations {
 		if nc.ConfigName == configName {
 			return nc
 		}
@@ -115,7 +115,7 @@ func (cv ConfigVars) Find(configName string) NodeConfiguration {
 	panic("Node configuration not found.")
 }
 
-func (nc NodeConfiguration) GetUserData() *string {
+func (nc Configuration) GetUserData() *string {
 	var userData string
 	for i := range nc.UserData {
 		userData += nc.UserData[i] + "\n"
@@ -124,7 +124,7 @@ func (nc NodeConfiguration) GetUserData() *string {
 	return &b64
 }
 
-func (nc NodeConfiguration) GetPrivateIp() *string {
+func (nc Configuration) GetPrivateIp() *string {
 	if nc.PrivateIp == "" {
 		return nil
 	}

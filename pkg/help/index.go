@@ -6,9 +6,10 @@ import (
 )
 
 const HelpText = `
-    List  Nodes:        cloud list
-    Create Node:        cloud create <launch-template> <name-tag-1> <name-tag-2> ...
-    Delete Node:        cloud delete <node-name-tag or instance-id-substring> ...
+List  Nodes:        cloud list
+Create Node:        cloud create <launch-template> <name-tag-1> <name-tag-2> ...
+Delete Node:        cloud delete <node-name-tag or instance-id-substring> ...
+
 `
 
 func Print() {

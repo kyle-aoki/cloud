@@ -2,13 +2,14 @@ package config
 
 import (
 	"cloud/pkg/util"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
+
+	"gopkg.in/yaml.v2"
 )
 
-const configFileName = ".cloud"
+const configFileName = ".cloudlab"
 
 var Vars ConfigVars
 
@@ -28,6 +29,6 @@ func Load() {
 	configFile, err := ioutil.ReadFile(ConfigFilePath())
 	util.MustExec(err)
 
-	err = json.Unmarshal(configFile, &Vars)
+	err = yaml.Unmarshal(configFile, &Vars)
 	util.MustExec(err)
 }
