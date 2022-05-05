@@ -12,7 +12,7 @@ Delete Node:        cloud delete <node-name-tag or instance-id-substring> ...
 
 `
 
-func Print() {
+func FatalHelpText() {
 	fmt.Print(HelpText)
 	os.Exit(1)
 }

@@ -13,7 +13,7 @@ import (
 func Create() {
 	configType := args.Poll()
 	instanceNames := args.Collect()
-	client := amazon.EC2Client()
+	client := amazon.EC2()
 
 	nc := config.Vars.Find(configType)
 

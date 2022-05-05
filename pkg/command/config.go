@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 )
 
-func ShowConfig() {
+func Config() {
 	content, err := ioutil.ReadFile(config.ConfigFilePath())
 	util.MustExec(err)
 	fmt.Print(string(content))

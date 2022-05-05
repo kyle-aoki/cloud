@@ -23,7 +23,7 @@ func DeleteNodes() {
 		}
 	}
 
-	tio, err := amazon.EC2Client().TerminateInstances(&ec2.TerminateInstancesInput{
+	tio, err := amazon.EC2().TerminateInstances(&ec2.TerminateInstancesInput{
 		InstanceIds: instanceIds,
 	})
 	util.MustExec(err)

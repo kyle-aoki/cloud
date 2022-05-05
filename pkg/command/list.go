@@ -11,7 +11,7 @@ import (
 )
 
 func GetNodes() (nodes []*ec2.Instance) {
-	client := amazon.EC2Client()
+	client := amazon.EC2()
 
 	di, err := client.DescribeInstances(&ec2.DescribeInstancesInput{})
 	util.MustExec(err)

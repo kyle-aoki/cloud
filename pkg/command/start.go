@@ -34,7 +34,7 @@ func GetIds() []string {
 
 func Stop() {
 	ids := GetIds()
-	client := amazon.EC2Client()
+	client := amazon.EC2()
 
 	sii, err := client.StopInstances(&ec2.StopInstancesInput{
 		InstanceIds: util.StrSlicePtr(ids),
@@ -48,7 +48,7 @@ func Stop() {
 
 func Start() {
 	ids := GetIds()
-	client := amazon.EC2Client()
+	client := amazon.EC2()
 
 	sio, err := client.StartInstances(&ec2.StartInstancesInput{
 		InstanceIds: util.StrSlicePtr(ids),

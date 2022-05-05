@@ -4,6 +4,10 @@ func StrPtr(s string) *string {
 	return &s
 }
 
+func BoolPtr(b bool) *bool {
+	return &b
+}
+
 func IntToInt64Ptr(i int) *int64 {
 	i64 := int64(i)
 	return &i64

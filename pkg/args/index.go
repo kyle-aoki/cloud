@@ -15,7 +15,7 @@ func init() {
 
 func Poll() string {
 	if len(args) == 0 {
-		help.Print()
+		help.FatalHelpText()
 	}
 	next := args[0]
 	args = args[1:]
@@ -24,7 +24,7 @@ func Poll() string {
 
 func Collect() []string {
 	if len(args) == 0 {
-		panic("Not enough arguments. Try 'cloud --help'")
+		help.FatalHelpText()
 	}
 	return args
 }

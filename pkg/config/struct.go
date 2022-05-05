@@ -29,7 +29,7 @@ type Configuration struct {
 }
 
 func (nc Configuration) VPC() *string {
-	client := amazon.EC2Client()
+	client := amazon.EC2()
 	dvo, err := client.DescribeVpcs(&ec2.DescribeVpcsInput{})
 	util.MustExec(err)
 	for _, vpc := range dvo.Vpcs {
@@ -53,7 +53,7 @@ func (nc Configuration) StorageSizeToInt64() *int64 {
 }
 
 func (nc Configuration) DefaultDeviceName() *string {
-	client := amazon.EC2Client()
+	client := amazon.EC2()
 	dio, err := client.DescribeImages(&ec2.DescribeImagesInput{
 		ImageIds: []*string{&nc.AMI},
 	})
@@ -63,7 +63,7 @@ func (nc Configuration) DefaultDeviceName() *string {
 }
 
 func (nc Configuration) SubnetId() *string {
-	client := amazon.EC2Client()
+	client := amazon.EC2()
 	dso, err := client.DescribeSubnets(&ec2.DescribeSubnetsInput{})
 	util.MustExec(err)
 
@@ -85,7 +85,7 @@ func (nc Configuration) SubnetId() *string {
 }
 
 func (nc Configuration) SecurityGroupIds() []*string {
-	client := amazon.EC2Client()
+	client := amazon.EC2()
 	dsgo, err := client.DescribeSecurityGroups(&ec2.DescribeSecurityGroupsInput{})
 	util.MustExec(err)
 	var ids []*string
