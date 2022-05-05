@@ -25,14 +25,20 @@ func CloudLabVpcExists() (bool, *string) {
 	return false, nil
 }
 
+func FindNameTag(tags []*ec2.Tag) *string {
+	for _, tag := range tags {
+		if *tag.Key == "Name" {
+			return tag.Value
+		}
+	}
+	return nil
+}
+
 func GetVpcIdByNameTag(dvo *ec2.DescribeVpcsOutput, name string) *string {
 	for _, vpc := range dvo.Vpcs {
-		for _, tag := range vpc.Tags {
-			if *tag.Key == "Name" {
-				if *tag.Value == name {
-					return vpc.VpcId
-				}
-			}
+		nameTag := FindNameTag(vpc.Tags)
+		if nameTag != nil && *nameTag == name {
+			return vpc.VpcId
 		}
 	}
 	panic("failed to find vpc id")
