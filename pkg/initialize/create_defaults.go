@@ -19,29 +19,80 @@ import (
 // Set up Route Table Subnet Association
 
 func CreateCloudLabDefaults() {
-	exists, vpcId := CloudLabVpcExists()
-	if !exists {
-		vpcId = CreateCloudLabVpc()
+	if isMissingCloudLabVpc() {
+		CreateCloudLabVpc()
 	}
-	exists, subnetId := PublicSubnetExists(vpcId)
-	if !exists {
-		subnetId = CreatePublicSubnet(vpcId)
-		ModifyPublicSubnetAttributes(subnetId)
+	vpcId := findCloudLabVpcId()
+
+	if isMissingCloudLabPublicSubnet(vpcId) {
+		CreatePublicSubnet(vpcId)
 	}
+	subnetId := findSubnetByVpcId(vpcId)
+
+	ModifyPublicSubnetAttributes(subnetId)
+
 	if !CloudLabRouteTableExists() {
 		CreateCloudLabRouteTable(vpcId)
 	}
 }
 
-func CreateCloudLabVpc() *string {
+func isMissingCloudLabVpc() bool {
+	vpcId := findCloudLabVpcId()
+	if vpcId == nil {
+		fmt.Println("missing cloudlab vpc")
+		return true
+	}
+	util.VPrint("found cloudlab vpc", *vpcId)
+	return false
+}
+
+func findCloudLabVpcId() *string {
+	var NextToken *string
+	for {
+		dvo, err := amazon.EC2().DescribeVpcs(&ec2.DescribeVpcsInput{NextToken: NextToken})
+		util.MustExec(err)
+		for _, vpc := range dvo.Vpcs {
+			nameTagValue := findNameTagValue(vpc.Tags)
+			if nameTagValue != nil && *nameTagValue == DefaultVpcName {
+				return vpc.VpcId
+			}
+		}
+		NextToken = dvo.NextToken
+		if NextToken == nil {
+			return nil
+		}
+	}
+}
+
+func isMissingPublicSubnetAttributes() bool {
+	var NextToken *string
+	for {
+		dso, err := amazon.EC2().DescribeSubnets(&ec2.DescribeSubnetsInput{NextToken: NextToken})
+		util.MustExec(err)
+		for _, subnet := range dso.Subnets {
+			nameTagValue := findNameTagValue(subnet.Tags)
+			if nameTagValue != nil && *nameTagValue == CloudLabPublicSubnetNameTagValue {
+				if subnet.MapPublicIpOnLaunch == nil || !*subnet.MapPublicIpOnLaunch {
+					return true
+				}
+				return false
+			}
+		}
+		NextToken = dso.NextToken
+		if NextToken == nil {
+			return true
+		}
+	}
+}
+// MapPublicIpOnLaunch: &ec2.AttributeBooleanValue{Value: util.BoolPtr(true)},
+
+func CreateCloudLabVpc() {
 	fmt.Println("creating cloudlab VPC")
-	cvo, err := amazon.EC2().CreateVpc(&ec2.CreateVpcInput{
+	_, err := amazon.EC2().CreateVpc(&ec2.CreateVpcInput{
 		CidrBlock:         util.StrPtr(DefaultVpcCidrBlock),
 		TagSpecifications: NameTag("vpc", DefaultVpcName),
 	})
 	util.MustExec(err)
-
-	return cvo.Vpc.VpcId
 }
 
 func CreatePublicSubnet(vpcId *string) *string {
@@ -58,17 +109,44 @@ func CreatePublicSubnet(vpcId *string) *string {
 
 func ModifyPublicSubnetAttributes(subnetId *string) {
 	fmt.Println("modifying public subnet attributes")
-	_, err := amazon.EC2().ModifySubnetAttribute(&ec2.ModifySubnetAttributeInput{
-		SubnetId:                             subnetId,
-		EnableResourceNameDnsARecordOnLaunch: &ec2.AttributeBooleanValue{Value: util.BoolPtr(true)},
-	})
-	util.MustExec(err)
+	// _, err := amazon.EC2().ModifySubnetAttribute(&ec2.ModifySubnetAttributeInput{
+	// 	SubnetId:                             subnetId,
+	// 	EnableResourceNameDnsARecordOnLaunch: &ec2.AttributeBooleanValue{Value: util.BoolPtr(true)},
+	// })
+	// util.MustExec(err)
 
-	_, err = amazon.EC2().ModifySubnetAttribute(&ec2.ModifySubnetAttributeInput{
-		SubnetId:            subnetId,
-		MapPublicIpOnLaunch: &ec2.AttributeBooleanValue{Value: util.BoolPtr(true)},
-	})
-	util.MustExec(err)
+	// _, err = amazon.EC2().ModifySubnetAttribute(&ec2.ModifySubnetAttributeInput{
+	// 	SubnetId:            subnetId,
+	// 	MapPublicIpOnLaunch: &ec2.AttributeBooleanValue{Value: util.BoolPtr(true)},
+	// })
+	// util.MustExec(err)
+}
+
+func findSubnetByVpcId(vpcId *string) *string {
+	var NextToken *string
+	for {
+		dso, err := amazon.EC2().DescribeSubnets(&ec2.DescribeSubnetsInput{NextToken: NextToken})
+		util.MustExec(err)
+		for _, subnet := range dso.Subnets {
+			if subnet.VpcId != nil && *subnet.VpcId == *vpcId {
+				return subnet.VpcId
+			}
+		}
+		NextToken = dso.NextToken
+		if NextToken == nil {
+			return nil
+		}
+	}
+}
+
+func isMissingCloudLabPublicSubnet(vpcId *string) bool {
+	subnetId := findSubnetByVpcId(vpcId)
+	if subnetId == nil {
+		fmt.Println("missing cloudlab public subnet")
+		return true
+	}
+	util.VPrint("found cloudlab public subnet", *subnetId)
+	return false
 }
 
 func PublicSubnetExists(vpcId *string) (exists bool, subnetId *string) {

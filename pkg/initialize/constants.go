@@ -2,6 +2,7 @@ package initialize
 
 const DefaultVpcName = "cloudlab-vpc"
 const CloudLabRouteTable = "cloudlab-route-table"
+const CloudLabPublicSubnetNameTagValue = "cloudlab-public-subnet"
 
 const MissingVpcErrorMessage = `
 You don't have a VPC named 'cloudlab'.
