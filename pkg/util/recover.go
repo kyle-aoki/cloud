@@ -1,9 +1,9 @@
 package util
 
-import "fmt"
+// import "fmt"
 
 func Recover() {
-	if r := recover(); r != nil {
-		fmt.Println(r)
-	}
+	// if r := recover(); r != nil {
+		// fmt.Println(r)
+	// }
 }

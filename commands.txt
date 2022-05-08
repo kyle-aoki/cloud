@@ -1,0 +1,19 @@
+cloud lab commands:
+
+cloudlab init                      create cloudlab resources (vpc, subnets, et cetera)
+cloudlab destroy                   delete all cloudlab resources
+
+cloudlab create public             create an instance with a public IP address
+cloudlab create private            create an instance with only a private IP address
+
+cloudlab list                      list all your instances
+cloudlab list all                  list all your cloudlab resources
+
+cloudlab delete <instance-id>      delete an instance
+cloudlab delete all                delete all your instances
+
+cloudlab stop <instnace-id>        stop an instance
+cloudlab stop all                  stop all your instances
+
+cloudlab start <instnace-id>       start an instance
+cloudlab start all                 start all your instances

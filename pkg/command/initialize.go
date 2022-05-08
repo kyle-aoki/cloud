@@ -1,7 +1,9 @@
 package command
 
-import "cloud/pkg/initialize"
+import (
+	"cloud/pkg/defaults"
+)
 
 func Initialize() {
-	initialize.CreateCloudLabDefaults()
+	defaults.CreateCloudLabDefaults()
 }

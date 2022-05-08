@@ -16,6 +16,7 @@ func main() {
 
 	switch args.Poll() {
 	    case "init":           command.Initialize()
+		case "destroy":        command.Destroy()
         case "delete":         command.DeleteNodes()
         case "create":         command.Create()
         case "list":           command.PrintNodes()
