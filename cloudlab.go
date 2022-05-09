@@ -12,7 +12,12 @@ import (
 var CommandMap = map[string]func(){
 	"init":    command.Initialize,
 	"destroy": command.Destroy,
-	"delete":  command.DeleteNodes,
+	"delete": func() {
+		exec(map[string]func(){
+			"instance":  command.DeleteNodes,
+			"instances": command.DeleteNodes,
+		})
+	},
 	"list": func() {
 		exec(map[string]func(){
 			"":     command.PrintNodes,
@@ -22,7 +27,7 @@ var CommandMap = map[string]func(){
 	"create": func() {
 		exec(map[string]func(){
 			"instance": command.CreateInstance,
-			"key":      command.CreateKeyPair,
+			"key-pair": command.CreateKeyPair,
 		})
 	},
 	"start":  command.Start,

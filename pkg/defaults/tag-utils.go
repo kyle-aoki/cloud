@@ -15,7 +15,7 @@ func findNameTagValue(tags []*ec2.Tag) *string {
 	return nil
 }
 
-func nameTagEquals(tags []*ec2.Tag, name string) bool {
+func NameTagEquals(tags []*ec2.Tag, name string) bool {
 	nameTagValue := findNameTagValue(tags)
 	if nameTagValue != nil && *nameTagValue == name {
 		return true

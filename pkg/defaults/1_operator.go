@@ -61,7 +61,7 @@ func CreateCloudLabDefaults() {
 	cldo.createSecurityGroup("allow-port-8080", 8080)
 
 	fmt.Println("all cloudlab resources exist")
-	fmt.Println("to create a key-pair, run: 'cloudlab key'")
+	fmt.Println("to create a key-pair, run: 'cloudlab create key-pair'")
 }
 
 func DestroyCloudLabResources() {

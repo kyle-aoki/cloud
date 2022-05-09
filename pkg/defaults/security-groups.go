@@ -13,7 +13,7 @@ func (cldo *CloudLabDefaultsOperator) findCloudLabSecurityGroups() {
 		&ec2.DescribeSecurityGroupsInput{},
 		func(dsgo *ec2.DescribeSecurityGroupsOutput, b bool) bool {
 			for _, sg := range dsgo.SecurityGroups {
-				if nameTagEquals(sg.Tags, CloudLabSecutiyGroup) {
+				if NameTagEquals(sg.Tags, CloudLabSecutiyGroup) {
 					cldo.SecurityGroups = append(cldo.SecurityGroups, sg)
 					continue
 				}
@@ -44,6 +44,11 @@ func (cldo *CloudLabDefaultsOperator) nameDefaultSecutiyGroup(securityGroupId *s
 }
 
 func (cldo *CloudLabDefaultsOperator) createSecurityGroup(name string, port int) {
+	for _, sg := range cldo.SecurityGroups {
+		if sg.GroupName != nil && *sg.GroupName == name {
+			return
+		}
+	}
 	csgo, err := amazon.EC2().CreateSecurityGroup(&ec2.CreateSecurityGroupInput{
 		VpcId:             cldo.Vpc.VpcId,
 		GroupName:         util.StrPtr(name),

@@ -74,6 +74,11 @@ func (cldo *CloudLabDefaultsOperator) nameRouteTable() {
 }
 
 func (cldo *CloudLabDefaultsOperator) addInternetGatewayRoute() {
+	for _, route := range cldo.RouteTable.Routes {
+		if *route.GatewayId == *cldo.InternetGateway.InternetGatewayId {
+			return
+		}
+	}
 	_, err := amazon.EC2().CreateRoute(&ec2.CreateRouteInput{
 		RouteTableId:         cldo.RouteTable.RouteTableId,
 		GatewayId:            cldo.InternetGateway.InternetGatewayId,
@@ -86,6 +91,11 @@ func (cldo *CloudLabDefaultsOperator) addInternetGatewayRoute() {
 }
 
 func (cldo *CloudLabDefaultsOperator) associatePublicSubnetWithRouteTable() {
+	for _, assoc := range cldo.RouteTable.Associations {
+		if assoc.SubnetId != nil && *assoc.SubnetId == *cldo.PublicSubnet.SubnetId {
+			return
+		}
+	}
 	_, err := amazon.EC2().AssociateRouteTable(&ec2.AssociateRouteTableInput{
 		RouteTableId: cldo.RouteTable.RouteTableId,
 		SubnetId:     cldo.PublicSubnet.SubnetId,

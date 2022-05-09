@@ -42,7 +42,7 @@ func (cldo *CloudLabDefaultsOperator) FindAllCloudLabKeyPairs() {
 	util.MustExec(err)
 
 	for _, kp := range dkpo.KeyPairs {
-		if nameTagEquals(kp.Tags, CloudLabKeyPair) {
+		if NameTagEquals(kp.Tags, CloudLabKeyPair) {
 			cldo.KeyPairs = append(cldo.KeyPairs, kp)
 		}
 	}

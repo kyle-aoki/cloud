@@ -97,7 +97,6 @@ var FourLetterNames = [372]string{
 	"dean",
 	"deon",
 	"desi",
-	"dick",
 	"dino",
 	"dion",
 	"dior",

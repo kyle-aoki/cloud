@@ -13,7 +13,7 @@ func (cldo *CloudLabDefaultsOperator) findInternetGateway() {
 		&ec2.DescribeInternetGatewaysInput{},
 		func(digo *ec2.DescribeInternetGatewaysOutput, b bool) bool {
 			for _, ig := range digo.InternetGateways {
-				if nameTagEquals(ig.Tags, CloudLabInternetGateway) {
+				if NameTagEquals(ig.Tags, CloudLabInternetGateway) {
 					cldo.InternetGateway = ig
 					return false
 				}

@@ -1,3 +1,3 @@
 #!/bin/bash
 go build cloudlab.go
-mv cloud ~/bin/cloudlab
+mv cloudlab ~/bin/cloudlab
