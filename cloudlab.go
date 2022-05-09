@@ -15,14 +15,15 @@ func main() {
 	amazon.InitEC2Client()
 
 	switch args.Poll() {
-	    case "init":           command.Initialize()
-		case "destroy":        command.Destroy()
-        case "delete":         command.DeleteNodes()
-        case "create":         command.Create()
-        case "list":           command.PrintNodes()
-        case "start":          command.Start()
-        case "stop":           command.Stop()
-        case "config":         command.Config()
-		default:               help.FatalHelpText()
+	    case "init":               command.Initialize()
+		case "key":                command.CreateKeyPair()
+		case "destroy":            command.Destroy()
+        case "delete":             command.DeleteNodes()
+        case "create":             command.Create()
+        case "list":               command.PrintNodes()
+        case "start":              command.Start()
+        case "stop":               command.Stop()
+        case "config":             command.Config()
+		default:                   help.FatalHelpText()
 	}
 }

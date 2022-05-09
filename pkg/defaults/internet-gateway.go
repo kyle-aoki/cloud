@@ -33,7 +33,7 @@ func (cldo *CloudLabDefaultsOperator) createInternetGateway() {
 		return
 	}
 	cigo, err := amazon.EC2().CreateInternetGateway(&ec2.CreateInternetGatewayInput{
-		TagSpecifications: createNameTag("internet-gateway", CloudLabInternetGateway),
+		TagSpecifications: CreateNameTagSpec("internet-gateway", CloudLabInternetGateway),
 	})
 	util.MustExec(err)
 	cldo.InternetGateway = cigo.InternetGateway

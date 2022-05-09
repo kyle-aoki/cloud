@@ -22,6 +22,9 @@ type CloudLabDefaultsOperator struct {
 	PrivateSubnet   *ec2.Subnet
 	RouteTable      *ec2.RouteTable
 	InternetGateway *ec2.InternetGateway
+	SecurityGroups  []*ec2.SecurityGroup
+	KeyPairs        []*ec2.KeyPairInfo
+	CurrentKeyPair  *ec2.KeyPairInfo
 }
 
 func (cldo *CloudLabDefaultsOperator) FindAll() {
@@ -30,6 +33,7 @@ func (cldo *CloudLabDefaultsOperator) FindAll() {
 	cldo.PrivateSubnet = findSubnet(CloudLabPrivateSubnetName)
 	cldo.findCloudLabRouteTable()
 	cldo.findInternetGateway()
+	cldo.findCloudLabSecurityGroups()
 }
 
 // Idempotent
@@ -48,7 +52,12 @@ func CreateCloudLabDefaults() {
 	cldo.addInternetGatewayRoute()
 	cldo.associatePublicSubnetWithRouteTable()
 
+	cldo.createSecurityGroup("allow-port-22", 22)
+	cldo.createSecurityGroup("allow-port-3000", 3000)
+	cldo.createSecurityGroup("allow-port-8080", 8080)
+
 	fmt.Println("all cloudlab resources exist")
+	fmt.Println("to create a key-pair, run: 'cloudlab key'")
 }
 
 func DestroyCloudLabResources() {
@@ -58,6 +67,7 @@ func DestroyCloudLabResources() {
 	cldo.detachInternetGateway()
 	cldo.deleteInternetGateway()
 	cldo.deleteSubnets()
+	cldo.deleteAllSecurityGroups()
 	cldo.deleteVpc()
 
 	fmt.Println("no cloudlab resources exist")

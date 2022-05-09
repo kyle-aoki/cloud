@@ -2,8 +2,9 @@ package command
 
 import (
 	"cloud/pkg/amazon"
-	"cloud/pkg/args"
-	"cloud/pkg/config"
+	"cloud/pkg/ami"
+	"cloud/pkg/defaults"
+	"cloud/pkg/names"
 	"cloud/pkg/util"
 	"fmt"
 
@@ -11,38 +12,26 @@ import (
 )
 
 func Create() {
-	configType := args.Poll()
-	instanceNames := args.Collect()
-	client := amazon.EC2()
+	cldo := &defaults.CloudLabDefaultsOperator{}
+	cldo.FindAll()
+	cldo.FindAllCloudLabKeyPairs()
 
-	nc := config.Vars.Find(configType)
-
-	for _, instanceName := range instanceNames {
-		rio, err := client.RunInstances(&ec2.RunInstancesInput{
-			BlockDeviceMappings: []*ec2.BlockDeviceMapping{
-				{
-					DeviceName: nc.DefaultDeviceName(),
-					Ebs: &ec2.EbsBlockDevice{
-						VolumeSize: nc.StorageSizeToInt64(),
-					}},
-			},
-			ImageId:          &nc.AMI,
-			MinCount:         util.IntToInt64Ptr(1),
-			MaxCount:         util.IntToInt64Ptr(1),
-			KeyName:          &nc.KeyPair,
-			SecurityGroupIds: nc.SecurityGroupIds(),
-			InstanceType:     &nc.InstanceType,
-			SubnetId:         nc.SubnetId(),
-			TagSpecifications: []*ec2.TagSpecification{
-				{ResourceType: util.StrPtr("instance"), Tags: []*ec2.Tag{
-					{Key: util.StrPtr("Name"), Value: util.StrPtr(instanceName)},
-				}},
-			},
-			PrivateIpAddress: nc.GetPrivateIp(),
-			UserData: nc.GetUserData(),
-		})
-		util.MustExec(err)
-
-		fmt.Println(*rio.Instances[0].InstanceId)
-	}
+	rio, err := amazon.EC2().RunInstances(&ec2.RunInstancesInput{
+		BlockDeviceMappings: []*ec2.BlockDeviceMapping{{
+			DeviceName: util.StrPtr("/dev/sda1"),
+			Ebs:        &ec2.EbsBlockDevice{VolumeSize: util.IntToInt64Ptr(8)}},
+		},
+		ImageId:  util.StrPtr(ami.GetAmi()),
+		MinCount: util.IntToInt64Ptr(1),
+		MaxCount: util.IntToInt64Ptr(1),
+		KeyName:  util.StrPtr(cldo.GetCurrentCloudLabKeyPairName()),
+		SecurityGroupIds: []*string{
+			util.StrPtr(*cldo.GetSecurityGroupIdByName("allow-port-22").GroupId),
+		},
+		InstanceType:      util.StrPtr("t2.micro"),
+		SubnetId:          cldo.PublicSubnet.SubnetId,
+		TagSpecifications: defaults.CreateNameTagSpec("instance", names.GetRandomName()),
+	})
+	util.MustExec(err)
+	fmt.Println("created instance " + *rio.Instances[0].InstanceId)
 }

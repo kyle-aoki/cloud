@@ -36,6 +36,9 @@ import (
 // }
 
 func (cldo *CloudLabDefaultsOperator) findCloudLabRouteTable() {
+	if cldo.Vpc == nil {
+		return
+	}
 	err := amazon.EC2().DescribeRouteTablesPages(
 		&ec2.DescribeRouteTablesInput{},
 		func(drto *ec2.DescribeRouteTablesOutput, b bool) bool {
@@ -54,6 +57,10 @@ func (cldo *CloudLabDefaultsOperator) findCloudLabRouteTable() {
 
 func (cldo *CloudLabDefaultsOperator) nameRouteTable() {
 	if cldo.RouteTable == nil {
+		return
+	}
+	routeTableNameTagValue := findNameTagValue(cldo.RouteTable.Tags)
+	if routeTableNameTagValue != nil && *routeTableNameTagValue == CloudLabRouteTable {
 		return
 	}
 	_, err := amazon.EC2().CreateTags(&ec2.CreateTagsInput{
@@ -88,9 +95,3 @@ func (cldo *CloudLabDefaultsOperator) associatePublicSubnetWithRouteTable() {
 		fmt.Sprintf("added %s association to %s", CloudLabPublicSubnetName, CloudLabRouteTable),
 	)
 }
-
-
-
-// func (cldo *CloudLabDefaultsOperator) disassociatePublicSubnetWithRouteTable() {
-// 	amazon.EC2().RouteTable
-// }

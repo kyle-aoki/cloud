@@ -55,7 +55,7 @@ func (cldo CloudLabDefaultsOperator) createSubnet(name string, cidr string) (sn 
 	cso, err := amazon.EC2().CreateSubnet(&ec2.CreateSubnetInput{
 		VpcId:             cldo.Vpc.VpcId,
 		CidrBlock:         util.StrPtr(cidr),
-		TagSpecifications: createNameTag("subnet", name),
+		TagSpecifications: CreateNameTagSpec("subnet", name),
 	})
 	util.MustExec(err)
 	util.VMessage("created", name, *cso.Subnet.SubnetId)

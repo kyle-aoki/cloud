@@ -42,7 +42,7 @@ func (cldo *CloudLabDefaultsOperator) findCloudLabVpc() {
 func (cldo *CloudLabDefaultsOperator) createCloudLabVpc() {
 	cvo, err := amazon.EC2().CreateVpc(&ec2.CreateVpcInput{
 		CidrBlock:         util.StrPtr(DefaultVpcCidrBlock),
-		TagSpecifications: createNameTag("vpc", DefaultVpcName),
+		TagSpecifications: CreateNameTagSpec("vpc", DefaultVpcName),
 	})
 	util.MustExec(err)
 	cldo.Vpc = cvo.Vpc

@@ -23,12 +23,16 @@ func nameTagEquals(tags []*ec2.Tag, name string) bool {
 	return false
 }
 
-func createNameTag(resourceType string, name string) []*ec2.TagSpecification {
+func CreateNameTagSpec(resourceType string, name string) []*ec2.TagSpecification {
 	return []*ec2.TagSpecification{{
 		ResourceType: util.StrPtr(resourceType),
-		Tags: []*ec2.Tag{{
-			Key:   util.StrPtr("Name"),
-			Value: util.StrPtr(name),
-		}}},
-	}
+		Tags:         createNameTagArray(name),
+	}}
+}
+
+func createNameTagArray(name string) []*ec2.Tag {
+	return []*ec2.Tag{{
+		Key:   util.StrPtr("Name"),
+		Value: util.StrPtr(name),
+	}}
 }
