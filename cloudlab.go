@@ -9,21 +9,39 @@ import (
 	"cloud/pkg/util"
 )
 
+var CommandMap = map[string]func(){
+	"init":    command.Initialize,
+	"destroy": command.Destroy,
+	"delete":  command.DeleteNodes,
+	"list": func() {
+		exec(map[string]func(){
+			"":     command.PrintNodes,
+			"keys": command.ListKeys,
+		})
+	},
+	"create": func() {
+		exec(map[string]func(){
+			"instance": command.CreateInstance,
+			"key":      command.CreateKeyPair,
+		})
+	},
+	"start":  command.Start,
+	"stop":   command.Stop,
+	"config": command.Config,
+}
+
 func main() {
 	defer util.Recover()
 	config.Load()
 	amazon.InitEC2Client()
 
-	switch args.Poll() {
-	    case "init":               command.Initialize()
-		case "key":                command.CreateKeyPair()
-		case "destroy":            command.Destroy()
-        case "delete":             command.DeleteNodes()
-        case "create":             command.Create()
-        case "list":               command.PrintNodes()
-        case "start":              command.Start()
-        case "stop":               command.Stop()
-        case "config":             command.Config()
-		default:                   help.FatalHelpText()
+	exec(CommandMap)
+}
+
+func exec(commandMap map[string]func()) {
+	if command, ok := commandMap[args.PollOrEmpty()]; ok {
+		command()
+	} else {
+		help.FatalHelpText()
 	}
 }

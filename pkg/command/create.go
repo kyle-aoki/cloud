@@ -11,7 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-func Create() {
+func CreateInstance() {
 	cldo := &defaults.CloudLabDefaultsOperator{}
 	cldo.FindAll()
 	cldo.FindAllCloudLabKeyPairs()
@@ -33,5 +33,5 @@ func Create() {
 		TagSpecifications: defaults.CreateNameTagSpec("instance", names.GetRandomName()),
 	})
 	util.MustExec(err)
-	fmt.Println("created instance " + *rio.Instances[0].InstanceId)
+	fmt.Println(*rio.Instances[0].InstanceId)
 }

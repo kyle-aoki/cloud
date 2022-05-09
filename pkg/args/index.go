@@ -22,6 +22,15 @@ func Poll() string {
 	return next
 }
 
+func PollOrEmpty() string {
+	if len(args) == 0 {
+		return ""
+	}
+	next := args[0]
+	args = args[1:]
+	return next
+}
+
 func Collect() []string {
 	if len(args) == 0 {
 		help.FatalHelpText()

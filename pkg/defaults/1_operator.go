@@ -27,6 +27,10 @@ type CloudLabDefaultsOperator struct {
 	CurrentKeyPair  *ec2.KeyPairInfo
 }
 
+func NewOperator() *CloudLabDefaultsOperator {
+	return &CloudLabDefaultsOperator{}
+}
+
 func (cldo *CloudLabDefaultsOperator) FindAll() {
 	cldo.findCloudLabVpc()
 	cldo.PublicSubnet = findSubnet(CloudLabPublicSubnetName)
