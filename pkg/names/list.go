@@ -1,10 +1,42 @@
 package names
 
-import "math/rand"
+import (
+	"cloud/pkg/defaults"
+	"math/rand"
+	"time"
 
-func GetRandomName() string {
-	n := rand.Intn(372)
-	return FourLetterNames[n]
+	"github.com/aws/aws-sdk-go/service/ec2"
+)
+
+func Contains(arr []string, elem string) bool {
+	for i := range arr {
+		if elem == arr[i] {
+			return true
+		}
+	}
+	return false
+}
+
+var tries int
+
+func GetRandomName(nodes []*ec2.Instance) string {
+	var names []string
+	for _, node := range nodes {
+		names = append(names, *defaults.FindNameTagValue(node.Tags))
+	}
+	rand.Seed(time.Now().Local().UnixMicro())
+	for {
+		n := rand.Intn(372)
+		name := FourLetterNames[n]
+		if !Contains(names, name) {
+			return name
+		} else {
+			tries++
+			if tries > 500 {
+				panic("something went wrong")
+			}
+		}
+	}
 }
 
 var FourLetterNames = [372]string{

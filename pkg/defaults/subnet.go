@@ -39,7 +39,7 @@ func findSubnet(name string) (sn *ec2.Subnet) {
 		&ec2.DescribeSubnetsInput{},
 		func(dso *ec2.DescribeSubnetsOutput, b bool) bool {
 			for _, subnet := range dso.Subnets {
-				nameTagValue := findNameTagValue(subnet.Tags)
+				nameTagValue := FindNameTagValue(subnet.Tags)
 				if nameTagValue != nil && *nameTagValue == name {
 					sn = subnet
 					return false
@@ -49,6 +49,19 @@ func findSubnet(name string) (sn *ec2.Subnet) {
 		})
 	util.MustExec(err)
 	return sn
+}
+
+func (cldo *CloudLabDefaultsOperator) findPublicSubnet() {
+	cldo.PublicSubnet = findSubnet(CloudLabPublicSubnetName)
+}
+
+func (cldo *CloudLabDefaultsOperator) findPrivateSubnet() {
+	cldo.PrivateSubnet = findSubnet(CloudLabPrivateSubnetName)
+}
+
+func (cldo *CloudLabDefaultsOperator) findSubnets() {
+	cldo.findPublicSubnet()
+	cldo.findPrivateSubnet()
 }
 
 func (cldo CloudLabDefaultsOperator) createSubnet(name string, cidr string) (sn *ec2.Subnet) {

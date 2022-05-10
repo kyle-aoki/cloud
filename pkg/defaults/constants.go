@@ -8,7 +8,7 @@ const CloudLabInternetGateway = "cloudlab-internet-gateway"
 const CloudLabSecutiyGroup = "cloudlab-security-group"
 const CloudLabKeyPair = "cloud-lab-key-pair"
 const CloudLabKeyPairNameTemplate = "cloudlab-key-pair-"
-const CloudLabInstance = "CloudLabInstance"
+const CloudLabInstance = "cloud-lab-instance"
 
 const MissingVpcErrorMessage = `
 You don't have a VPC named 'cloudlab'.

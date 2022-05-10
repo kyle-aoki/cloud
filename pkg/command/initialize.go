@@ -4,6 +4,6 @@ import (
 	"cloud/pkg/defaults"
 )
 
-func Initialize() {
+func (c Commander) Initialize() {
 	defaults.CreateCloudLabDefaults()
 }

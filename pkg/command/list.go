@@ -1,41 +1,25 @@
 package command
 
 import (
-	"cloud/pkg/amazon"
 	"cloud/pkg/config"
+	"cloud/pkg/defaults"
 	"cloud/pkg/tab"
-	"cloud/pkg/util"
 	"fmt"
 
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-func GetNodes() (nodes []*ec2.Instance) {
-	client := amazon.EC2()
+func (c Commander) PrintNodes() {
+	cldo := defaults.Start()
 
-	di, err := client.DescribeInstances(&ec2.DescribeInstancesInput{})
-	util.MustExec(err)
+	tab.Print("name\tstate\tprivate-ip\tpublic-ip")
 
-	for _, res := range di.Reservations {
-		for _, inst := range res.Instances {
-			nodes = append(nodes, inst)
-		}
-	}
-
-	return nodes
-}
-
-func PrintNodes() {
-	nodes := GetNodes()
-
-	tab.Print("id\tname\tstate\tprivate-ip\tpublic-ip")
-
-	for _, node := range nodes {
+	for _, node := range cldo.Instances {
 		if !config.Vars.ShowTerminatedNodes && State(node) == "terminated" {
 			continue
 		}
-		l := fmt.Sprintf("%v\t%v\t%v\t%v\t%v",
-			Id(node), Name(node), State(node), PrivateIp(node), PublicIp(node),
+		l := fmt.Sprintf("%v\t%v\t%v\t%v",
+			Name(node), State(node), PrivateIp(node), PublicIp(node),
 		)
 		tab.Print(l)
 	}

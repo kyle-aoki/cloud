@@ -25,19 +25,26 @@ type CloudLabDefaultsOperator struct {
 	SecurityGroups  []*ec2.SecurityGroup
 	KeyPairs        []*ec2.KeyPairInfo
 	CurrentKeyPair  *ec2.KeyPairInfo
+	Instances       []*ec2.Instance
 }
 
 func NewOperator() *CloudLabDefaultsOperator {
 	return &CloudLabDefaultsOperator{}
 }
 
+func Start() *CloudLabDefaultsOperator {
+	cldo := NewOperator()
+	cldo.FindAll()
+	return cldo
+}
+
 func (cldo *CloudLabDefaultsOperator) FindAll() {
 	cldo.findCloudLabVpc()
-	cldo.PublicSubnet = findSubnet(CloudLabPublicSubnetName)
-	cldo.PrivateSubnet = findSubnet(CloudLabPrivateSubnetName)
+	cldo.findSubnets()
 	cldo.findCloudLabRouteTable()
 	cldo.findInternetGateway()
 	cldo.findCloudLabSecurityGroups()
+	cldo.FindAllInstances()
 }
 
 // Idempotent

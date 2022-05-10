@@ -59,7 +59,7 @@ func (cldo *CloudLabDefaultsOperator) nameRouteTable() {
 	if cldo.RouteTable == nil {
 		return
 	}
-	routeTableNameTagValue := findNameTagValue(cldo.RouteTable.Tags)
+	routeTableNameTagValue := FindNameTagValue(cldo.RouteTable.Tags)
 	if routeTableNameTagValue != nil && *routeTableNameTagValue == CloudLabRouteTable {
 		return
 	}

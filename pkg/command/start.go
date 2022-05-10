@@ -3,6 +3,7 @@ package command
 import (
 	"cloud/pkg/amazon"
 	"cloud/pkg/args"
+	"cloud/pkg/defaults"
 	"cloud/pkg/util"
 	"fmt"
 	"strings"
@@ -11,9 +12,10 @@ import (
 )
 
 func GetIds() []string {
+	cldo := defaults.Start()
 	names := args.Collect()
 
-	nodeNames := GetNodeNames(GetNodes())
+	nodeNames := GetNodeNames(cldo.Instances)
 	var nodesToStart []NodeName
 
 	for i := range names {

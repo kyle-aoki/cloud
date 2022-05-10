@@ -3,22 +3,23 @@ package command
 import (
 	"cloud/pkg/amazon"
 	"cloud/pkg/args"
+	"cloud/pkg/defaults"
 	"cloud/pkg/util"
-	"fmt"
 
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-func DeleteNodes() {
-	names := args.Collect()
-	nodes := GetNodes()
+func (c Commander) DeleteInstances() {
+	namesOfInstancesToDelete := args.Collect()
+
+	cldo := defaults.Start()
 	var instanceIds []*string
 
-	for _, node := range nodes {
-		nodeName := GetName(node)
-		for _, name := range names {
-			if nodeName == name {
-				instanceIds = append(instanceIds, node.InstanceId)
+	for _, inst := range cldo.Instances {
+		instanceName := defaults.FindNameTagValue(inst.Tags)
+		for _, nameOfInstanceToDelete := range namesOfInstancesToDelete {
+			if instanceName != nil && *instanceName == nameOfInstanceToDelete {
+				instanceIds = append(instanceIds, inst.InstanceId)
 			}
 		}
 	}
@@ -29,6 +30,6 @@ func DeleteNodes() {
 	util.MustExec(err)
 
 	for _, ti := range tio.TerminatingInstances {
-		fmt.Println(*ti.InstanceId)
+		util.VMessage("deleted", defaults.CloudLabInstance, *ti.InstanceId)
 	}
 }

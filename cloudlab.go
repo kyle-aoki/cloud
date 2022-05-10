@@ -7,32 +7,40 @@ import (
 	"cloud/pkg/config"
 	"cloud/pkg/help"
 	"cloud/pkg/util"
+	"reflect"
 )
 
-var CommandMap = map[string]func(){
-	"init":    command.Initialize,
-	"destroy": command.Destroy,
-	"delete": func() {
-		exec(map[string]func(){
-			"instance":  command.DeleteNodes,
-			"instances": command.DeleteNodes,
-		})
+var CommandMap = map[string]any{
+	"init":    "Initialize",
+	"destroy": "Destroy",
+	"delete": map[string]any{
+		"instance":  "DeleteInstances",
+		"instances": "DeleteInstances",
+		"key":       "DeleteKey",
+		"keys":      "DeleteKey",
+		"key-pair":  "DeleteKey",
+		"key-pairs": "DeleteKey",
+		"all": map[string]any{
+			"keys":      "DeleteAllKeys",
+			"key-pairs": "DeleteAllKeys",
+		},
 	},
-	"list": func() {
-		exec(map[string]func(){
-			"":     command.PrintNodes,
-			"keys": command.ListKeys,
-		})
+	"list": map[string]any{
+		"":          "PrintNodes",
+		"instance":  "PrintNodes",
+		"instances": "PrintNodes",
+		"keys":      "ListKeys",
 	},
-	"create": func() {
-		exec(map[string]func(){
-			"instance": command.CreateInstance,
-			"key-pair": command.CreateKeyPair,
-		})
+	"create": map[string]any{
+		"public": map[string]any{
+			"instance": "CreatePublicInstance",
+		},
+		"private": map[string]any{
+			"instance": "CreatePrivateInstance",
+		},
+		"key":      "CreateKeyPair",
+		"key-pair": "CreateKeyPair",
 	},
-	"start":  command.Start,
-	"stop":   command.Stop,
-	"config": command.Config,
 }
 
 func main() {
@@ -40,13 +48,21 @@ func main() {
 	config.Load()
 	amazon.InitEC2Client()
 
-	exec(CommandMap)
+	traverse(CommandMap)
 }
 
-func exec(commandMap map[string]func()) {
-	if command, ok := commandMap[args.PollOrEmpty()]; ok {
-		command()
+func traverse(commandMap map[string]any) {
+	if val, ok := commandMap[args.PollOrEmpty()]; ok {
+		if reflect.TypeOf(val).Kind() == reflect.String {
+			exec(val)
+		} else {
+			traverse(val.(map[string]any))
+		}
 	} else {
 		help.FatalHelpText()
 	}
+}
+
+func exec(methodName any) {
+	reflect.ValueOf(command.Commander{}).MethodByName(methodName.(string)).Call(nil)
 }

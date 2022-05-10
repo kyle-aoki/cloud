@@ -37,10 +37,11 @@ func (cldo *CloudLabDefaultsOperator) isVpcDefaultSecurityGroup(vpcId *string) b
 }
 
 func (cldo *CloudLabDefaultsOperator) nameDefaultSecutiyGroup(securityGroupId *string) {
-	amazon.EC2().CreateTags(&ec2.CreateTagsInput{
+	_, err := amazon.EC2().CreateTags(&ec2.CreateTagsInput{
 		Resources: []*string{securityGroupId},
 		Tags:      createNameTagArray(CloudLabSecutiyGroup),
 	})
+	util.MustExec(err)
 }
 
 func (cldo *CloudLabDefaultsOperator) createSecurityGroup(name string, port int) {

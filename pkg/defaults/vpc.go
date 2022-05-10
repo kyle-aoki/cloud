@@ -28,7 +28,7 @@ func (cldo *CloudLabDefaultsOperator) findCloudLabVpc() {
 		&ec2.DescribeVpcsInput{},
 		func(dvo *ec2.DescribeVpcsOutput, b bool) bool {
 			for _, vpc := range dvo.Vpcs {
-				nameTagValue := findNameTagValue(vpc.Tags)
+				nameTagValue := FindNameTagValue(vpc.Tags)
 				if nameTagValue != nil && *nameTagValue == DefaultVpcName {
 					cldo.Vpc = vpc
 					return false

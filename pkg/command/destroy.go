@@ -2,6 +2,6 @@ package command
 
 import "cloud/pkg/defaults"
 
-func Destroy() {
+func (c Commander) Destroy() {
 	defaults.DestroyCloudLabResources()
 }

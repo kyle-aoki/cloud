@@ -6,7 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-func findNameTagValue(tags []*ec2.Tag) *string {
+func FindNameTagValue(tags []*ec2.Tag) *string {
 	for _, tag := range tags {
 		if *tag.Key == "Name" {
 			return tag.Value
@@ -16,7 +16,7 @@ func findNameTagValue(tags []*ec2.Tag) *string {
 }
 
 func NameTagEquals(tags []*ec2.Tag, name string) bool {
-	nameTagValue := findNameTagValue(tags)
+	nameTagValue := FindNameTagValue(tags)
 	if nameTagValue != nil && *nameTagValue == name {
 		return true
 	}
