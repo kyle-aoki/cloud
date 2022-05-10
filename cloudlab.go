@@ -47,7 +47,6 @@ func main() {
 	defer util.Recover()
 	config.Load()
 	amazon.InitEC2Client()
-
 	traverse(CommandMap)
 }
 
