@@ -4,7 +4,6 @@ import (
 	"cloud/pkg/amazon"
 	"cloud/pkg/args"
 	"cloud/pkg/command"
-	"cloud/pkg/config"
 	"cloud/pkg/util"
 	"fmt"
 	"os"
@@ -52,7 +51,6 @@ var CommandMap = map[string]any{
 
 func main() {
 	defer util.Recover()
-	config.Load()
 	amazon.InitEC2Client()
 
 	traverse(CommandMap)

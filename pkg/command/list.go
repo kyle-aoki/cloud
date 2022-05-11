@@ -1,7 +1,6 @@
 package command
 
 import (
-	"cloud/pkg/config"
 	"cloud/pkg/defaults"
 	"cloud/pkg/tab"
 	"fmt"
@@ -15,9 +14,6 @@ func ListInstances() {
 	tab.Print("name\tstate\tprivate-ip\tpublic-ip")
 
 	for _, node := range cldo.Instances {
-		if !config.Vars.ShowTerminatedNodes && State(node) == "terminated" {
-			continue
-		}
 		l := fmt.Sprintf("%v\t%v\t%v\t%v",
 			Name(node), State(node), PrivateIp(node), PublicIp(node),
 		)
