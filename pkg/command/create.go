@@ -10,18 +10,18 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-func (c Commander) CreateKeyPair() {
+func CreateKeyPair() {
 	defaults.InitiateKeyPairCreation()
 }
 
-func (c Commander) CreatePublicInstance() {
+func CreatePublicInstance() {
 	cldo := &defaults.CloudLabDefaultsOperator{}
 	cldo.FindAll()
 	cldo.FindAllCloudLabKeyPairs()
 	CreateInstanceInSubnet(cldo, cldo.PublicSubnet.SubnetId)
 }
 
-func (c Commander) CreatePrivateInstance() {
+func CreatePrivateInstance() {
 	cldo := &defaults.CloudLabDefaultsOperator{}
 	cldo.FindAll()
 	cldo.FindAllCloudLabKeyPairs()

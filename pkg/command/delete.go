@@ -9,7 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-func (c Commander) DeleteInstances() {
+func DeleteInstances() {
 	namesOfInstancesToDelete := args.Collect()
 
 	cldo := defaults.Start()

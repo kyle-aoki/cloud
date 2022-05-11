@@ -10,7 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-func (c Commander) ListKeys() {
+func ListKeys() {
 	cldo := defaults.NewOperator()
 	cldo.FindAllCloudLabKeyPairs()
 	for _, kp := range cldo.KeyPairs {
@@ -21,12 +21,12 @@ func (c Commander) ListKeys() {
 	}
 }
 
-func (c Commander) DeleteKey() {
+func DeleteKey() {
 	keyPairNames := args.Collect()
 	DeleteKeys(keyPairNames)
 }
 
-func (c Commander) DeleteAllKeys() {
+func DeleteAllKeys() {
 	cldo := defaults.NewOperator()
 	cldo.FindAllCloudLabKeyPairs()
 	var keyPairNames []string

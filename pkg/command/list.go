@@ -9,7 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-func (c Commander) PrintNodes() {
+func ListInstances() {
 	cldo := defaults.Start()
 
 	tab.Print("name\tstate\tprivate-ip\tpublic-ip")
