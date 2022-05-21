@@ -40,7 +40,7 @@ func CreateInstanceInSubnet(cldo *defaults.CloudLabDefaultsOperator, subnetId *s
 		MaxCount: util.IntToInt64Ptr(1),
 		KeyName:  util.StrPtr(cldo.GetCurrentCloudLabKeyPairName()),
 		SecurityGroupIds: []*string{
-			util.StrPtr(*cldo.GetSecurityGroupIdByName("allow-port-22").GroupId),
+			util.StrPtr(*cldo.GetSecurityGroupIdByNameOrPanic("22").GroupId),
 		},
 		InstanceType: util.StrPtr("t2.micro"),
 		TagSpecifications: []*ec2.TagSpecification{

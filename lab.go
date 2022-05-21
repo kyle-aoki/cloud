@@ -19,8 +19,8 @@ var CommandMap = map[string]any{
 	"init":    Command{fn: command.InitializeCloudLabResources, args: ""},
 	"destroy": Command{fn: command.DestroyCloudLabResources, args: ""},
 	"delete": map[string]any{
-		"instance":  Command{fn: command.DeleteInstances, args: "<instance-names>..."},
-		"instances": Command{fn: command.DeleteInstances, args: "<instance-names>..."},
+		"node":  Command{fn: command.DeleteInstances, args: "<instance-names>..."},
+		"nodes": Command{fn: command.DeleteInstances, args: "<instance-names>..."},
 		"key":       Command{fn: command.DeleteKey, args: "<key-names>..."},
 		"keys":      Command{fn: command.DeleteKey, args: "<key-names>..."},
 		"key-pair":  Command{fn: command.DeleteKey, args: "<key-names>..."},
@@ -32,20 +32,23 @@ var CommandMap = map[string]any{
 	},
 	"list": map[string]any{
 		"":          Command{fn: command.ListInstances, args: ""},
-		"instance":  Command{fn: command.ListInstances, args: ""},
-		"instances": Command{fn: command.ListInstances, args: ""},
+		"node":  Command{fn: command.ListInstances, args: ""},
+		"nodes": Command{fn: command.ListInstances, args: ""},
 		"keys":      Command{fn: command.ListKeys, args: ""},
 		"key-pairs": Command{fn: command.ListKeys, args: ""},
 	},
 	"create": map[string]any{
 		"public": map[string]any{
-			"instance": Command{fn: command.CreatePublicInstance, args: ""},
+			"node": Command{fn: command.CreatePublicInstance, args: ""},
 		},
 		"private": map[string]any{
-			"instance": Command{fn: command.CreatePrivateInstance, args: ""},
+			"node": Command{fn: command.CreatePrivateInstance, args: ""},
 		},
 		"key":      Command{fn: command.CreateKeyPair, args: ""},
 		"key-pair": Command{fn: command.CreateKeyPair, args: ""},
+	},
+	"open": map[string]any{
+		"port": Command{fn: command.OpenPort, args: "<port> <node>"},
 	},
 }
 

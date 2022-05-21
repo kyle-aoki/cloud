@@ -33,3 +33,21 @@ func DeleteInstances() {
 		util.VMessage("deleted", defaults.CloudLabInstance, *ti.InstanceId)
 	}
 }
+
+func DeleteAllInstances() {
+	cldo := defaults.Start()
+	var instanceIds []*string
+
+	for _, inst := range cldo.Instances {
+		instanceIds = append(instanceIds, inst.InstanceId)
+	}
+
+	tio, err := amazon.EC2().TerminateInstances(&ec2.TerminateInstancesInput{
+		InstanceIds: instanceIds,
+	})
+	util.MustExec(err)
+
+	for _, ti := range tio.TerminatingInstances {
+		util.VMessage("deleted", defaults.CloudLabInstance, *ti.InstanceId)
+	}
+}

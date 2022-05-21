@@ -63,9 +63,7 @@ func CreateCloudLabDefaults() {
 	cldo.addInternetGatewayRoute()
 	cldo.associatePublicSubnetWithRouteTable()
 
-	cldo.createSecurityGroup("allow-port-22", 22)
-	cldo.createSecurityGroup("allow-port-3000", 3000)
-	cldo.createSecurityGroup("allow-port-8080", 8080)
+	cldo.CreateSecurityGroup("22", 22)
 
 	fmt.Println("all cloudlab resources exist")
 	fmt.Println("to create a key-pair, run: 'cloudlab create key-pair'")
@@ -74,6 +72,10 @@ func CreateCloudLabDefaults() {
 func DestroyCloudLabResources() {
 	cldo := &CloudLabDefaultsOperator{}
 	cldo.FindAll()
+
+	if cldo.PublicIpAddressesExist() {
+		panic("run 'lab delete all instances' and try again")
+	}
 
 	cldo.detachInternetGateway()
 	cldo.deleteInternetGateway()

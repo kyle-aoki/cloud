@@ -11,15 +11,36 @@ import (
 func ListInstances() {
 	cldo := defaults.Start()
 
-	tab.Print("name\tstate\tprivate-ip\tpublic-ip")
+	tab.Print("name\tstate\tprivate-ip\tpublic-ip\tports")
 
 	for _, node := range cldo.Instances {
-		l := fmt.Sprintf("%v\t%v\t%v\t%v",
-			Name(node), State(node), PrivateIp(node), PublicIp(node),
+		if *node.State.Name == "terminated" {
+			continue
+		}
+		l := fmt.Sprintf("%v\t%v\t%v\t%v\t%s",
+			Name(node),
+			State(node),
+			PrivateIp(node),
+			PublicIp(node),
+			Ports(node),
 		)
 		tab.Print(l)
 	}
 	tab.Flush()
+}
+
+func Ports(inst *ec2.Instance) (ports string) {
+	for i, sg := range inst.SecurityGroups {
+		if sg.GroupName == nil {
+			panic("unknown security group found in instance")
+		}
+		if i == len(inst.SecurityGroups)-1 {
+			ports += *sg.GroupName
+			break
+		}
+		ports += *sg.GroupName + ", "
+	}
+	return ports
 }
 
 func State(inst *ec2.Instance) string {

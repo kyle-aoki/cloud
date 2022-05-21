@@ -25,3 +25,38 @@ func (cldo *CloudLabDefaultsOperator) FindAllInstances() {
 	}
 	cldo.Instances = nodes
 }
+
+func (cldo *CloudLabDefaultsOperator) PublicIpAddressesExist() bool {
+	for _, inst := range cldo.Instances {
+		if inst.PublicIpAddress != nil {
+			return true
+		}
+	}
+	return false
+}
+
+func (cldo *CloudLabDefaultsOperator) GetInstanceByName(name string) *ec2.Instance {
+	for _, inst := range cldo.Instances {
+		if NameTagEquals(inst.Tags, name) {
+			return inst
+		}
+	}
+	panic("node not found")
+}
+
+func (cldo *CloudLabDefaultsOperator) AssignSecurityGroup(
+	instance *ec2.Instance,
+	securityGroup *ec2.SecurityGroup,
+) {
+	var groupIds []*string
+	for _, sgs := range instance.SecurityGroups {
+		groupIds = append(groupIds, sgs.GroupId)
+	}
+	groupIds = append(groupIds, securityGroup.GroupId)
+	_, err := amazon.EC2().ModifyInstanceAttribute(&ec2.ModifyInstanceAttributeInput{
+		InstanceId: instance.InstanceId,
+		Groups:     groupIds,
+	})
+	util.MustExec(err)
+	util.VMessage("opened port", *securityGroup.GroupName, *instance.InstanceId)
+}

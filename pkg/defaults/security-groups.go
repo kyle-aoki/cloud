@@ -9,6 +9,7 @@ import (
 )
 
 func (cldo *CloudLabDefaultsOperator) findCloudLabSecurityGroups() {
+	cldo.SecurityGroups = []*ec2.SecurityGroup{}
 	err := amazon.EC2().DescribeSecurityGroupsPages(
 		&ec2.DescribeSecurityGroupsInput{},
 		func(dsgo *ec2.DescribeSecurityGroupsOutput, b bool) bool {
@@ -44,7 +45,7 @@ func (cldo *CloudLabDefaultsOperator) nameDefaultSecutiyGroup(securityGroupId *s
 	util.MustExec(err)
 }
 
-func (cldo *CloudLabDefaultsOperator) createSecurityGroup(name string, port int) {
+func (cldo *CloudLabDefaultsOperator) CreateSecurityGroup(name string, port int) {
 	for _, sg := range cldo.SecurityGroups {
 		if sg.GroupName != nil && *sg.GroupName == name {
 			return
@@ -60,6 +61,7 @@ func (cldo *CloudLabDefaultsOperator) createSecurityGroup(name string, port int)
 	createInboundRule(csgo.GroupId, "tcp", port)
 	createInboundRule(csgo.GroupId, "udp", port)
 	util.VMessage("created", name, *csgo.GroupId)
+	cldo.findCloudLabSecurityGroups()
 }
 
 func createInboundRule(groupId *string, protocol Protocol, port int) {
@@ -86,11 +88,31 @@ func (cldo *CloudLabDefaultsOperator) deleteAllSecurityGroups() {
 	}
 }
 
-func (cldo *CloudLabDefaultsOperator) GetSecurityGroupIdByName(name string) *ec2.SecurityGroup {
+func (cldo *CloudLabDefaultsOperator) Port22() *string {
+	for _, sg := range cldo.SecurityGroups {
+		if sg.GroupName != nil && *sg.GroupName == "22" {
+			return sg.GroupId
+		}
+	}
+	cldo.CreateSecurityGroup("22", 22)
+	cldo.findCloudLabSecurityGroups()
+	return cldo.GetSecurityGroupIdByNameOrPanic("22").GroupId
+}
+
+func (cldo *CloudLabDefaultsOperator) GetSecurityGroupIdByNameOrPanic(name string) *ec2.SecurityGroup {
 	for _, sg := range cldo.SecurityGroups {
 		if sg.GroupName != nil && *sg.GroupName == name {
 			return sg
 		}
 	}
 	panic(fmt.Sprintf("failed to find security group %s", name))
+}
+
+func (cldo *CloudLabDefaultsOperator) GetSecurityGroupIdByNameOrNil(name string) *ec2.SecurityGroup {
+	for _, sg := range cldo.SecurityGroups {
+		if sg.GroupName != nil && *sg.GroupName == name {
+			return sg
+		}
+	}
+	return nil
 }
