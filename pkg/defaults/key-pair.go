@@ -2,7 +2,6 @@ package defaults
 
 import (
 	"cloud/pkg/amazon"
-	"cloud/pkg/args"
 	"cloud/pkg/util"
 	"fmt"
 
@@ -31,7 +30,6 @@ import (
 // here is the key material:`
 
 func InitiateKeyPairCreation() {
-	args.ParseKeyPairFlags()
 	cldo := &CloudLabDefaultsOperator{}
 	cldo.FindAllCloudLabKeyPairs()
 	fmt.Println(*cldo.createKeyPair())

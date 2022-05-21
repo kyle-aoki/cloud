@@ -2,7 +2,6 @@ package command
 
 import (
 	"cloud/pkg/amazon"
-	"cloud/pkg/ami"
 	"cloud/pkg/defaults"
 	"cloud/pkg/names"
 	"cloud/pkg/util"
@@ -35,7 +34,7 @@ func CreateInstanceInSubnet(cldo *defaults.CloudLabDefaultsOperator, subnetId *s
 			DeviceName: util.StrPtr("/dev/sda1"),
 			Ebs:        &ec2.EbsBlockDevice{VolumeSize: util.IntToInt64Ptr(8)}},
 		},
-		ImageId:  util.StrPtr(ami.GetAmi()),
+		ImageId:  util.StrPtr(amazon.GetAmi()),
 		MinCount: util.IntToInt64Ptr(1),
 		MaxCount: util.IntToInt64Ptr(1),
 		KeyName:  util.StrPtr(cldo.GetCurrentCloudLabKeyPairName()),

@@ -1,6 +1,4 @@
-package ami
-
-import "cloud/pkg/amazon"
+package amazon
 
 var UbuntuAmiRegionMap = map[string]string{
 	"us-gov-west-1":  "ami-04e77113f128920b2",
@@ -30,9 +28,9 @@ var UbuntuAmiRegionMap = map[string]string{
 }
 
 func GetAmi() string {
-	if val, ok := UbuntuAmiRegionMap[amazon.Region]; ok {
+	if val, ok := UbuntuAmiRegionMap[Region]; ok {
 		return val
 	}
-	panic(`did not find an Ubuntu 22.04 in your region.
+	panic(`did not find an Ubuntu 22.04 ami in your region.
 	your aws config is most likely missing or corrupted`)
 }

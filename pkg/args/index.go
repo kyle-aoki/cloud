@@ -1,7 +1,6 @@
 package args
 
 import (
-	"cloud/pkg/help"
 	"os"
 )
 
@@ -15,7 +14,7 @@ func init() {
 
 func Poll() string {
 	if len(args) == 0 {
-		help.FatalHelpText()
+		panic("not enough arguments")
 	}
 	next := args[0]
 	args = args[1:]
@@ -33,7 +32,9 @@ func PollOrEmpty() string {
 
 func Collect() []string {
 	if len(args) == 0 {
-		help.FatalHelpText()
+		panic("not enough arguments")
 	}
-	return args
+	collection := args[:]
+	args = nil
+	return collection
 }

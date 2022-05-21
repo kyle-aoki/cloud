@@ -26,6 +26,15 @@ func (cldo *CloudLabDefaultsOperator) FindAllInstances() {
 	cldo.Instances = nodes
 }
 
+func (cldo *CloudLabDefaultsOperator) FindInstanceByName(name string) *ec2.Instance {
+	for _, inst := range cldo.Instances {
+		if NameTagEquals(inst.Tags, name) {
+			return inst
+		}
+	}
+	panic("node not found")
+}
+
 func (cldo *CloudLabDefaultsOperator) PublicIpAddressesExist() bool {
 	for _, inst := range cldo.Instances {
 		if inst.PublicIpAddress != nil {
@@ -58,5 +67,4 @@ func (cldo *CloudLabDefaultsOperator) AssignSecurityGroup(
 		Groups:     groupIds,
 	})
 	util.MustExec(err)
-	util.VMessage("opened port", *securityGroup.GroupName, *instance.InstanceId)
 }
