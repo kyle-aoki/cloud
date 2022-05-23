@@ -45,6 +45,7 @@ func (cldo *CloudLabDefaultsOperator) FindAll() {
 	cldo.findInternetGateway()
 	cldo.findCloudLabSecurityGroups()
 	cldo.FindAllInstances()
+	cldo.FindAllCloudLabKeyPairs()
 }
 
 // Idempotent
@@ -82,6 +83,9 @@ func DestroyCloudLabResources() {
 	cldo.deleteSubnets()
 	cldo.deleteAllSecurityGroups()
 	cldo.deleteVpc()
+
+	cldo.FindAllCloudLabKeyPairs()
+	DeleteKeys(cldo.GetKeyPairNames())
 
 	fmt.Println("no cloudlab resources exist")
 }

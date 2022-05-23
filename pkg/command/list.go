@@ -2,7 +2,7 @@ package command
 
 import (
 	"cloud/pkg/defaults"
-	"cloud/pkg/tab"
+	"cloud/pkg/util"
 	"fmt"
 
 	"github.com/aws/aws-sdk-go/service/ec2"
@@ -11,7 +11,7 @@ import (
 func ListInstances() {
 	cldo := defaults.Start()
 
-	tab.Print("name\tstate\tprivate-ip\tpublic-ip\tports")
+	util.Print("name\tstate\tprivate-ip\tpublic-ip\tports")
 
 	for _, node := range cldo.Instances {
 		if *node.State.Name == "terminated" {
@@ -24,9 +24,10 @@ func ListInstances() {
 			PublicIp(node),
 			Ports(node),
 		)
-		tab.Print(l)
+		util.Print(l)
 	}
-	tab.Flush()
+
+	util.Flush()
 }
 
 func Ports(inst *ec2.Instance) (ports string) {
@@ -75,4 +76,8 @@ func Name(inst *ec2.Instance) string {
 
 func Id(inst *ec2.Instance) string {
 	return *inst.InstanceId
+}
+
+func KeyName(inst *ec2.Instance) string {
+	return *inst.KeyName
 }

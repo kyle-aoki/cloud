@@ -2,6 +2,7 @@ package defaults
 
 import (
 	"cloud/pkg/amazon"
+	"cloud/pkg/args"
 	"cloud/pkg/util"
 	"fmt"
 
@@ -28,12 +29,6 @@ import (
 // to create a key-pair without seeing this text, use the -q argument
 // ok
 // here is the key material:`
-
-func InitiateKeyPairCreation() {
-	cldo := &CloudLabDefaultsOperator{}
-	cldo.FindAllCloudLabKeyPairs()
-	fmt.Println(*cldo.createKeyPair())
-}
 
 func (cldo *CloudLabDefaultsOperator) FindAllCloudLabKeyPairs() {
 	dkpo, err := amazon.EC2().DescribeKeyPairs(&ec2.DescribeKeyPairsInput{})
@@ -63,11 +58,39 @@ func (cldo *CloudLabDefaultsOperator) getNextCloudLabKeyPairName() string {
 	return fmt.Sprintf("%s%v", CloudLabKeyPairNameTemplate, number)
 }
 
-func (cldo *CloudLabDefaultsOperator) createKeyPair() *string {
+func (cldo *CloudLabDefaultsOperator) CreateKeyPair() *string {
 	ckpo, err := amazon.EC2().CreateKeyPair(&ec2.CreateKeyPairInput{
 		KeyName:           util.StrPtr(cldo.getNextCloudLabKeyPairName()),
 		TagSpecifications: CreateNameTagSpec("key-pair", CloudLabKeyPair),
 	})
 	util.MustExec(err)
 	return ckpo.KeyMaterial
+}
+
+func DeleteKey() {
+	keyPairNames := args.Collect()
+	DeleteKeys(keyPairNames)
+}
+
+func (cldo *CloudLabDefaultsOperator) GetKeyPairNames() (keyPairNames []string) {
+	for _, kp := range cldo.KeyPairs {
+		keyPairNames = append(keyPairNames, *kp.KeyName)
+	}
+	return keyPairNames
+}
+
+func DeleteAllKeys() {
+	cldo := NewOperator()
+	cldo.FindAllCloudLabKeyPairs()
+	DeleteKeys(cldo.GetKeyPairNames())
+}
+
+func DeleteKeys(keyPairNames []string) {
+	for _, keyPairName := range keyPairNames {
+		_, err := amazon.EC2().DeleteKeyPair(&ec2.DeleteKeyPairInput{
+			KeyName: util.StrPtr(keyPairName),
+		})
+		util.MustExec(err)
+		util.VMessage("deleted", CloudLabKeyPair, keyPairName)
+	}
 }

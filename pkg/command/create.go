@@ -9,21 +9,15 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-func CreateKeyPair() {
-	defaults.InitiateKeyPairCreation()
-}
-
 func CreatePublicInstance() {
 	cldo := &defaults.CloudLabDefaultsOperator{}
 	cldo.FindAll()
-	cldo.FindAllCloudLabKeyPairs()
 	CreateInstanceInSubnet(cldo, cldo.PublicSubnet.SubnetId)
 }
 
 func CreatePrivateInstance() {
 	cldo := &defaults.CloudLabDefaultsOperator{}
 	cldo.FindAll()
-	cldo.FindAllCloudLabKeyPairs()
 	CreateInstanceInSubnet(cldo, cldo.PrivateSubnet.SubnetId)
 }
 
@@ -50,5 +44,5 @@ func CreateInstanceInSubnet(cldo *defaults.CloudLabDefaultsOperator, subnetId *s
 		},
 	})
 	util.MustExec(err)
-	util.VMessage("created", defaults.CloudLabInstance, *rio.Instances[0].InstanceId)
+	util.SinglePrint("created node\t" + *rio.Instances[0].InstanceId)
 }

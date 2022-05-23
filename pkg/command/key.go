@@ -1,13 +1,8 @@
 package command
 
 import (
-	"cloud/pkg/amazon"
-	"cloud/pkg/args"
 	"cloud/pkg/defaults"
-	"cloud/pkg/util"
 	"fmt"
-
-	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
 func ListKeys() {
@@ -21,27 +16,17 @@ func ListKeys() {
 	}
 }
 
+func CreateKeyPair() {
+	cldo := defaults.Start()
+	cldo.FindAllCloudLabKeyPairs()
+	keyMaterial := cldo.CreateKeyPair()
+	fmt.Println(*keyMaterial)
+}
+
 func DeleteKey() {
-	keyPairNames := args.Collect()
-	DeleteKeys(keyPairNames)
+	defaults.DeleteKey()
 }
 
 func DeleteAllKeys() {
-	cldo := defaults.NewOperator()
-	cldo.FindAllCloudLabKeyPairs()
-	var keyPairNames []string
-	for _, kp := range cldo.KeyPairs {
-		keyPairNames = append(keyPairNames, *kp.KeyName)
-	}
-	DeleteKeys(keyPairNames)
-}
-
-func DeleteKeys(keyPairNames []string) {
-	for _, keyPairName := range keyPairNames {
-		_, err := amazon.EC2().DeleteKeyPair(&ec2.DeleteKeyPairInput{
-			KeyName: util.StrPtr(keyPairName),
-		})
-		util.MustExec(err)
-		util.VMessage("deleted", defaults.CloudLabKeyPair, keyPairName)
-	}
+	defaults.DeleteAllKeys()
 }

@@ -1,4 +1,4 @@
-package tab
+package util
 
 import (
 	"fmt"
@@ -14,6 +14,11 @@ func init() {
 
 func Print(a ...any) {
 	fmt.Fprintln(W, a...)
+}
+
+func SinglePrint(a ...any) {
+	Print(a...)
+	Flush()
 }
 
 func Flush() {
