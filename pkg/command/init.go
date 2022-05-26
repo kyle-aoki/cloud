@@ -2,8 +2,9 @@ package command
 
 import "cloud/pkg/resource"
 
-func Info() {
+func InitializeCloudLabResources() {
 	ro := resource.New()
 	ro.FindAll()
+	ro.InitializeCloudLabResources()
 	ro.Info()
 }

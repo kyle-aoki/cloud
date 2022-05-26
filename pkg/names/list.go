@@ -1,7 +1,7 @@
 package names
 
 import (
-	"cloud/pkg/defaults"
+	"cloud/pkg/resource"
 	"math/rand"
 	"time"
 
@@ -22,7 +22,7 @@ var tries int
 func GetRandomName(nodes []*ec2.Instance) string {
 	var names []string
 	for _, node := range nodes {
-		names = append(names, *defaults.FindNameTagValue(node.Tags))
+		names = append(names, *resource.FindNameTagValue(node.Tags))
 	}
 	rand.Seed(time.Now().Local().UnixMicro())
 	for {

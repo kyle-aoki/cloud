@@ -3,7 +3,7 @@ package command
 import (
 	"cloud/pkg/amazon"
 	"cloud/pkg/args"
-	"cloud/pkg/defaults"
+	"cloud/pkg/resource"
 	"cloud/pkg/util"
 	"fmt"
 	"strconv"
@@ -25,33 +25,33 @@ func ValidatePort(portString string) (portInt int) {
 
 func OpenPort() {
 	port := args.Poll()
-	instnaceName := args.Poll()
+	_ = args.Poll()
 
-	cldo := defaults.Start()
+	ro := resource.NewResourceOperator()
 
-	sg := cldo.GetSecurityGroupIdByNameOrNil(port)
+	sg := ro.GetSecurityGroupIdByNameOrNil(port)
 
 	if sg == nil {
 		portInt := ValidatePort(port)
-		cldo.CreateSecurityGroup(port, portInt)
+		resource.CreateSecurityGroup(*ro.Vpc.VpcId, port, portInt)
 	}
 
-	instance := cldo.GetInstanceByName(instnaceName)
-	securityGroup := cldo.GetSecurityGroupIdByNameOrPanic(port)
+	// instance := ro.GetInstanceByName(instnaceName)
+	// securityGroup := ro.GetSecurityGroupIdByNameOrPanic(port)
 
-	cldo.AssignSecurityGroup(instance, securityGroup)
-	fmt.Println(fmt.Sprintf("opened port %s on node %s", port, instnaceName))
+	// ro.AssignSecurityGroup(instance, securityGroup)
+	// fmt.Println(fmt.Sprintf("opened port %s on node %s", port, instnaceName))
 }
 
 func ClosePort() {
-	cldo := defaults.Start()
+	ro := resource.NewResourceOperator()
 
 	port := args.Poll()
 	instanceName := args.Poll()
 
 	_ = ValidatePort(port)
 
-	var instance *ec2.Instance = cldo.FindInstanceByName(instanceName)
+	var instance *ec2.Instance = ro.FindInstanceByName(instanceName)
 
 	var newSecurityGroups []*string
 	for _, groupIdentifier := range instance.SecurityGroups {

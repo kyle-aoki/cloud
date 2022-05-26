@@ -7,26 +7,30 @@ import (
 	"strings"
 )
 
-var lines []string
+var commands []Command
+var spacing = 40
 
-func helpText() {
-	lineBreak()
-	formLine("command", "arguments")
-	lines = append(lines, strings.Repeat("-", 60))
+func HelpText() {
 	traverseAndAppend(SyntaxTree, "lab")
-	printLines()
-	lineBreak()
+	sortCommands()
+	printCommands()
 	os.Exit(1)
 }
 
-func printLines() {
-	firstTwoLines := lines[:2]
-	remLines := lines[2:]
-	sort.Strings(remLines)
-	firstTwoLines = append(firstTwoLines, remLines...)
-	for i := range firstTwoLines {
-		fmt.Println(firstTwoLines[i])
+func sortCommands() {
+	sort.Slice(commands, func(i, j int) bool {
+		return commands[i].order < commands[j].order
+	})
+}
+
+func printCommands() {
+	fmt.Println()
+	fmt.Println(createSpacedString("command", "arguments/explanation"))
+	fmt.Println(strings.Repeat("-", 60))
+	for i := range commands {
+		fmt.Println(commands[i].fullCommand)
 	}
+	fmt.Println()
 }
 
 // recursive
@@ -34,17 +38,22 @@ func traverseAndAppend(syntaxTree map[string]any, prevkey string) {
 	for key, value := range syntaxTree {
 		switch value.(type) {
 		case Command:
-			formLine(concatKey(prevkey, key), value.(Command).args)
+			formLine(concatKey(prevkey, key), value.(Command))
 		default:
 			traverseAndAppend(value.(map[string]any), concatKey(prevkey, key))
 		}
 	}
 }
 
-func formLine(left string, right string) {
-	spaces := 40 - len(left)
+func createSpacedString(left string, right string) string {
+	spaces := spacing - len(left)
 	spaceString := strings.Repeat(" ", spaces)
-	lines = append(lines, fmt.Sprintf("%s%s%s", left, spaceString, right))
+	return fmt.Sprintf("%s%s%s", left, spaceString, right)
+}
+
+func formLine(left string, command Command) {
+	command.fullCommand = createSpacedString(left, command.args)
+	commands = append(commands, command)
 }
 
 var lineBreak = func() { fmt.Println() }

@@ -1,7 +1,13 @@
 package command
 
-import "cloud/pkg/defaults"
+import (
+	"cloud/pkg/resource"
+	"fmt"
+)
 
 func DestroyCloudLabResources() {
-	defaults.DestroyCloudLabResources()
+	ro := resource.New()
+	ro.FindAll()
+	ro.DestroyCloudLabResources()
+	fmt.Println("deleted all cloudlab resources")
 }

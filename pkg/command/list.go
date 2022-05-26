@@ -1,7 +1,7 @@
 package command
 
 import (
-	"cloud/pkg/defaults"
+	"cloud/pkg/resource"
 	"cloud/pkg/util"
 	"fmt"
 
@@ -9,16 +9,16 @@ import (
 )
 
 func ListInstances() {
-	cldo := defaults.Start()
+	ro := resource.NewResourceOperator()
 
 	util.Print("name\tstate\tprivate-ip\tpublic-ip\tports")
 
-	for _, node := range cldo.Instances {
+	for _, node := range ro.Instances {
 		if *node.State.Name == "terminated" {
 			continue
 		}
 		l := fmt.Sprintf("%v\t%v\t%v\t%v\t%s",
-			Name(node),
+			resource.FindNameTagValue(node.Tags),
 			State(node),
 			PrivateIp(node),
 			PublicIp(node),
@@ -61,15 +61,6 @@ func PublicIp(inst *ec2.Instance) string {
 func PrivateIp(inst *ec2.Instance) string {
 	if inst.PrivateIpAddress != nil {
 		return *inst.PrivateIpAddress
-	}
-	return ""
-}
-
-func Name(inst *ec2.Instance) string {
-	for _, tag := range inst.Tags {
-		if *tag.Key == "Name" {
-			return *tag.Value
-		}
 	}
 	return ""
 }

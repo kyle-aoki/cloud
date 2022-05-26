@@ -3,7 +3,7 @@ package command
 import (
 	"cloud/pkg/amazon"
 	"cloud/pkg/args"
-	"cloud/pkg/defaults"
+	"cloud/pkg/resource"
 	"cloud/pkg/util"
 
 	"github.com/aws/aws-sdk-go/service/ec2"
@@ -12,11 +12,11 @@ import (
 func DeleteInstances() {
 	namesOfInstancesToDelete := args.Collect()
 
-	cldo := defaults.Start()
+	ro := resource.NewResourceOperator()
 	var instanceIds []*string
 
-	for _, inst := range cldo.Instances {
-		instanceName := defaults.FindNameTagValue(inst.Tags)
+	for _, inst := range ro.Instances {
+		instanceName := resource.FindNameTagValue(inst.Tags)
 		for _, nameOfInstanceToDelete := range namesOfInstancesToDelete {
 			if instanceName != nil && *instanceName == nameOfInstanceToDelete {
 				instanceIds = append(instanceIds, inst.InstanceId)
@@ -30,15 +30,15 @@ func DeleteInstances() {
 	util.MustExec(err)
 
 	for _, ti := range tio.TerminatingInstances {
-		util.VMessage("deleted", defaults.CloudLabInstance, *ti.InstanceId)
+		util.VMessage("deleted", resource.CloudLabInstance, *ti.InstanceId)
 	}
 }
 
 func DeleteAllInstances() {
-	cldo := defaults.Start()
+	ro := resource.NewResourceOperator()
 	var instanceIds []*string
 
-	for _, inst := range cldo.Instances {
+	for _, inst := range ro.Instances {
 		instanceIds = append(instanceIds, inst.InstanceId)
 	}
 
@@ -48,6 +48,6 @@ func DeleteAllInstances() {
 	util.MustExec(err)
 
 	for _, ti := range tio.TerminatingInstances {
-		util.VMessage("deleted", defaults.CloudLabInstance, *ti.InstanceId)
+		util.VMessage("deleted", resource.CloudLabInstance, *ti.InstanceId)
 	}
 }

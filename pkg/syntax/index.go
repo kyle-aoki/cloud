@@ -17,6 +17,6 @@ func traverse(commandMap map[string]any) {
 			traverse(val.(map[string]any))
 		}
 	} else {
-		helpText()
+		HelpText()
 	}
 }

@@ -1,14 +1,20 @@
-package defaults
+package resource
 
-const DefaultVpcName = "cloudlab-vpc"
+const CloudLabVpc = "cloudlab-vpc"
 const CloudLabRouteTable = "cloudlab-route-table"
-const CloudLabPublicSubnetName = "cloudlab-public-subnet"
-const CloudLabPrivateSubnetName = "cloudlab-private-subnet"
+const CloudLabPublicSubnet = "cloudlab-public-subnet"
+const CloudLabPrivateSubnet = "cloudlab-private-subnet"
 const CloudLabInternetGateway = "cloudlab-internet-gateway"
 const CloudLabSecutiyGroup = "cloudlab-security-group"
-const CloudLabKeyPair = "cloud-lab-key-pair"
+const CloudLabKeyPair = "cloudlab-key-pair"
 const CloudLabKeyPairNameTemplate = "cloudlab-key-pair-"
-const CloudLabInstance = "cloud-lab-instance"
+const CloudLabInstance = "cloudlab-instance"
+
+const CloudLabMainRouteTable = "cloudlab-public-route-table"
+const CloudLabPrivateRouteTable = "cloudlab-private-route-table"
+
+// Map Keys
+
 
 const MissingVpcErrorMessage = `
 You don't have a VPC named 'cloudlab'.
