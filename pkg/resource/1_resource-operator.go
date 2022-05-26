@@ -99,13 +99,11 @@ func (ro *ResourceOperator) InitializeCloudLabResources() {
 		ro.PublicRouteTable = findMainRouteTable(ro.Vpc)
 	}
 
-	vpcId := *ro.Vpc.VpcId
-
 	if ro.PublicSubnet == nil {
-		ro.PublicSubnet = createSubnet(vpcId, CloudLabPublicSubnet, PublicSubnetCidrBlock)
+		ro.PublicSubnet = createSubnet(ro.Vpc, CloudLabPublicSubnet, PublicSubnetCidrBlock)
 	}
 	if ro.PrivateSubnet == nil {
-		ro.PrivateSubnet = createSubnet(vpcId, CloudLabPrivateSubnet, PrivateSubnetCidrBlock)
+		ro.PrivateSubnet = createSubnet(ro.Vpc, CloudLabPrivateSubnet, PrivateSubnetCidrBlock)
 	}
 
 	if ro.PrivateRouteTable == nil {
@@ -130,7 +128,7 @@ func (ro *ResourceOperator) InitializeCloudLabResources() {
 
 	securityGroup22 := findSecurityGroupByName(ro.SecurityGroups, "22")
 	if securityGroup22 == nil {
-		CreateSecurityGroup(vpcId, "22", 22)
+		CreateSecurityGroup(ro.Vpc, "22", 22)
 		ro.SecurityGroups = findCloudLabSecurityGroups()
 	}
 }

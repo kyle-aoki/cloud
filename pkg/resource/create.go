@@ -10,7 +10,7 @@ import (
 func createVpc(cidrBlock string, name string) *ec2.Vpc {
 	cvo, err := amazon.EC2().CreateVpc(&ec2.CreateVpcInput{
 		CidrBlock: util.StrPtr(cidrBlock),
-		
+
 		TagSpecifications: CreateTagSpecs("vpc", map[string]string{
 			"Name": name,
 		}),
@@ -19,9 +19,9 @@ func createVpc(cidrBlock string, name string) *ec2.Vpc {
 	return cvo.Vpc
 }
 
-func createSubnet(vpcId string, name string, cidr string) (sn *ec2.Subnet) {
+func createSubnet(vpc *ec2.Vpc, name string, cidr string) (sn *ec2.Subnet) {
 	cso, err := amazon.EC2().CreateSubnet(&ec2.CreateSubnetInput{
-		VpcId:             util.StrPtr(vpcId),
+		VpcId:             vpc.VpcId,
 		CidrBlock:         util.StrPtr(cidr),
 		TagSpecifications: CreateNameTagSpec("subnet", name),
 	})

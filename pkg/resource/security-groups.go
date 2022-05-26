@@ -35,9 +35,9 @@ func nameDefaultSecutiyGroup(securityGroupId *string, name string) {
 	util.MustExec(err)
 }
 
-func CreateSecurityGroup(vpcId string, name string, port int) {
+func CreateSecurityGroup(vpc *ec2.Vpc, name string, port int) {
 	csgo, err := amazon.EC2().CreateSecurityGroup(&ec2.CreateSecurityGroupInput{
-		VpcId:             util.StrPtr(vpcId),
+		VpcId:             vpc.VpcId,
 		GroupName:         util.StrPtr(name),
 		Description:       util.StrPtr(name),
 		TagSpecifications: CreateNameTagSpec("security-group", CloudLabSecutiyGroup),
