@@ -1,10 +1,10 @@
 package syntax
 
 import (
-	"cloud/pkg/command"
+	cmd "cloudlab/pkg/command"
 )
 
-type Command struct {
+type Cmd struct {
 	fn          func()
 	args        string
 	order       int
@@ -13,41 +13,41 @@ type Command struct {
 }
 
 var SyntaxTree = map[string]any{
-	"version": Command{fn: command.Version, order: 11},
-	"info":    Command{fn: command.Info, order: 12, args: "discover existing cloudlab resources"},
-	"init":    Command{fn: command.InitializeCloudLabResources, order: 13, args: "initialize cloudlab resources"},
-	"destroy": Command{fn: command.DestroyCloudLabResources, order: 14, args: "delete all cloudlab resources"},
+	"version": Cmd{fn: cmd.Version, order: 11},
+	"info":    Cmd{fn: cmd.Info, order: 12, args: "discover existing cloudlab resources"},
+	"init":    Cmd{fn: cmd.InitializeCloudLabResources, order: 13, args: "initialize cloudlab resources"},
+	"destroy": Cmd{fn: cmd.DestroyCloudLabResources, order: 14, args: "delete all cloudlab resources"},
 
 	"list": map[string]any{
-		"":      Command{fn: command.ListInstances, order: 21},
-		"nodes": Command{fn: command.ListInstances, order: 22},
-		"keys":  Command{fn: command.ListKeys, order: 23},
+		"":      Cmd{fn: cmd.ListInstances, order: 21},
+		"nodes": Cmd{fn: cmd.ListInstances, order: 22},
+		"keys":  Cmd{fn: cmd.ListKeys, order: 23},
 	},
 
 	"create": map[string]any{
 		"public": map[string]any{
-			"node": Command{fn: command.CreatePublicInstance, order: 31},
+			"node": Cmd{fn: cmd.CreatePublicInstance, order: 31},
 		},
 		"private": map[string]any{
-			"node": Command{fn: command.CreatePrivateInstance, order: 32},
+			"node": Cmd{fn: cmd.CreatePrivateInstance, order: 32},
 		},
-		"key": Command{fn: command.CreateKeyPair, order: 33},
+		"key": Cmd{fn: cmd.CreateKeyPair, order: 33},
 	},
 
 	"delete": map[string]any{
-		"node": Command{fn: command.DeleteInstances, args: "<nodes>...", order: 40},
-		"key":  Command{fn: command.DeleteKey, args: "<keys>...", order: 41},
+		"node": Cmd{fn: cmd.DeleteInstances, args: "<nodes>...", order: 40},
+		"key":  Cmd{fn: cmd.DeleteKey, args: "<keys>...", order: 41},
 		"all": map[string]any{
-			"keys":  Command{fn: command.DeleteAllKeys, order: 42},
-			"nodes": Command{fn: command.DeleteAllInstances, order: 43},
+			"keys":  Cmd{fn: cmd.DeleteAllKeys, order: 42},
+			"nodes": Cmd{fn: cmd.DeleteAllInstances, order: 43},
 		},
 	},
 
 	"open": map[string]any{
-		"port": Command{fn: command.OpenPort, args: "<port> <node>", order: 51},
+		"port": Cmd{fn: cmd.OpenPort, args: "<port> <node>", order: 51},
 	},
 
 	"close": map[string]any{
-		"port": Command{fn: command.ClosePort, args: "<port> <node>", order: 52},
+		"port": Cmd{fn: cmd.ClosePort, args: "<port> <node>", order: 52},
 	},
 }

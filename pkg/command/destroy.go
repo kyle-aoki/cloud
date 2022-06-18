@@ -1,7 +1,7 @@
-package command
+package cmd
 
 import (
-	"cloud/pkg/resource"
+	"cloudlab/pkg/resource"
 	"fmt"
 )
 

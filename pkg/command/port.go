@@ -1,10 +1,10 @@
-package command
+package cmd
 
 import (
-	"cloud/pkg/amazon"
-	"cloud/pkg/args"
-	"cloud/pkg/resource"
-	"cloud/pkg/util"
+	"cloudlab/pkg/amazon"
+	"cloudlab/pkg/args"
+	"cloudlab/pkg/resource"
+	"cloudlab/pkg/util"
 	"fmt"
 	"strconv"
 

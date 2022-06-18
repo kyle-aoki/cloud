@@ -1,9 +1,9 @@
 package resource
 
 import (
-	"cloud/pkg/amazon"
-	"cloud/pkg/args"
-	"cloud/pkg/util"
+	"cloudlab/pkg/amazon"
+	"cloudlab/pkg/args"
+	"cloudlab/pkg/util"
 	"fmt"
 	"io/ioutil"
 

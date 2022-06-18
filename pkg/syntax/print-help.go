@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-var commands []Command
+var commands []Cmd
 var spacing = 40
 
 func HelpText() {
@@ -37,8 +37,8 @@ func printCommands() {
 func traverseAndAppend(syntaxTree map[string]any, prevkey string) {
 	for key, value := range syntaxTree {
 		switch value.(type) {
-		case Command:
-			formLine(concatKey(prevkey, key), value.(Command))
+		case Cmd:
+			formLine(concatKey(prevkey, key), value.(Cmd))
 		default:
 			traverseAndAppend(value.(map[string]any), concatKey(prevkey, key))
 		}
@@ -51,7 +51,7 @@ func createSpacedString(left string, right string) string {
 	return fmt.Sprintf("%s%s%s", left, spaceString, right)
 }
 
-func formLine(left string, command Command) {
+func formLine(left string, command Cmd) {
 	command.fullCommand = createSpacedString(left, command.args)
 	commands = append(commands, command)
 }

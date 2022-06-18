@@ -1,7 +1,7 @@
 package names
 
 import (
-	"cloud/pkg/resource"
+	"cloudlab/pkg/resource"
 	"math/rand"
 	"time"
 

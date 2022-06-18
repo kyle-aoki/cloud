@@ -1,9 +1,9 @@
 package main
 
 import (
-	"cloud/pkg/amazon"
-	"cloud/pkg/syntax"
-	"cloud/pkg/util"
+	"cloudlab/pkg/amazon"
+	"cloudlab/pkg/syntax"
+	"cloudlab/pkg/util"
 )
 
 func main() {

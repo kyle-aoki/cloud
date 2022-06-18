@@ -1,8 +1,8 @@
-package command
+package cmd
 
 import (
-	"cloud/pkg/resource"
-	"cloud/pkg/util"
+	"cloudlab/pkg/resource"
+	"cloudlab/pkg/util"
 	"fmt"
 
 	"github.com/aws/aws-sdk-go/service/ec2"

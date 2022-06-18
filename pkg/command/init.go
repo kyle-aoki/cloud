@@ -1,6 +1,6 @@
-package command
+package cmd
 
-import "cloud/pkg/resource"
+import "cloudlab/pkg/resource"
 
 func InitializeCloudLabResources() {
 	ro := resource.New()

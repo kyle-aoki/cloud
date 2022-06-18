@@ -1,7 +1,7 @@
 package resource
 
 import (
-	"cloud/pkg/util"
+	"cloudlab/pkg/util"
 
 	"github.com/aws/aws-sdk-go/service/ec2"
 )

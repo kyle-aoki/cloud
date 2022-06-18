@@ -1,7 +1,7 @@
 package syntax
 
 import (
-	"cloud/pkg/args"
+	"cloudlab/pkg/args"
 )
 
 func FindAndExecute() {
@@ -11,8 +11,8 @@ func FindAndExecute() {
 func traverse(commandMap map[string]any) {
 	if val, ok := commandMap[args.PollOrEmpty()]; ok {
 		switch val.(type) {
-		case Command:
-			val.(Command).fn()
+		case Cmd:
+			val.(Cmd).fn()
 		default:
 			traverse(val.(map[string]any))
 		}
