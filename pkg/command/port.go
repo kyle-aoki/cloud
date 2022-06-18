@@ -33,7 +33,7 @@ func OpenPort() {
 
 	if sg == nil {
 		portInt := ValidatePort(port)
-		resource.CreateSecurityGroup(*ro.Vpc.VpcId, port, portInt)
+		resource.CreateSecurityGroup(ro.Vpc, port, portInt)
 	}
 
 	// instance := ro.GetInstanceByName(instnaceName)

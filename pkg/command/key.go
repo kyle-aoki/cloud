@@ -62,7 +62,7 @@ func CreateKeyPair() {
 	}
 
 	ro := resource.NewResourceOperator()
-	keyMaterial := ro.CreateKeyPair()
+	keyMaterial := ro.ExecuteCreateKeyPairRequest()
 
 	setFileContent(keyFilePath, *keyMaterial)
 

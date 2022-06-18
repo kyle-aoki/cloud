@@ -28,6 +28,7 @@ type ResourceOperator struct {
 	KeyPairs          []*ec2.KeyPairInfo
 	Instances         []*ec2.Instance
 	CurrentKeyPair    *ec2.KeyPairInfo
+	KeyPair           *ec2.KeyPairInfo
 }
 
 func New() *ResourceOperator {
@@ -55,12 +56,11 @@ func (ro *ResourceOperator) FindAll() {
 	ro.PublicSubnet = findSubnet(CloudLabPublicSubnet)
 	ro.PrivateSubnet = findSubnet(CloudLabPrivateSubnet)
 	ro.PublicRouteTable = findMainRouteTable(ro.Vpc)
-	ro.PrivateRouteTable = findRouteTable(*ro.Vpc.VpcId, CloudLabPrivateRouteTable)
+	ro.PrivateRouteTable = findRouteTable(ro.Vpc, CloudLabPrivateRouteTable)
 	ro.InternetGateway = findInternetGateway()
 	ro.SecurityGroups = findCloudLabSecurityGroups()
 	ro.Instances = findInstances()
-	ro.KeyPairs = FindAllCloudLabKeyPairs()
-	ro.CurrentKeyPair = FindCurrentKeyPair(ro.KeyPairs)
+	ro.KeyPair = FindKeyPair()
 }
 
 func (ro *ResourceOperator) Audit() {
@@ -85,11 +85,14 @@ func (ro *ResourceOperator) Audit() {
 	if ro.SecurityGroups == nil {
 		FatalMissing("security groups")
 	}
-	if ro.KeyPairs == nil {
-		FatalMissing("cloudlab key pair")
-	}
-	if ro.CurrentKeyPair == nil {
-		FatalMissing("cloudlab key pair")
+	// if ro.KeyPairs == nil {
+	// 	FatalMissing("cloudlab key pair")
+	// }
+	// if ro.CurrentKeyPair == nil {
+	// 	FatalMissing("cloudlab key pair")
+	// }
+	if ro.KeyPair == nil {
+		FatalMissing("key pair")
 	}
 }
 
@@ -130,6 +133,11 @@ func (ro *ResourceOperator) InitializeCloudLabResources() {
 	if securityGroup22 == nil {
 		CreateSecurityGroup(ro.Vpc, "22", 22)
 		ro.SecurityGroups = findCloudLabSecurityGroups()
+	}
+
+	if ro.KeyPair == nil {
+		ro.CreateCloudlabKeyPair()
+		ro.KeyPair = FindKeyPair()
 	}
 }
 

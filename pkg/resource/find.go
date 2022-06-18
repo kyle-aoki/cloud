@@ -89,6 +89,19 @@ func FindAllCloudLabKeyPairs() (kps []*ec2.KeyPairInfo) {
 	return kps
 }
 
+func FindKeyPair() (keypair *ec2.KeyPairInfo) {
+	dkpo, err := amazon.EC2().DescribeKeyPairs(&ec2.DescribeKeyPairsInput{})
+	util.MustExec(err)
+
+	for _, kp := range dkpo.KeyPairs {
+		if NameTagEquals(kp.Tags, CloudLabKeyPair) {
+			keypair = kp
+		}
+	}
+
+	return keypair
+}
+
 func FindCurrentKeyPair(kps []*ec2.KeyPairInfo) *ec2.KeyPairInfo {
 	if kps == nil {
 		return nil
@@ -102,12 +115,12 @@ func FindCurrentKeyPair(kps []*ec2.KeyPairInfo) *ec2.KeyPairInfo {
 	return nil
 }
 
-func findRouteTable(vpcId string, name string) (routeTableToFind *ec2.RouteTable) {
+func findRouteTable(vpc *ec2.Vpc, name string) (routeTableToFind *ec2.RouteTable) {
 	err := amazon.EC2().DescribeRouteTablesPages(
 		&ec2.DescribeRouteTablesInput{},
 		func(drto *ec2.DescribeRouteTablesOutput, b bool) bool {
 			for _, rt := range drto.RouteTables {
-				if rt.VpcId != nil && *rt.VpcId == vpcId {
+				if rt.VpcId != nil && *rt.VpcId == *vpc.VpcId {
 					if NameTagEquals(rt.Tags, name) {
 						routeTableToFind = rt
 						return false
