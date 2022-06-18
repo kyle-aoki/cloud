@@ -102,19 +102,6 @@ func FindKeyPair() (keypair *ec2.KeyPairInfo) {
 	return keypair
 }
 
-func FindCurrentKeyPair(kps []*ec2.KeyPairInfo) *ec2.KeyPairInfo {
-	if kps == nil {
-		return nil
-	}
-	currentKeyPairName := GetCurrentCloudLabKeyPairName(kps)
-	for _, kp := range kps {
-		if kp.KeyName != nil && *kp.KeyName == currentKeyPairName {
-			return kp
-		}
-	}
-	return nil
-}
-
 func findRouteTable(vpc *ec2.Vpc, name string) (routeTableToFind *ec2.RouteTable) {
 	err := amazon.EC2().DescribeRouteTablesPages(
 		&ec2.DescribeRouteTablesInput{},

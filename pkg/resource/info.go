@@ -42,21 +42,23 @@ func (ro *ResourceOperator) Info() {
 		util.Print("internet gateway\t" + *ro.InternetGateway.InternetGatewayId)
 	}
 
+	if ro.KeyPair == nil {
+		util.Print("missing cloudlab key")
+	} else {
+		util.Print("key\t" + *ro.KeyPair.KeyPairId)
+	}
+
 	util.Print("\t")
 	for _, sg := range ro.SecurityGroups {
 		util.Print("security group " + *sg.GroupName + "\t" + *sg.GroupId)
 	}
-	util.Print("\t")
 
-	util.Print("number of key pairs\t" + util.IntToString(len(ro.KeyPairs)))
-	if ro.CurrentKeyPair != nil {
-		util.Print("current key pair\t" + *ro.CurrentKeyPair.KeyName)
+	if len(ro.SecurityGroups) > 0 {
+		util.Print("\t")
 	}
 
-	util.Print("\t")
 	util.Print("number of nodes\t" + util.IntToString(len(ro.Instances)))
 
-	util.Print("\t")
 	for _, inst := range ro.Instances {
 		util.Print(fmt.Sprintf(
 			"%s\t%s\t%s",

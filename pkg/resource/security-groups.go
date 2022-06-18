@@ -58,17 +58,6 @@ func createInboundRule(groupId *string, protocol Protocol, port int) {
 	util.MustExec(err)
 }
 
-// func (ro *CloudLabDefaultsOperator) Port22() *string {
-// 	for _, sg := range ro.SecurityGroups {
-// 		if sg.GroupName != nil && *sg.GroupName == "22" {
-// 			return sg.GroupId
-// 		}
-// 	}
-// 	ro.CreateSecurityGroup("22", 22)
-// 	ro.findCloudLabSecurityGroups()
-// 	return ro.GetSecurityGroupIdByNameOrPanic("22").GroupId
-// }
-
 func (ro *ResourceOperator) GetSecurityGroupIdByNameOrPanic(name string) *ec2.SecurityGroup {
 	for _, sg := range ro.SecurityGroups {
 		if sg.GroupName != nil && *sg.GroupName == name {

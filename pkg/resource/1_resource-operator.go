@@ -25,9 +25,7 @@ type ResourceOperator struct {
 	PrivateRouteTable *ec2.RouteTable
 	InternetGateway   *ec2.InternetGateway
 	SecurityGroups    []*ec2.SecurityGroup
-	KeyPairs          []*ec2.KeyPairInfo
 	Instances         []*ec2.Instance
-	CurrentKeyPair    *ec2.KeyPairInfo
 	KeyPair           *ec2.KeyPairInfo
 }
 
@@ -85,12 +83,6 @@ func (ro *ResourceOperator) Audit() {
 	if ro.SecurityGroups == nil {
 		FatalMissing("security groups")
 	}
-	// if ro.KeyPairs == nil {
-	// 	FatalMissing("cloudlab key pair")
-	// }
-	// if ro.CurrentKeyPair == nil {
-	// 	FatalMissing("cloudlab key pair")
-	// }
 	if ro.KeyPair == nil {
 		FatalMissing("key pair")
 	}
@@ -143,7 +135,7 @@ func (ro *ResourceOperator) InitializeCloudLabResources() {
 
 func (ro *ResourceOperator) DestroyCloudLabResources() {
 	if len(findNotTerminatedInstances(ro.Instances)) > 0 {
-		panic("run 'lab delete all instances' and try again")
+		panic("run 'lab delete all nodes' and try again")
 	}
 
 	if len(ro.Instances) > 0 {
@@ -172,5 +164,5 @@ func (ro *ResourceOperator) DestroyCloudLabResources() {
 		deleteVpc(ro.Vpc)
 	}
 
-	deleteKeyPairs(ro.KeyPairs)
+	deleteKeyPair(ro.KeyPair)
 }

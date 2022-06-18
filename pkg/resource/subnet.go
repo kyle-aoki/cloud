@@ -15,11 +15,4 @@ func (ro ResourceOperator) resolvePublicSubnetAttributes() {
 		})
 		util.MustExec(err)
 	}
-	// if !*ro.PublicSubnet.PrivateDnsNameOptionsOnLaunch.EnableResourceNameDnsARecord {
-	// 	_, err := amazon.EC2().ModifySubnetAttribute(&ec2.ModifySubnetAttributeInput{
-	// 		SubnetId:                             ro.PublicSubnet.SubnetId,
-	// 		EnableResourceNameDnsARecordOnLaunch: &ec2.AttributeBooleanValue{Value: util.BoolPtr(true)},
-	// 	})
-	// 	util.MustExec(err)
-	// }
 }

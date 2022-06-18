@@ -11,16 +11,6 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-func ListKeys() {
-	ro := resource.NewResourceOperator()
-	for _, kp := range ro.KeyPairs {
-		if kp.KeyName == nil {
-			continue
-		}
-		fmt.Println(*kp.KeyName)
-	}
-}
-
 const cloudlabConfigDirName = ".cloudlab"
 const keyFile = "key.pem"
 
@@ -102,9 +92,3 @@ func fsObjectExists(fsObject string) bool {
 	return true
 }
 
-func DeleteKey() {
-	resource.DeleteKey()
-}
-
-func DeleteAllKeys() {
-}

@@ -7,10 +7,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-func nameMainRouteTable(vpc *ec2.Vpc) {
-
-}
-
 func internetGatewayRouteExistsOnRouteTable(rt *ec2.RouteTable, ig *ec2.InternetGateway) bool {
 	for _, route := range rt.Routes {
 		if *route.GatewayId == *ig.InternetGatewayId {

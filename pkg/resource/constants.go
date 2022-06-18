@@ -7,14 +7,10 @@ const CloudLabPrivateSubnet = "cloudlab-private-subnet"
 const CloudLabInternetGateway = "cloudlab-internet-gateway"
 const CloudLabSecutiyGroup = "cloudlab-security-group"
 const CloudLabKeyPair = "cloudlab-key-pair"
-const CloudLabKeyPairNameTemplate = "cloudlab-key-pair-"
 const CloudLabInstance = "cloudlab-instance"
 
 const CloudLabMainRouteTable = "cloudlab-public-route-table"
 const CloudLabPrivateRouteTable = "cloudlab-private-route-table"
-
-// Map Keys
-
 
 const MissingVpcErrorMessage = `
 You don't have a VPC named 'cloudlab'.

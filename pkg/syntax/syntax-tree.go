@@ -1,7 +1,7 @@
 package syntax
 
 import (
-	cmd "cloudlab/pkg/command"
+	"cloudlab/pkg/cmd"
 )
 
 type Cmd struct {
@@ -21,7 +21,6 @@ var SyntaxTree = map[string]any{
 	"list": map[string]any{
 		"":      Cmd{fn: cmd.ListInstances, order: 21},
 		"nodes": Cmd{fn: cmd.ListInstances, order: 22},
-		"keys":  Cmd{fn: cmd.ListKeys, order: 23},
 	},
 
 	"create": map[string]any{
@@ -36,9 +35,7 @@ var SyntaxTree = map[string]any{
 
 	"delete": map[string]any{
 		"node": Cmd{fn: cmd.DeleteInstances, args: "<nodes>...", order: 40},
-		"key":  Cmd{fn: cmd.DeleteKey, args: "<keys>...", order: 41},
 		"all": map[string]any{
-			"keys":  Cmd{fn: cmd.DeleteAllKeys, order: 42},
 			"nodes": Cmd{fn: cmd.DeleteAllInstances, order: 43},
 		},
 	},

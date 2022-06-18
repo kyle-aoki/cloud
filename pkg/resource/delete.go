@@ -61,6 +61,7 @@ func deleteKeyPair(key *ec2.KeyPairInfo) {
 	})
 	util.MustExec(err)
 }
+
 func deleteKeyPairs(keys []*ec2.KeyPairInfo) {
 	for _, key := range keys {
 		deleteKeyPair(key)
