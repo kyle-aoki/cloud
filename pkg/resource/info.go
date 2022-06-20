@@ -57,12 +57,9 @@ func (ro *ResourceOperator) Info() {
 		util.Print("\t")
 	}
 
-	util.Print("number of nodes\t" + util.IntToString(len(ro.Instances)))
-
 	for _, inst := range ro.Instances {
 		util.Print(fmt.Sprintf(
-			"%s\t%s\t%s",
-			*inst.InstanceId,
+			"%s\t%s",
 			*FindNameTagValue(inst.Tags),
 			*inst.State.Name,
 		))

@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+	"strconv"
 )
 
 func StrPtr(s string) *string {
@@ -19,6 +20,12 @@ func IntToInt64Ptr(i int) *int64 {
 
 func IntToString(i int) string {
 	return fmt.Sprintf("%d", i)
+}
+
+func StringToInt(s string) int {
+	i, err := strconv.ParseInt(s, 10, 32)
+	MustExec(err)
+	return int(i)
 }
 
 func StrSlicePtr(s []string) (sptrs []*string) {

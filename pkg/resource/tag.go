@@ -31,6 +31,17 @@ func FindNameTagValue(tags []*ec2.Tag) *string {
 	return nil
 }
 
+func TagEquals(tags []*ec2.Tag, key string, value string) bool {
+	for _, tag := range tags {
+		if tag.Key != nil && *tag.Key == key {
+			if tag.Value != nil && *tag.Value == value {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func NameTagEquals(tags []*ec2.Tag, name string) bool {
 	nameTagValue := FindNameTagValue(tags)
 	if nameTagValue != nil && *nameTagValue == name {

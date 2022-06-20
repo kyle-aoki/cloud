@@ -52,7 +52,15 @@ func createSpacedString(left string, right string) string {
 }
 
 func formLine(left string, command Cmd) {
-	command.fullCommand = createSpacedString(left, command.args)
+	var argsExpl string
+	for i := range command.args {
+		if i == 0 {
+			argsExpl += command.args[i]
+			continue
+		}
+		argsExpl += "\n\t\t\t\t\t" + command.args[i]
+	}
+	command.fullCommand = createSpacedString(left, argsExpl)
 	commands = append(commands, command)
 }
 

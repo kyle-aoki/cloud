@@ -1,7 +1,9 @@
 package args
 
 import (
+	"fmt"
 	"os"
+	"strings"
 )
 
 var ExecutionPath string
@@ -15,6 +17,19 @@ func init() {
 func Poll() string {
 	if len(args) == 0 {
 		panic("not enough arguments")
+	}
+	next := args[0]
+	args = args[1:]
+	return next
+}
+
+func PollNonArgumentOrEmpty() string {
+	if len(args) == 0 {
+		return ""
+	}
+	if strings.Contains(args[0], "-") {
+		fmt.Println(args)
+		return ""
 	}
 	next := args[0]
 	args = args[1:]

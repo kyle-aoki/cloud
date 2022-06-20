@@ -96,6 +96,7 @@ func (ro *ResourceOperator) InitializeCloudLabResources() {
 
 	if ro.PublicSubnet == nil {
 		ro.PublicSubnet = createSubnet(ro.Vpc, CloudLabPublicSubnet, PublicSubnetCidrBlock)
+		ro.resolvePublicSubnetAttributes()
 	}
 	if ro.PrivateSubnet == nil {
 		ro.PrivateSubnet = createSubnet(ro.Vpc, CloudLabPrivateSubnet, PrivateSubnetCidrBlock)

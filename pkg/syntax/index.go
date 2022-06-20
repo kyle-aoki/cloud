@@ -5,11 +5,12 @@ import (
 )
 
 func FindAndExecute() {
+	args.ParseFlags()
 	traverse(SyntaxTree)
 }
 
 func traverse(commandMap map[string]any) {
-	if val, ok := commandMap[args.PollOrEmpty()]; ok {
+	if val, ok := commandMap[args.PollNonArgumentOrEmpty()]; ok {
 		switch val.(type) {
 		case Cmd:
 			val.(Cmd).fn()

@@ -19,7 +19,7 @@ func Contains(arr []string, elem string) bool {
 
 var tries int
 
-func GetRandomName(nodes []*ec2.Instance) string {
+func RandomName(nodes []*ec2.Instance) string {
 	var names []string
 	for _, node := range nodes {
 		names = append(names, *resource.FindNameTagValue(node.Tags))

@@ -29,7 +29,7 @@ func findInstances() (nodes []*ec2.Instance) {
 		func(dio *ec2.DescribeInstancesOutput, b bool) bool {
 			for _, res := range dio.Reservations {
 				for _, inst := range res.Instances {
-					if NameTagEquals(inst.Tags, CloudLabInstance) {
+					if TagEquals(inst.Tags, IsCloudLabInstanceTagKey, IsCloudLabInstanceTagVal) {
 						nodes = append(nodes, inst)
 					}
 				}
@@ -43,11 +43,11 @@ func findInstances() (nodes []*ec2.Instance) {
 
 func findNotTerminatedInstances(nodes []*ec2.Instance) (notTerminatedNodes []*ec2.Instance) {
 	for _, node := range nodes {
-		if *node.State.Name != "terminated" {
+		if node.State != nil && node.State.Name != nil && *node.State.Name != "terminated" {
 			nodes = append(nodes, node)
 		}
 	}
-	return nodes
+	return notTerminatedNodes
 }
 
 func (ro *ResourceOperator) FindInstanceByName(name string) *ec2.Instance {

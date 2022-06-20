@@ -6,7 +6,7 @@ import (
 
 type Cmd struct {
 	fn          func()
-	args        string
+	args        []string
 	order       int
 	explanation string
 	fullCommand string
@@ -14,37 +14,31 @@ type Cmd struct {
 
 var SyntaxTree = map[string]any{
 	"version": Cmd{fn: cmd.Version, order: 11},
-	"info":    Cmd{fn: cmd.Info, order: 12, args: "discover existing cloudlab resources"},
-	"init":    Cmd{fn: cmd.InitializeCloudLabResources, order: 13, args: "initialize cloudlab resources"},
-	"destroy": Cmd{fn: cmd.DestroyCloudLabResources, order: 14, args: "delete all cloudlab resources"},
+	"info":    Cmd{fn: cmd.Info, order: 12, args: []string{"discover existing cloudlab resources"}},
+	"init":    Cmd{fn: cmd.InitializeCloudLabResources, order: 13, args: []string{"initialize cloudlab resources"}},
+	"destroy": Cmd{fn: cmd.DestroyCloudLabResources, order: 14, args: []string{"delete all cloudlab resources"}},
 
 	"list": map[string]any{
 		"":      Cmd{fn: cmd.ListInstances, order: 21},
 		"nodes": Cmd{fn: cmd.ListInstances, order: 22},
 	},
 
-	"create": map[string]any{
-		"public": map[string]any{
-			"node": Cmd{fn: cmd.CreatePublicInstance, order: 31},
-		},
-		"private": map[string]any{
-			"node": Cmd{fn: cmd.CreatePrivateInstance, order: 32},
-		},
-		"key": Cmd{fn: cmd.CreateKeyPair, order: 33},
+	"run": Cmd{fn: cmd.CreateInstance, order: 31, args: []string{
+		"all flags optional",
+		"--name=<string>",
+		"--gigs=<storage>",
+		"--type=<t2.nano, t2.micro, etc>",
+		"--ami=<amazon-machine-image>",
+		"--script=<start-up-script>"},
 	},
 
-	"delete": map[string]any{
-		"node": Cmd{fn: cmd.DeleteInstances, args: "<nodes>...", order: 40},
-		"all": map[string]any{
-			"nodes": Cmd{fn: cmd.DeleteAllInstances, order: 43},
-		},
-	},
+	"delete": Cmd{fn: cmd.DeleteInstances, args: []string{"<nodes>..."}, order: 40},
 
 	"open": map[string]any{
-		"port": Cmd{fn: cmd.OpenPort, args: "<port> <node>", order: 51},
+		"port": Cmd{fn: cmd.OpenPort, args: []string{"<port> <node>"}, order: 51},
 	},
 
 	"close": map[string]any{
-		"port": Cmd{fn: cmd.ClosePort, args: "<port> <node>", order: 52},
+		"port": Cmd{fn: cmd.ClosePort, args: []string{"<port> <node>"}, order: 52},
 	},
 }

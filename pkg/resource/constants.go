@@ -7,7 +7,9 @@ const CloudLabPrivateSubnet = "cloudlab-private-subnet"
 const CloudLabInternetGateway = "cloudlab-internet-gateway"
 const CloudLabSecutiyGroup = "cloudlab-security-group"
 const CloudLabKeyPair = "cloudlab-key-pair"
-const CloudLabInstance = "cloudlab-instance"
+
+const IsCloudLabInstanceTagKey = "is-cloudlab-instance"
+const IsCloudLabInstanceTagVal = "true"
 
 const CloudLabMainRouteTable = "cloudlab-public-route-table"
 const CloudLabPrivateRouteTable = "cloudlab-private-route-table"
