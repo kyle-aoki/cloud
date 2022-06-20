@@ -136,7 +136,7 @@ func (ro *ResourceOperator) InitializeCloudLabResources() {
 
 func (ro *ResourceOperator) DestroyCloudLabResources() {
 	if len(findNotTerminatedInstances(ro.Instances)) > 0 {
-		panic("run 'lab delete all nodes' and try again")
+		panic("run 'lab delete all' and try again")
 	}
 
 	if len(ro.Instances) > 0 {

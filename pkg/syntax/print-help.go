@@ -25,8 +25,8 @@ func sortCommands() {
 
 func printCommands() {
 	fmt.Println()
-	fmt.Println(createSpacedString("command", "arguments/explanation"))
-	fmt.Println(strings.Repeat("-", 60))
+	fmt.Println(createSpacedString("command", "arguments/flags/explanation"))
+	fmt.Println(strings.Repeat("-", 67))
 	for i := range commands {
 		fmt.Println(commands[i].fullCommand)
 	}

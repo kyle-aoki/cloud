@@ -14,6 +14,9 @@ func ListInstances() {
 	util.Print("name\tstate\tprivate-ip\tpublic-ip\tports")
 
 	for _, node := range ro.Instances {
+		if *node.State.Name == "terminated" {
+			continue
+		}
 		l := fmt.Sprintf("%v\t%v\t%v\t%v\t%s",
 			*resource.FindNameTagValue(node.Tags),
 			State(node),

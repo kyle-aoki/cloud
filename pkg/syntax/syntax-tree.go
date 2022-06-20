@@ -18,27 +18,25 @@ var SyntaxTree = map[string]any{
 	"init":    Cmd{fn: cmd.InitializeCloudLabResources, order: 13, args: []string{"initialize cloudlab resources"}},
 	"destroy": Cmd{fn: cmd.DestroyCloudLabResources, order: 14, args: []string{"delete all cloudlab resources"}},
 
-	"list": map[string]any{
-		"":      Cmd{fn: cmd.ListInstances, order: 21},
-		"nodes": Cmd{fn: cmd.ListInstances, order: 22},
-	},
+	"list": Cmd{fn: cmd.ListInstances, order: 21, args: []string{"list instances"}},
 
 	"run": Cmd{fn: cmd.CreateInstance, order: 31, args: []string{
 		"all flags optional",
-		"--name=<string>",
-		"--gigs=<storage>",
-		"--type=<t2.nano, t2.micro, etc>",
-		"--ami=<amazon-machine-image>",
-		"--script=<start-up-script>"},
+		"-n, --name=<string>",
+		"-p, --private",
+		"-g, --gigs=<storage>",
+		"-t, --type=<t2.nano, t2.micro, etc>",
+		"-a, --ami=<amazon-machine-image>",
+		"-s, --script=<script-file>"},
 	},
 
-	"delete": Cmd{fn: cmd.DeleteInstances, args: []string{"<nodes>..."}, order: 40},
+	"delete": Cmd{fn: cmd.DeleteInstances, args: []string{"<names>..."}, order: 40},
 
 	"open": map[string]any{
-		"port": Cmd{fn: cmd.OpenPort, args: []string{"<port> <node>"}, order: 51},
+		"port": Cmd{fn: cmd.OpenPort, args: []string{"<port> <name>"}, order: 51},
 	},
 
 	"close": map[string]any{
-		"port": Cmd{fn: cmd.ClosePort, args: []string{"<port> <node>"}, order: 52},
+		"port": Cmd{fn: cmd.ClosePort, args: []string{"<port> <name>"}, order: 52},
 	},
 }

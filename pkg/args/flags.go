@@ -53,21 +53,20 @@ func ContainsOnlyValidCharsOrPanic(s string) {
 }
 
 func ParseFlags() {
-FlagLoop:
-	for i, flag := range Flags {
-	ArgLoop:
-		for j, argument := range args {
+ArgLoop:
+	for j, argument := range args {
+		for i, flag := range Flags {
 
 			standaloneFlag := fmt.Sprintf("--%s", flag.Key)
-			if flag.Standalone && strings.Contains(argument, standaloneFlag) {
+			if flag.Standalone && argument == standaloneFlag {
 				flag.Value = "true"
-				continue FlagLoop
+				continue ArgLoop
 			}
 
 			abbrStandaloneFlag := fmt.Sprintf("-%s", flag.Abbr)
-			if flag.Standalone && strings.Contains(argument, abbrStandaloneFlag) {
+			if flag.Standalone && argument == abbrStandaloneFlag {
 				flag.Value = "true"
-				continue FlagLoop
+				continue ArgLoop
 			}
 
 			fullFlagPrefix := fmt.Sprintf("--%s=", flag.Key)
@@ -78,7 +77,7 @@ FlagLoop:
 				}
 				ContainsOnlyValidCharsOrPanic(s[1])
 				Flags[i].Value = s[1]
-				continue FlagLoop
+				continue ArgLoop
 			}
 
 			abbrFlagPrefix := fmt.Sprintf("-%s", flag.Abbr)
@@ -89,10 +88,11 @@ FlagLoop:
 				v := args[j+1]
 				ContainsOnlyValidCharsOrPanic(v)
 				Flags[i].Value = v
-				continue FlagLoop
+				continue ArgLoop
 			}
-
-			continue ArgLoop
+		}
+		if strings.Contains(argument, "-") {
+			panic("unknown flag: " + argument)
 		}
 	}
 }
