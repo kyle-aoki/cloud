@@ -11,46 +11,28 @@ import (
 )
 
 func DeleteInstances() {
-	namesOfInstancesToDelete := args.Collect()
+	var targets []string = args.Collect()
 
 	ro := resource.NewResourceOperator()
-	var instanceNames []string
-	var instanceIds []*string
+	var names []string
+	var ids []*string
 
 	for _, inst := range ro.Instances {
-		instanceName := resource.FindNameTagValue(inst.Tags)
-		for _, nameOfInstanceToDelete := range namesOfInstancesToDelete {
-			if instanceName != nil && *instanceName == nameOfInstanceToDelete {
-				instanceNames = append(instanceNames, *instanceName)
-				instanceIds = append(instanceIds, inst.InstanceId)
+		name := resource.FindNameTagValue(inst.Tags)
+		for _, target := range targets {
+			if name != nil && *name == target {
+				names = append(names, *name)
+				ids = append(ids, inst.InstanceId)
 			}
 		}
 	}
 
 	_, err := amazon.EC2().TerminateInstances(&ec2.TerminateInstancesInput{
-		InstanceIds: instanceIds,
+		InstanceIds: ids,
 	})
 	util.MustExec(err)
 
-	for _, name := range instanceNames {
-		fmt.Println("deleted " + name)
-	}
-}
-
-func DeleteAllInstances() {
-	ro := resource.NewResourceOperator()
-	var instanceIds []*string
-
-	for _, inst := range ro.Instances {
-		instanceIds = append(instanceIds, inst.InstanceId)
-	}
-
-	tio, err := amazon.EC2().TerminateInstances(&ec2.TerminateInstancesInput{
-		InstanceIds: instanceIds,
-	})
-	util.MustExec(err)
-
-	for _, ti := range tio.TerminatingInstances {
-		util.VMessage("deleted", "", *ti.InstanceId)
+	for _, name := range names {
+		fmt.Println(fmt.Sprintf("deleted %s", name))
 	}
 }

@@ -33,6 +33,13 @@ func New() *ResourceOperator {
 	return &ResourceOperator{}
 }
 
+func NewResourceOperatorNoAudit() *ResourceOperator {
+	ro := New()
+	ro.FindAll()
+	return ro
+}
+
+// Finds all resources and audits them.
 func NewResourceOperator() *ResourceOperator {
 	ro := New()
 	ro.FindAll()
@@ -129,7 +136,7 @@ func (ro *ResourceOperator) InitializeCloudLabResources() {
 	}
 
 	if ro.KeyPair == nil {
-		ro.CreateCloudlabKeyPair()
+		CreateKeyPair()
 		ro.KeyPair = FindKeyPair()
 	}
 }

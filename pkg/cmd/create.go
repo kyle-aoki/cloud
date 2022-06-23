@@ -6,6 +6,7 @@ import (
 	"cloudlab/pkg/resource"
 	"cloudlab/pkg/util"
 	"fmt"
+	"io/ioutil"
 )
 
 func CreateInstance() {
@@ -15,8 +16,10 @@ func CreateInstance() {
 	instType := args.FlagValueOrDefault("type", "t2.nano")
 	ami := args.FlagValueOrDefault("ami", amazon.UbuntuAmi())
 	gigs := args.FlagValueOrDefault("gigs", "8")
-	userData := args.FlagValueOrDefault("script", "")
+	scriptPath := args.FlagValueOrDefault("script", "")
 	private := args.FlagValueOrDefault("private", "false")
+
+	startUpScript := ReadScriptFile(scriptPath)
 
 	cii := &resource.CreateInstanceInput{
 		TagSpecifications: resource.CreateTagSpecs("instance", map[string]string{
@@ -32,9 +35,18 @@ func CreateInstance() {
 		Size:             util.StringToInt(gigs),
 		KeyName:          resource.CloudLabKeyPair,
 		SecurityGroupIds: []*string{ro.GetSecurityGroupIdByNameOrPanic("22").GroupId},
-		UserData:         userData,
+		UserData:         startUpScript,
 	}
 
 	instance := resource.ExecuteCreateInstanceRequest(cii)
 	fmt.Println(*instance.InstanceId)
+}
+
+func ReadScriptFile(path string) string {
+	if path == "" {
+		return ""
+	}
+	bytes, err := ioutil.ReadFile(path)
+	util.MustExec(err)
+	return string(bytes)
 }

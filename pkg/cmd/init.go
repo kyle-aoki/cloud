@@ -4,22 +4,26 @@ import (
 	"cloudlab/pkg/resource"
 	"cloudlab/pkg/util"
 	"fmt"
+	"strings"
 )
 
+const InitGuideTemplate = `
+placed ssh key at <config-dir>
+
+create an instance:
+
+lab run
+
+ssh into an instance:
+
+ssh -i <config-dir> ubuntu@<public-ip>`
+
 func InitializeCloudLabResources() {
-	ro := resource.New()
-	ro.FindAll()
+	ro := resource.NewResourceOperatorNoAudit()
 	ro.InitializeCloudLabResources()
 	ro.Info()
-	fmt.Println(fmt.Sprintf("placed ssh key at %s", util.ConfigDir()))
-	fmt.Println()
-	fmt.Println("create an instance:")
-	fmt.Println()
-	fmt.Println("lab run")
-	fmt.Println()
-	fmt.Println("ssh into an instance:")
-	fmt.Println()
-	fmt.Println(fmt.Sprintf("ssh -i %s ubuntu@<public-ip>", util.ConfigDir()))
-	fmt.Println()
-	fmt.Println()
+
+	initGuide := strings.ReplaceAll(InitGuideTemplate, "<config-dir", util.ConfigDir())
+
+	fmt.Println(initGuide)
 }
