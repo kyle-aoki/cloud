@@ -7,7 +7,23 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-func findVpc(name string) (vpcToFind *ec2.Vpc) {
+type ResourceFinder interface {
+	findVpc(name string) *ec2.Vpc
+	findInstances() []*ec2.Instance
+	findNotTerminatedInstances(nodes []*ec2.Instance) []*ec2.Instance
+	findInternetGateway() *ec2.InternetGateway
+	findAllCloudLabKeyPairs() []*ec2.KeyPairInfo
+	findKeyPair() *ec2.KeyPairInfo
+	findRouteTable(vpc *ec2.Vpc, name string) *ec2.RouteTable
+	findMainRouteTable(vpc *ec2.Vpc) *ec2.RouteTable
+	findCloudLabSecurityGroups() []*ec2.SecurityGroup
+	findSecurityGroupByName(sgs []*ec2.SecurityGroup, name string) *ec2.SecurityGroup
+	findSubnet(name string) *ec2.Subnet
+}
+
+type AWSResourceFinder struct{}
+
+func (a *AWSResourceFinder) findVpc(name string) (vpcToFind *ec2.Vpc) {
 	err := amazon.EC2().DescribeVpcsPages(
 		&ec2.DescribeVpcsInput{},
 		func(dvo *ec2.DescribeVpcsOutput, b bool) bool {
@@ -24,7 +40,7 @@ func findVpc(name string) (vpcToFind *ec2.Vpc) {
 	return vpcToFind
 }
 
-func findInstances() (nodes []*ec2.Instance) {
+func (a *AWSResourceFinder) findInstances() (nodes []*ec2.Instance) {
 	err := amazon.EC2().DescribeInstancesPages(&ec2.DescribeInstancesInput{},
 		func(dio *ec2.DescribeInstancesOutput, b bool) bool {
 			for _, res := range dio.Reservations {
@@ -41,7 +57,7 @@ func findInstances() (nodes []*ec2.Instance) {
 	return nodes
 }
 
-func findNotTerminatedInstances(nodes []*ec2.Instance) (notTerminatedNodes []*ec2.Instance) {
+func (a *AWSResourceFinder) findNotTerminatedInstances(nodes []*ec2.Instance) (notTerminatedNodes []*ec2.Instance) {
 	for _, node := range nodes {
 		if node.State != nil && node.State.Name != nil && *node.State.Name != "terminated" {
 			nodes = append(nodes, node)
@@ -50,16 +66,7 @@ func findNotTerminatedInstances(nodes []*ec2.Instance) (notTerminatedNodes []*ec
 	return notTerminatedNodes
 }
 
-func (ro *ResourceOperator) FindInstanceByName(name string) *ec2.Instance {
-	for _, inst := range ro.Instances {
-		if NameTagEquals(inst.Tags, name) {
-			return inst
-		}
-	}
-	panic("node not found")
-}
-
-func findInternetGateway() (igToFind *ec2.InternetGateway) {
+func (a *AWSResourceFinder) findInternetGateway() (igToFind *ec2.InternetGateway) {
 	err := amazon.EC2().DescribeInternetGatewaysPages(
 		&ec2.DescribeInternetGatewaysInput{},
 		func(digo *ec2.DescribeInternetGatewaysOutput, b bool) bool {
@@ -76,7 +83,7 @@ func findInternetGateway() (igToFind *ec2.InternetGateway) {
 	return igToFind
 }
 
-func FindAllCloudLabKeyPairs() (kps []*ec2.KeyPairInfo) {
+func (a *AWSResourceFinder) findAllCloudLabKeyPairs() (kps []*ec2.KeyPairInfo) {
 	dkpo, err := amazon.EC2().DescribeKeyPairs(&ec2.DescribeKeyPairsInput{})
 	util.MustExec(err)
 
@@ -89,7 +96,7 @@ func FindAllCloudLabKeyPairs() (kps []*ec2.KeyPairInfo) {
 	return kps
 }
 
-func FindKeyPair() (keypair *ec2.KeyPairInfo) {
+func (a *AWSResourceFinder) findKeyPair() (keypair *ec2.KeyPairInfo) {
 	dkpo, err := amazon.EC2().DescribeKeyPairs(&ec2.DescribeKeyPairsInput{})
 	util.MustExec(err)
 
@@ -102,7 +109,7 @@ func FindKeyPair() (keypair *ec2.KeyPairInfo) {
 	return keypair
 }
 
-func findRouteTable(vpc *ec2.Vpc, name string) (routeTableToFind *ec2.RouteTable) {
+func (a *AWSResourceFinder) findRouteTable(vpc *ec2.Vpc, name string) (routeTableToFind *ec2.RouteTable) {
 	err := amazon.EC2().DescribeRouteTablesPages(
 		&ec2.DescribeRouteTablesInput{},
 		func(drto *ec2.DescribeRouteTablesOutput, b bool) bool {
@@ -121,7 +128,7 @@ func findRouteTable(vpc *ec2.Vpc, name string) (routeTableToFind *ec2.RouteTable
 	return routeTableToFind
 }
 
-func findMainRouteTable(vpc *ec2.Vpc) (routeTableToFind *ec2.RouteTable) {
+func (a *AWSResourceFinder) findMainRouteTable(vpc *ec2.Vpc) (routeTableToFind *ec2.RouteTable) {
 	err := amazon.EC2().DescribeRouteTablesPages(
 		&ec2.DescribeRouteTablesInput{},
 		func(drto *ec2.DescribeRouteTablesOutput, b bool) bool {
@@ -142,7 +149,7 @@ func findMainRouteTable(vpc *ec2.Vpc) (routeTableToFind *ec2.RouteTable) {
 	return routeTableToFind
 }
 
-func findCloudLabSecurityGroups() (sgs []*ec2.SecurityGroup) {
+func (a *AWSResourceFinder) findCloudLabSecurityGroups() (sgs []*ec2.SecurityGroup) {
 	err := amazon.EC2().DescribeSecurityGroupsPages(
 		&ec2.DescribeSecurityGroupsInput{},
 		func(dsgo *ec2.DescribeSecurityGroupsOutput, b bool) bool {
@@ -159,7 +166,7 @@ func findCloudLabSecurityGroups() (sgs []*ec2.SecurityGroup) {
 	return sgs
 }
 
-func findSecurityGroupByName(sgs []*ec2.SecurityGroup, name string) *ec2.SecurityGroup {
+func (a *AWSResourceFinder) findSecurityGroupByName(sgs []*ec2.SecurityGroup, name string) *ec2.SecurityGroup {
 	for _, sg := range sgs {
 		if sg.GroupName != nil && *sg.GroupName == name {
 			return sg
@@ -168,7 +175,7 @@ func findSecurityGroupByName(sgs []*ec2.SecurityGroup, name string) *ec2.Securit
 	return nil
 }
 
-func findSubnet(name string) (subnetToFind *ec2.Subnet) {
+func (a *AWSResourceFinder) findSubnet(name string) (subnetToFind *ec2.Subnet) {
 	err := amazon.EC2().DescribeSubnetsPages(
 		&ec2.DescribeSubnetsInput{},
 		func(dso *ec2.DescribeSubnetsOutput, b bool) bool {

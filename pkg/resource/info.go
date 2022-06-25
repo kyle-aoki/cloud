@@ -5,59 +5,59 @@ import (
 	"fmt"
 )
 
-func (ro *ResourceOperator) Info() {
-	if ro.Vpc == nil {
+func (co *AWSCloudOperator) Info() {
+	if co.Rs.Vpc == nil {
 		util.Print("missing cloudlab vpc")
 	} else {
-		util.Print("vpc\t" + *ro.Vpc.VpcId)
+		util.Print("vpc\t" + *co.Rs.Vpc.VpcId)
 	}
 
-	if ro.PublicSubnet == nil {
+	if co.Rs.PublicSubnet == nil {
 		util.Print("missing cloudlab public subnet")
 	} else {
-		util.Print("public subnet\t" + *ro.PublicSubnet.SubnetId)
+		util.Print("public subnet\t" + *co.Rs.PublicSubnet.SubnetId)
 	}
 
-	if ro.PrivateSubnet == nil {
+	if co.Rs.PrivateSubnet == nil {
 		util.Print("missing cloudlab private subnet")
 	} else {
-		util.Print("private subnet\t" + *ro.PrivateSubnet.SubnetId)
+		util.Print("private subnet\t" + *co.Rs.PrivateSubnet.SubnetId)
 	}
 
-	if ro.PublicRouteTable == nil {
+	if co.Rs.PublicRouteTable == nil {
 		util.Print("missing public route table")
 	} else {
-		util.Print("public route table\t" + *ro.PublicRouteTable.RouteTableId)
+		util.Print("public route table\t" + *co.Rs.PublicRouteTable.RouteTableId)
 	}
 
-	if ro.PrivateRouteTable == nil {
+	if co.Rs.PrivateRouteTable == nil {
 		util.Print("missing private route table")
 	} else {
-		util.Print("private route table\t" + *ro.PrivateRouteTable.RouteTableId)
+		util.Print("private route table\t" + *co.Rs.PrivateRouteTable.RouteTableId)
 	}
 
-	if ro.InternetGateway == nil {
+	if co.Rs.InternetGateway == nil {
 		util.Print("missing cloudlab internet gateway")
 	} else {
-		util.Print("internet gateway\t" + *ro.InternetGateway.InternetGatewayId)
+		util.Print("internet gateway\t" + *co.Rs.InternetGateway.InternetGatewayId)
 	}
 
-	if ro.KeyPair == nil {
+	if co.Rs.KeyPair == nil {
 		util.Print("missing cloudlab key")
 	} else {
-		util.Print("key\t" + *ro.KeyPair.KeyPairId)
+		util.Print("key\t" + *co.Rs.KeyPair.KeyPairId)
 	}
 
 	util.Print("\t")
-	for _, sg := range ro.SecurityGroups {
+	for _, sg := range co.Rs.SecurityGroups {
 		util.Print("security group " + *sg.GroupName + "\t" + *sg.GroupId)
 	}
 
-	if len(ro.SecurityGroups) > 0 {
+	if len(co.Rs.SecurityGroups) > 0 {
 		util.Print("\t")
 	}
 
-	for _, inst := range ro.Instances {
+	for _, inst := range co.Rs.Instances {
 		util.Print(fmt.Sprintf(
 			"%s\t%s",
 			*FindNameTagValue(inst.Tags),

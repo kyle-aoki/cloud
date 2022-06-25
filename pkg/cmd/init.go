@@ -19,9 +19,9 @@ ssh into an instance:
 ssh -i <config-dir> ubuntu@<public-ip>`
 
 func InitializeCloudLabResources() {
-	ro := resource.NewResourceOperatorNoAudit()
-	ro.InitializeCloudLabResources()
-	ro.Info()
+	co := resource.NewCloudOperatorNoAudit()
+	co.InitializeCloudLabResources()
+	co.Info()
 
 	initGuide := strings.ReplaceAll(InitGuideTemplate, "<config-dir", util.ConfigDir())
 

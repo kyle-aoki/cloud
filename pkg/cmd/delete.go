@@ -13,11 +13,11 @@ import (
 func DeleteInstances() {
 	var targets []string = args.Collect()
 
-	ro := resource.NewResourceOperator()
+	co := resource.NewCloudOperator()
 	var names []string
 	var ids []*string
 
-	for _, inst := range ro.Instances {
+	for _, inst := range co.Rs.Instances {
 		name := resource.FindNameTagValue(inst.Tags)
 		for _, target := range targets {
 			if name != nil && *name == target {

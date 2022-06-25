@@ -9,11 +9,11 @@ import (
 )
 
 func ListInstances() {
-	ro := resource.NewResourceOperator()
+	co := resource.NewCloudOperator()
 
 	util.Print("name\tstate\tprivate-ip\tpublic-ip\tports")
 
-	for _, node := range ro.Instances {
+	for _, node := range co.Rs.Instances {
 		if *node.State.Name == "terminated" {
 			continue
 		}

@@ -6,7 +6,7 @@ import (
 )
 
 func DestroyCloudLabResources() {
-	ro := resource.NewResourceOperatorNoAudit()
-	ro.DestroyCloudLabResources()
+	co := resource.NewCloudOperatorNoAudit()
+	co.DestroyCloudLabResources()
 	fmt.Println("deleted all cloudlab resources")
 }

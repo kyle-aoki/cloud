@@ -10,9 +10,9 @@ import (
 )
 
 func CreateInstance() {
-	ro := resource.NewResourceOperator()
+	co := resource.NewCloudOperator()
 
-	name := args.FlagValueOrDefault("name", ro.NextInstanceName())
+	name := args.FlagValueOrDefault("name", co.NextInstanceName())
 	instType := args.FlagValueOrDefault("type", "t2.nano")
 	ami := args.FlagValueOrDefault("ami", amazon.UbuntuAmi())
 	gigs := args.FlagValueOrDefault("gigs", "8")
@@ -26,7 +26,7 @@ func CreateInstance() {
 			"Name":                            name,
 			resource.IsCloudLabInstanceTagKey: resource.IsCloudLabInstanceTagVal,
 		}),
-		SubnetId:         ro.SelectPrivateSubnet(private),
+		SubnetId:         co.SelectPrivateSubnet(private),
 		InstanceType:     instType,
 		Ami:              ami,
 		DeviceName:       "/dev/sda1",
@@ -34,7 +34,7 @@ func CreateInstance() {
 		MaxCount:         1,
 		Size:             util.StringToInt(gigs),
 		KeyName:          resource.CloudLabKeyPair,
-		SecurityGroupIds: []*string{ro.GetSecurityGroupIdByNameOrPanic("22").GroupId},
+		SecurityGroupIds: []*string{co.GetSecurityGroupIdByNameOrPanic("22").GroupId},
 		UserData:         startUpScript,
 	}
 

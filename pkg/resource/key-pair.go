@@ -24,7 +24,7 @@ func keyFilePath() string {
 // AWS ##########################################################################
 // ##############################################################################
 
-func (ro *ResourceOperator) ExecuteCreateKeyPairRequest() *string {
+func (co *AWSCloudOperator) ExecuteCreateKeyPairRequest() *string {
 	ckpo, err := amazon.EC2().CreateKeyPair(&ec2.CreateKeyPairInput{
 		KeyName:           util.StrPtr(CloudLabKeyPair),
 		TagSpecifications: CreateNameTagSpec("key-pair", CloudLabKeyPair),
@@ -48,8 +48,8 @@ func CreateKeyPair() {
 		util.CreateEmptyFile(keyFilePath())
 	}
 
-	ro := NewResourceOperator()
-	keyMaterial := ro.ExecuteCreateKeyPairRequest()
+	co := NewCloudOperator()
+	keyMaterial := co.ExecuteCreateKeyPairRequest()
 
 	setFileContentWith400(keyFilePath(), *keyMaterial)
 

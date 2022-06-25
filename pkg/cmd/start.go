@@ -12,10 +12,10 @@ import (
 )
 
 func GetIds() []string {
-	ro := resource.NewResourceOperator()
+	co := resource.NewCloudOperator()
 	names := args.Collect()
 
-	nodeNames := GetNodeNames(ro.Instances)
+	nodeNames := GetNodeNames(co.Rs.Instances)
 	var nodesToStart []NodeName
 
 	for i := range names {

@@ -60,9 +60,9 @@ func AssignSecurityGroup(
 	util.MustExec(err)
 }
 
-func (ro *ResourceOperator) NextInstanceName() string {
+func (co *AWSCloudOperator) NextInstanceName() string {
 	var max int64
-	for _, inst := range ro.Instances {
+	for _, inst := range co.Rs.Instances {
 		n := *FindNameTagValue(inst.Tags)
 		num := n[1:]
 		i, err := strconv.ParseInt(num, 10, 32)
@@ -76,9 +76,9 @@ func (ro *ResourceOperator) NextInstanceName() string {
 	return fmt.Sprintf("i%v", max+1)
 }
 
-func (ro *ResourceOperator) SelectPrivateSubnet(isPrivate string) string {
+func (co *AWSCloudOperator) SelectPrivateSubnet(isPrivate string) string {
 	if isPrivate == "true" {
-		return *ro.PrivateSubnet.SubnetId
+		return *co.Rs.PrivateSubnet.SubnetId
 	}
-	return *ro.PublicSubnet.SubnetId
+	return *co.Rs.PublicSubnet.SubnetId
 }
