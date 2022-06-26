@@ -1,12 +1,11 @@
 package resource
 
 import (
-	"cloudlab/pkg/amazon"
 	"cloudlab/pkg/util"
 	"fmt"
+	"log"
 	"os"
 
-	"github.com/aws/aws-sdk-go/service/ec2"
 	"golang.org/x/sys/unix"
 )
 
@@ -24,20 +23,19 @@ func keyFilePath() string {
 // AWS ##########################################################################
 // ##############################################################################
 
-func (co *AWSCloudOperator) ExecuteCreateKeyPairRequest() *string {
-	ckpo, err := amazon.EC2().CreateKeyPair(&ec2.CreateKeyPairInput{
-		KeyName:           util.StrPtr(CloudLabKeyPair),
-		TagSpecifications: CreateNameTagSpec("key-pair", CloudLabKeyPair),
-	})
-	util.MustExec(err)
-	return ckpo.KeyMaterial
-}
-
 // ##############################################################################
 // Main Logic ###################################################################
 // ##############################################################################
 
-func CreateKeyPair() {
+func (co *AWSCloudOperator) CreateKeyPair() {
+	log.Print("starting key pair creation process")
+
+	if util.ObjectExists(keyFilePath()) {
+		util.DeleteFile(keyFilePath())
+	}
+	if !util.ObjectExists(util.ConfigDir()) {
+		util.CreateDir(util.ConfigDir())
+	}
 	if !writable(util.ConfigDir()) {
 		fatalInsufficientPermissions()
 	}
@@ -48,21 +46,9 @@ func CreateKeyPair() {
 		util.CreateEmptyFile(keyFilePath())
 	}
 
-	co := NewCloudOperator()
-	keyMaterial := co.ExecuteCreateKeyPairRequest()
+	keyMaterial := co.creator.ExecuteCreateKeyPairRequest(CloudLabKeyPair)
 
 	setFileContentWith400(keyFilePath(), *keyMaterial)
-
-	fmt.Println(fmt.Sprintf(`
-	created key file at %s
-	
-	to ssh with key file run:
-	
-	lab create public node
-	
-	ssh-add %s
-	
-	ssh ubuntu@<public-ip-address>`, keyFilePath(), keyFilePath()))
 }
 
 // ##############################################################################
@@ -70,6 +56,7 @@ func CreateKeyPair() {
 // ##############################################################################
 
 func setFileContentWith400(path, text string) {
+	log.Println("setting file content")
 	f, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY, 400)
 	util.MustExec(err)
 	defer f.Close()
@@ -78,7 +65,9 @@ func setFileContentWith400(path, text string) {
 }
 
 func writable(path string) bool {
-	return unix.Access(path, unix.W_OK) == nil
+	isWritable := unix.Access(path, unix.W_OK) == nil
+	log.Println(path, "isWritable", isWritable)
+	return isWritable
 }
 
 // ##############################################################################

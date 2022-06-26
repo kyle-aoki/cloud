@@ -10,16 +10,16 @@ import (
 // ######################################################################################
 
 type AWSCloudOperator struct {
-	creator ResourceCreator
-	finder  ResourceFinder
-	deleter ResourceDeleter
+	creator *ResourceCreator
+	finder  *ResourceFinder
+	deleter *ResourceDeleter
 	Rs      *AWSResources
 }
 
 func new() *AWSCloudOperator {
 	return &AWSCloudOperator{
-		creator: &AWSCreator{},
-		finder:  &AWSResourceFinder{},
+		creator: &ResourceCreator{},
+		finder:  &ResourceFinder{},
 		Rs:      &AWSResources{},
 	}
 }
@@ -51,8 +51,8 @@ func (co *AWSCloudOperator) FindAll() {
 	co.Rs.PrivateSubnet = co.finder.findSubnet(CloudLabPrivateSubnet)
 	co.Rs.PublicRouteTable = co.finder.findMainRouteTable(co.Rs.Vpc)
 	co.Rs.PrivateRouteTable = co.finder.findRouteTable(co.Rs.Vpc, CloudLabPrivateRouteTable)
-	co.Rs.InternetGateway = co.finder.findInternetGateway()
-	co.Rs.SecurityGroups = co.finder.findCloudLabSecurityGroups()
+	co.Rs.InternetGateway = co.finder.findInternetGateway(CloudLabInternetGateway)
+	co.Rs.SecurityGroups = co.finder.findSecurityGroupsByName(CloudLabSecutiyGroup)
 	co.Rs.Instances = co.finder.findInstances()
 	co.Rs.KeyPair = co.finder.findKeyPair()
 }
@@ -81,6 +81,10 @@ func FatalMissing(missing bool, resourceType string) {
 // ######################################################################################
 
 func (co *AWSCloudOperator) InitializeCloudLabResources() {
+	if co.Rs.KeyPair == nil {
+		co.CreateKeyPair()
+		co.Rs.KeyPair = co.finder.findKeyPair()
+	}
 	if co.Rs.Vpc == nil {
 		co.Rs.Vpc = co.creator.createVpc(DefaultVpcCidrBlock, CloudLabVpc)
 		co.Rs.PublicRouteTable = co.finder.findMainRouteTable(co.Rs.Vpc)
@@ -110,11 +114,7 @@ func (co *AWSCloudOperator) InitializeCloudLabResources() {
 	securityGroup22 := co.finder.findSecurityGroupByName(co.Rs.SecurityGroups, "22")
 	if securityGroup22 == nil {
 		CreateSecurityGroup(co.Rs.Vpc, "22", 22)
-		co.Rs.SecurityGroups = co.finder.findCloudLabSecurityGroups()
-	}
-	if co.Rs.KeyPair == nil {
-		CreateKeyPair()
-		co.Rs.KeyPair = co.finder.findKeyPair()
+		co.Rs.SecurityGroups = co.finder.findSecurityGroupsByName(CloudLabSecutiyGroup)
 	}
 }
 
@@ -153,5 +153,7 @@ func (co *AWSCloudOperator) DestroyCloudLabResources() {
 		co.deleter.deleteVpc(co.Rs.Vpc)
 	}
 
-	co.deleter.deleteKeyPair(co.Rs.KeyPair)
+	if co.Rs.KeyPair != nil {
+		co.deleter.deleteKeyPair(co.Rs.KeyPair)
+	}
 }

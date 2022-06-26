@@ -5,7 +5,6 @@ import (
 )
 
 func FindAndExecute() {
-	args.ParseFlags()
 	traverse(SyntaxTree)
 }
 

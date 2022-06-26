@@ -7,8 +7,7 @@ import (
 	"strings"
 )
 
-const InitGuideTemplate = `
-placed ssh key at <config-dir>
+const InitGuideTemplate = `placed ssh key at <config-dir>
 
 create an instance:
 
@@ -20,10 +19,12 @@ ssh -i <config-dir> ubuntu@<public-ip>`
 
 func InitializeCloudLabResources() {
 	co := resource.NewCloudOperatorNoAudit()
+	createdSSH := co.Rs.KeyPair == nil
 	co.InitializeCloudLabResources()
 	co.Info()
 
-	initGuide := strings.ReplaceAll(InitGuideTemplate, "<config-dir", util.ConfigDir())
-
-	fmt.Println(initGuide)
+	if createdSSH {
+		initGuide := strings.ReplaceAll(InitGuideTemplate, "<config-dir>", util.ConfigDir())
+		fmt.Println(initGuide)
+	}
 }
