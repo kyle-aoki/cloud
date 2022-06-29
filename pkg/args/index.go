@@ -1,17 +1,21 @@
 package args
 
 import (
+	"flag"
 	"fmt"
-	"os"
 	"strings"
 )
 
-var ExecutionPath string
 var args []string
+var Verbose bool
 
-func init() {
-	args = os.Args
-	ExecutionPath = Poll()
+func Prepare() {
+	v := flag.Bool("v", false, "verbose")
+	
+	flag.Parse()
+	fmt.Println("v", *v)
+	args = flag.Args()
+	fmt.Println(args)
 }
 
 func Poll() string {

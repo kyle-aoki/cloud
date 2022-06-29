@@ -11,6 +11,7 @@ import (
 type ResourceCreator struct{}
 
 func (c *ResourceCreator) createVpc(cidrBlock string, name string) *ec2.Vpc {
+	log.Println("creating vpc")
 	cvo, err := amazon.EC2().CreateVpc(&ec2.CreateVpcInput{
 		CidrBlock: util.StrPtr(cidrBlock),
 
@@ -23,6 +24,7 @@ func (c *ResourceCreator) createVpc(cidrBlock string, name string) *ec2.Vpc {
 }
 
 func (c *ResourceCreator) createSubnet(vpc *ec2.Vpc, name string, cidr string) *ec2.Subnet {
+	log.Println("creating subnet")
 	cso, err := amazon.EC2().CreateSubnet(&ec2.CreateSubnetInput{
 		VpcId:             vpc.VpcId,
 		CidrBlock:         util.StrPtr(cidr),
@@ -33,6 +35,7 @@ func (c *ResourceCreator) createSubnet(vpc *ec2.Vpc, name string, cidr string) *
 }
 
 func (c *ResourceCreator) createInternetGateway(name string) *ec2.InternetGateway {
+	log.Println("creating internet gateway")
 	cigo, err := amazon.EC2().CreateInternetGateway(&ec2.CreateInternetGatewayInput{
 		TagSpecifications: CreateNameTagSpec("internet-gateway", name),
 	})
@@ -41,6 +44,7 @@ func (c *ResourceCreator) createInternetGateway(name string) *ec2.InternetGatewa
 }
 
 func (c *ResourceCreator) createRouteTable(vpc *ec2.Vpc, name string) *ec2.RouteTable {
+	log.Println("creating route table")
 	crto, err := amazon.EC2().CreateRouteTable(&ec2.CreateRouteTableInput{
 		VpcId: vpc.VpcId,
 		TagSpecifications: CreateTagSpecs("route-table", map[string]string{
@@ -52,6 +56,7 @@ func (c *ResourceCreator) createRouteTable(vpc *ec2.Vpc, name string) *ec2.Route
 }
 
 func (c *ResourceCreator) ExecuteCreateKeyPairRequest(name string) *string {
+	log.Println("creating string")
 	log.Println("making create key pair request")
 	ckpo, err := amazon.EC2().CreateKeyPair(&ec2.CreateKeyPairInput{
 		KeyName:           util.StrPtr(name),

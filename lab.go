@@ -7,10 +7,9 @@ import (
 	"cloudlab/pkg/util"
 )
 
-
 func main() {
 	defer util.Recover()
-	args.FlagParse()
+	args.Prepare()
 	util.InitLogging()
 	amazon.InitEC2Client()
 	syntax.FindAndExecute()
