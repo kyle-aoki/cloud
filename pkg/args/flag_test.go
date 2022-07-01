@@ -9,10 +9,10 @@ func TestParseFlags(t *testing.T) {
 	s := "subcommand -v --script=lmao.txt do something -p 3306 -d"
 	input := strings.Split(s, " ")
 	t.Log(input)
-	flags, args := Par(input)
+	flags, args := ParseFlags(input)
 	t.Log(flags)
 	t.Log(args)
-	if flags[0].Flag != "v" {
+	if flags[0].Name != "v" {
 		t.Error("flags 0 does not equal v")
 	}
 	if len(args) != 3 {

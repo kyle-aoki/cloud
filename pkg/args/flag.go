@@ -5,28 +5,28 @@ import (
 )
 
 type CharFlag struct {
-	Flag  string
+	Name  string
 	Value string
 }
 
-func Par(fullArgs []string) ([]CharFlag, []int) {
+func ParseFlags(fullArgs []string) ([]CharFlag, []int) {
 	var flags []CharFlag
 	var args []int
 	for i := 0; i < len(fullArgs); i++ {
-		if IsFlag(fullArgs[i]) {
-			if IsSingleDashFlag(fullArgs[i]) {
+		if isFlag(fullArgs[i]) {
+			if isSingleDashFlag(fullArgs[i]) {
 				if i == len(fullArgs)-1 {
-					cf := CharFlag{Flag: fullArgs[i][1:]}
+					cf := CharFlag{Name: fullArgs[i][1:]}
 					flags = append(flags, cf)
 					break
 				} else {
-					cf := CharFlag{Flag: fullArgs[i][1:], Value: fullArgs[i+1]}
+					cf := CharFlag{Name: fullArgs[i][1:], Value: fullArgs[i+1]}
 					flags = append(flags, cf)
 					i++
 					continue
 				}
 			} else {
-				cf := SplitDoubleDashFlag(fullArgs[i])
+				cf := splitDoubleDashFlag(fullArgs[i])
 				flags = append(flags, cf)
 				continue
 			}
@@ -37,7 +37,7 @@ func Par(fullArgs []string) ([]CharFlag, []int) {
 	return flags, args
 }
 
-func IsFlag(s string) bool {
+func isFlag(s string) bool {
 	if len(s) < 2 {
 		return false
 	}
@@ -47,7 +47,7 @@ func IsFlag(s string) bool {
 	return false
 }
 
-func IsSingleDashFlag(s string) bool {
+func isSingleDashFlag(s string) bool {
 	if len(s) >= 2 {
 		if s[0] == '-' && s[1] != '-' {
 			return true
@@ -56,10 +56,10 @@ func IsSingleDashFlag(s string) bool {
 	return false
 }
 
-func SplitDoubleDashFlag(s string) CharFlag {
+func splitDoubleDashFlag(s string) CharFlag {
 	parts := strings.Split(s, "=")
 	if len(parts) < 2 {
 		panic("invalid flag: " + s)
 	}
-	return CharFlag{Flag: parts[0][2:], Value: parts[1]}
+	return CharFlag{Name: parts[0][2:], Value: parts[1]}
 }

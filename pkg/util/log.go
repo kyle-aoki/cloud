@@ -8,7 +8,7 @@ import (
 )
 
 func InitLogging() {
-	if args.Verbose {
+	if args.BoolFlag("v") {
 		log.SetOutput(os.Stdout)
 	} else {
 		log.SetOutput(io.Discard)

@@ -135,7 +135,7 @@ func (a *ResourceFinder) findMainRouteTable(vpc *ec2.Vpc) (routeTableToFind *ec2
 	return routeTableToFind
 }
 
-func (a *ResourceFinder) findSecurityGroupsByName(name string) (sgs []*ec2.SecurityGroup) {
+func (a *ResourceFinder) findSecurityGroups(name string) (sgs []*ec2.SecurityGroup) {
 	err := amazon.EC2().DescribeSecurityGroupsPages(
 		&ec2.DescribeSecurityGroupsInput{},
 		func(dsgo *ec2.DescribeSecurityGroupsOutput, b bool) bool {

@@ -9,7 +9,7 @@ import (
 
 func main() {
 	defer util.Recover()
-	args.Prepare()
+	args.Set()
 	util.InitLogging()
 	amazon.InitEC2Client()
 	syntax.FindAndExecute()

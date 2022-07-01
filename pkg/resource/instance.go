@@ -76,8 +76,8 @@ func (co *AWSCloudOperator) NextInstanceName() string {
 	return fmt.Sprintf("i%v", max+1)
 }
 
-func (co *AWSCloudOperator) SelectPrivateSubnet(isPrivate string) string {
-	if isPrivate == "true" {
+func (co *AWSCloudOperator) UsePrivateSubnet(isPrivateSubnet bool) string {
+	if isPrivateSubnet {
 		return *co.Rs.PrivateSubnet.SubnetId
 	}
 	return *co.Rs.PublicSubnet.SubnetId

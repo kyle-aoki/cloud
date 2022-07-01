@@ -1,7 +1,9 @@
 package resource
 
 import (
+	"cloudlab/pkg/util"
 	"fmt"
+	"log"
 	"os"
 )
 
@@ -43,6 +45,7 @@ func NewCloudOperator() *AWSCloudOperator {
 // ######################################################################################
 
 func (co *AWSCloudOperator) FindAll() {
+	log.Println("finding cloudlab resources...")
 	co.Rs.Vpc = co.finder.findVpc(CloudLabVpc)
 	if co.Rs.Vpc == nil {
 		return
@@ -52,28 +55,33 @@ func (co *AWSCloudOperator) FindAll() {
 	co.Rs.PublicRouteTable = co.finder.findMainRouteTable(co.Rs.Vpc)
 	co.Rs.PrivateRouteTable = co.finder.findRouteTable(co.Rs.Vpc, CloudLabPrivateRouteTable)
 	co.Rs.InternetGateway = co.finder.findInternetGateway(CloudLabInternetGateway)
-	co.Rs.SecurityGroups = co.finder.findSecurityGroupsByName(CloudLabSecutiyGroup)
+	co.Rs.SecurityGroups = co.finder.findSecurityGroups(CloudLabSecutiyGroup)
 	co.Rs.Instances = co.finder.findInstances()
 	co.Rs.KeyPair = co.finder.findKeyPair()
 }
 
 func (co *AWSCloudOperator) Audit() {
-	FatalMissing(co.Rs.Vpc == nil, "vpc")
-	FatalMissing(co.Rs.PublicSubnet == nil, "public subnet")
-	FatalMissing(co.Rs.PrivateSubnet == nil, "private subnet")
-	FatalMissing(co.Rs.PublicRouteTable == nil, "main route table")
-	FatalMissing(co.Rs.PrivateRouteTable == nil, "private route table")
-	FatalMissing(co.Rs.InternetGateway == nil, "internet gateway")
-	FatalMissing(co.Rs.SecurityGroups == nil, "security groups")
-	FatalMissing(co.Rs.KeyPair == nil, "key pair")
-}
-
-func FatalMissing(missing bool, resourceType string) {
-	if missing {
-		fmt.Printf("%s is missing from cloudlab resources\n", resourceType)
+	bools := []bool{
+		IsMissing(co.Rs.Vpc == nil, "vpc", true),
+		IsMissing(co.Rs.PublicSubnet == nil, "public subnet", true),
+		IsMissing(co.Rs.PrivateSubnet == nil, "private subnet", true),
+		IsMissing(co.Rs.PublicRouteTable == nil, "main route table", true),
+		IsMissing(co.Rs.PrivateRouteTable == nil, "private route table", true),
+		IsMissing(co.Rs.InternetGateway == nil, "internet gateway", true),
+		IsMissing(co.Rs.SecurityGroups == nil, "security groups", true),
+		IsMissing(co.Rs.KeyPair == nil, "key pair", true),
+	}
+	if util.AtLeastOneTrue(bools) {
 		fmt.Println("run 'lab init' to create missing cloudlab resources")
 		os.Exit(1)
 	}
+}
+
+func IsMissing(missing bool, resourceType string, print bool) bool {
+	if missing && print {
+		fmt.Printf("%s is missing from cloudlab resources\n", resourceType)
+	}
+	return missing
 }
 
 // ######################################################################################
@@ -114,7 +122,7 @@ func (co *AWSCloudOperator) InitializeCloudLabResources() {
 	securityGroup22 := co.finder.findSecurityGroupByName(co.Rs.SecurityGroups, "22")
 	if securityGroup22 == nil {
 		CreateSecurityGroup(co.Rs.Vpc, "22", 22)
-		co.Rs.SecurityGroups = co.finder.findSecurityGroupsByName(CloudLabSecutiyGroup)
+		co.Rs.SecurityGroups = co.finder.findSecurityGroups(CloudLabSecutiyGroup)
 	}
 }
 

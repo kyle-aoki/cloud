@@ -1,21 +1,39 @@
 package args
 
 import (
-	"flag"
 	"fmt"
+	"os"
 	"strings"
 )
 
 var args []string
-var Verbose bool
+var flags []CharFlag
 
-func Prepare() {
-	v := flag.Bool("v", false, "verbose")
-	
-	flag.Parse()
-	fmt.Println("v", *v)
-	args = flag.Args()
-	fmt.Println(args)
+func Set() {
+	rawArgs := os.Args[1:]
+	cfs, argIndicies := ParseFlags(rawArgs)
+	for _, index := range argIndicies {
+		args = append(args, rawArgs[index])
+	}
+	flags = cfs
+}
+
+func BoolFlag(name string) bool {
+	for _, flag := range flags {
+		if flag.Name == name {
+			return true
+		}
+	}
+	return false
+}
+
+func StrFlag(name string, defaultValue string) string {
+	for _, flag := range flags {
+		if flag.Name == name {
+			return flag.Value
+		}
+	}
+	return defaultValue
 }
 
 func Poll() string {

@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-const InitGuideTemplate = `placed ssh key at <config-dir>
+const InitGuideTemplate = `placed ssh key at <config-dir>/key.pem
 
 create an instance:
 
@@ -15,7 +15,8 @@ lab run
 
 ssh into an instance:
 
-ssh -i <config-dir> ubuntu@<public-ip>`
+ssh -i <config-dir>/key.pem ubuntu@<public-ip>
+`
 
 func InitializeCloudLabResources() {
 	co := resource.NewCloudOperatorNoAudit()
