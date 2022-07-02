@@ -60,6 +60,25 @@ func AssignSecurityGroup(
 	util.MustExec(err)
 }
 
+func RemoveSecurityGroup(
+	instance *ec2.Instance,
+	port string,
+) {
+	var newSecurityGroups []*string
+	for _, groupIdentifier := range instance.SecurityGroups {
+		if groupIdentifier.GroupName != nil && *groupIdentifier.GroupName == port {
+			continue
+		}
+		newSecurityGroups = append(newSecurityGroups, groupIdentifier.GroupId)
+	}
+
+	_, err := amazon.EC2().ModifyInstanceAttribute(&ec2.ModifyInstanceAttributeInput{
+		InstanceId: instance.InstanceId,
+		Groups:     newSecurityGroups,
+	})
+	util.MustExec(err)
+}
+
 func (co *AWSCloudOperator) NextInstanceName() string {
 	var max int64
 	for _, inst := range co.Rs.Instances {

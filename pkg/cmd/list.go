@@ -4,6 +4,8 @@ import (
 	"cloudlab/pkg/resource"
 	"cloudlab/pkg/util"
 	"fmt"
+	"sort"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
@@ -30,18 +32,16 @@ func ListInstances() {
 	util.Flush()
 }
 
-func Ports(inst *ec2.Instance) (ports string) {
-	for i, sg := range inst.SecurityGroups {
+func Ports(inst *ec2.Instance) (portsString string) {
+	var ports []string
+	for _, sg := range inst.SecurityGroups {
 		if sg.GroupName == nil {
 			panic("unknown security group found in instance")
 		}
-		if i == len(inst.SecurityGroups)-1 {
-			ports += *sg.GroupName
-			break
-		}
-		ports += *sg.GroupName + ", "
+		ports = append(ports, *sg.GroupName)
 	}
-	return ports
+	sort.Strings(ports)
+	return strings.Join(ports, ", ")
 }
 
 func State(inst *ec2.Instance) string {

@@ -43,6 +43,24 @@ func (a *ResourceFinder) findInstances() (nodes []*ec2.Instance) {
 	return nodes
 }
 
+func (a *ResourceFinder) FindInstanceByName(name string) (instance *ec2.Instance) {
+	err := amazon.EC2().DescribeInstancesPages(&ec2.DescribeInstancesInput{},
+		func(dio *ec2.DescribeInstancesOutput, b bool) bool {
+			for _, res := range dio.Reservations {
+				for _, inst := range res.Instances {
+					if TagEquals(inst.Tags, IsCloudLabInstanceTagKey, IsCloudLabInstanceTagVal) {
+						instance = inst
+						return false
+					}
+				}
+			}
+			return true
+		},
+	)
+	util.MustExec(err)
+	return instance
+}
+
 func (a *ResourceFinder) findNotTerminatedInstances(nodes []*ec2.Instance) (notTerminatedNodes []*ec2.Instance) {
 	for _, node := range nodes {
 		if node.State != nil && node.State.Name != nil && *node.State.Name != "terminated" {
@@ -135,7 +153,7 @@ func (a *ResourceFinder) findMainRouteTable(vpc *ec2.Vpc) (routeTableToFind *ec2
 	return routeTableToFind
 }
 
-func (a *ResourceFinder) findSecurityGroups(name string) (sgs []*ec2.SecurityGroup) {
+func (a *ResourceFinder) FindSecurityGroups() (sgs []*ec2.SecurityGroup) {
 	err := amazon.EC2().DescribeSecurityGroupsPages(
 		&ec2.DescribeSecurityGroupsInput{},
 		func(dsgo *ec2.DescribeSecurityGroupsOutput, b bool) bool {

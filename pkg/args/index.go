@@ -1,36 +1,48 @@
 package args
 
 import (
-	"fmt"
+	"io"
+	"log"
 	"os"
-	"strings"
 )
 
 var args []string
-var flags []CharFlag
+var flags []Flag
 
-func Set() {
+func Prepare() {
 	rawArgs := os.Args[1:]
-	cfs, argIndicies := ParseFlags(rawArgs)
+	flgs, argIndicies := ExtractFlagsFromArgs(rawArgs)
 	for _, index := range argIndicies {
 		args = append(args, rawArgs[index])
 	}
-	flags = cfs
+	flags = flgs
 }
 
-func BoolFlag(name string) bool {
+func InitLogging() {
+	if BoolFlag("v", "verbose") {
+		log.SetOutput(os.Stdout)
+	} else {
+		log.SetOutput(io.Discard)
+	}
+}
+
+func BoolFlag(names ...string) bool {
 	for _, flag := range flags {
-		if flag.Name == name {
-			return true
+		for _, name := range names {
+			if flag.Name == name {
+				return true
+			}
 		}
 	}
 	return false
 }
 
-func StrFlag(name string, defaultValue string) string {
+func StrFlag(defaultValue string, names ...string) string {
 	for _, flag := range flags {
-		if flag.Name == name {
-			return flag.Value
+		for _, name := range names {
+			if flag.Name == name {
+				return flag.Value
+			}
 		}
 	}
 	return defaultValue
@@ -39,19 +51,6 @@ func StrFlag(name string, defaultValue string) string {
 func Poll() string {
 	if len(args) == 0 {
 		panic("not enough arguments")
-	}
-	next := args[0]
-	args = args[1:]
-	return next
-}
-
-func PollNonArgumentOrEmpty() string {
-	if len(args) == 0 {
-		return ""
-	}
-	if strings.Contains(args[0], "-") {
-		fmt.Println(args)
-		return ""
 	}
 	next := args[0]
 	args = args[1:]

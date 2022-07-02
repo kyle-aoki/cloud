@@ -4,37 +4,43 @@ import (
 	"strings"
 )
 
-type CharFlag struct {
+type Flag struct {
 	Name  string
 	Value string
 }
 
-func ParseFlags(fullArgs []string) ([]CharFlag, []int) {
-	var flags []CharFlag
-	var args []int
+func ExtractFlagsFromArgs(fullArgs []string) (flags []Flag, argIndicies []int) {
 	for i := 0; i < len(fullArgs); i++ {
-		if isFlag(fullArgs[i]) {
-			if isSingleDashFlag(fullArgs[i]) {
-				if i == len(fullArgs)-1 {
-					cf := CharFlag{Name: fullArgs[i][1:]}
-					flags = append(flags, cf)
-					break
-				} else {
-					cf := CharFlag{Name: fullArgs[i][1:], Value: fullArgs[i+1]}
-					flags = append(flags, cf)
-					i++
-					continue
-				}
-			} else {
-				cf := splitDoubleDashFlag(fullArgs[i])
-				flags = append(flags, cf)
-				continue
-			}
-		} else {
-			args = append(args, i)
+		a := fullArgs[i]
+		if !isFlag(a) {
+			argIndicies = append(argIndicies, i)
+			continue
 		}
+
+		f := Flag{}
+		singleDash := hasOneDash(a)
+		lastArg := isLastArg(i, fullArgs)
+
+		switch {
+		case singleDash && lastArg:
+			f.Name = fullArgs[i][1:]
+		case singleDash && !lastArg:
+			f.Name = fullArgs[i][1:]
+			f.Value = fullArgs[i+1]
+			i++
+		case !singleDash:
+			f.Name, f.Value = splitDoubleDashFlag(fullArgs[i])
+		default:
+			panic("something went wrong parsing flags")
+		}
+
+		flags = append(flags, f)
 	}
-	return flags, args
+	return flags, argIndicies
+}
+
+func isLastArg(currentArgIndex int, fullArgs []string) bool {
+	return currentArgIndex == len(fullArgs)-1
 }
 
 func isFlag(s string) bool {
@@ -47,7 +53,7 @@ func isFlag(s string) bool {
 	return false
 }
 
-func isSingleDashFlag(s string) bool {
+func hasOneDash(s string) bool {
 	if len(s) >= 2 {
 		if s[0] == '-' && s[1] != '-' {
 			return true
@@ -56,10 +62,10 @@ func isSingleDashFlag(s string) bool {
 	return false
 }
 
-func splitDoubleDashFlag(s string) CharFlag {
+func splitDoubleDashFlag(s string) (string, string) {
 	parts := strings.Split(s, "=")
 	if len(parts) < 2 {
 		panic("invalid flag: " + s)
 	}
-	return CharFlag{Name: parts[0][2:], Value: parts[1]}
+	return parts[0][2:], parts[1]
 }

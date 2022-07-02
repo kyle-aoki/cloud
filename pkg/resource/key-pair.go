@@ -46,7 +46,7 @@ func (co *AWSCloudOperator) CreateKeyPair() {
 		util.CreateEmptyFile(keyFilePath())
 	}
 
-	keyMaterial := co.creator.ExecuteCreateKeyPairRequest(CloudLabKeyPair)
+	keyMaterial := co.Creator.ExecuteCreateKeyPairRequest(CloudLabKeyPair)
 
 	setFileContentWith400(keyFilePath(), *keyMaterial)
 	os.Chmod(keyFilePath(), 400)

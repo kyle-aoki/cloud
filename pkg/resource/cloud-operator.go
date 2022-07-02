@@ -12,16 +12,16 @@ import (
 // ######################################################################################
 
 type AWSCloudOperator struct {
-	creator *ResourceCreator
-	finder  *ResourceFinder
-	deleter *ResourceDeleter
+	Creator *ResourceCreator
+	Finder  *ResourceFinder
+	Deleter *ResourceDeleter
 	Rs      *AWSResources
 }
 
 func new() *AWSCloudOperator {
 	return &AWSCloudOperator{
-		creator: &ResourceCreator{},
-		finder:  &ResourceFinder{},
+		Creator: &ResourceCreator{},
+		Finder:  &ResourceFinder{},
 		Rs:      &AWSResources{},
 	}
 }
@@ -46,18 +46,18 @@ func NewCloudOperator() *AWSCloudOperator {
 
 func (co *AWSCloudOperator) FindAll() {
 	log.Println("finding cloudlab resources...")
-	co.Rs.Vpc = co.finder.findVpc(CloudLabVpc)
+	co.Rs.Vpc = co.Finder.findVpc(CloudLabVpc)
 	if co.Rs.Vpc == nil {
 		return
 	}
-	co.Rs.PublicSubnet = co.finder.findSubnet(CloudLabPublicSubnet)
-	co.Rs.PrivateSubnet = co.finder.findSubnet(CloudLabPrivateSubnet)
-	co.Rs.PublicRouteTable = co.finder.findMainRouteTable(co.Rs.Vpc)
-	co.Rs.PrivateRouteTable = co.finder.findRouteTable(co.Rs.Vpc, CloudLabPrivateRouteTable)
-	co.Rs.InternetGateway = co.finder.findInternetGateway(CloudLabInternetGateway)
-	co.Rs.SecurityGroups = co.finder.findSecurityGroups(CloudLabSecutiyGroup)
-	co.Rs.Instances = co.finder.findInstances()
-	co.Rs.KeyPair = co.finder.findKeyPair()
+	co.Rs.PublicSubnet = co.Finder.findSubnet(CloudLabPublicSubnet)
+	co.Rs.PrivateSubnet = co.Finder.findSubnet(CloudLabPrivateSubnet)
+	co.Rs.PublicRouteTable = co.Finder.findMainRouteTable(co.Rs.Vpc)
+	co.Rs.PrivateRouteTable = co.Finder.findRouteTable(co.Rs.Vpc, CloudLabPrivateRouteTable)
+	co.Rs.InternetGateway = co.Finder.findInternetGateway(CloudLabInternetGateway)
+	co.Rs.SecurityGroups = co.Finder.FindSecurityGroups()
+	co.Rs.Instances = co.Finder.findInstances()
+	co.Rs.KeyPair = co.Finder.findKeyPair()
 }
 
 func (co *AWSCloudOperator) Audit() {
@@ -91,24 +91,24 @@ func IsMissing(missing bool, resourceType string, print bool) bool {
 func (co *AWSCloudOperator) InitializeCloudLabResources() {
 	if co.Rs.KeyPair == nil {
 		co.CreateKeyPair()
-		co.Rs.KeyPair = co.finder.findKeyPair()
+		co.Rs.KeyPair = co.Finder.findKeyPair()
 	}
 	if co.Rs.Vpc == nil {
-		co.Rs.Vpc = co.creator.createVpc(DefaultVpcCidrBlock, CloudLabVpc)
-		co.Rs.PublicRouteTable = co.finder.findMainRouteTable(co.Rs.Vpc)
+		co.Rs.Vpc = co.Creator.createVpc(DefaultVpcCidrBlock, CloudLabVpc)
+		co.Rs.PublicRouteTable = co.Finder.findMainRouteTable(co.Rs.Vpc)
 	}
 	if co.Rs.PublicSubnet == nil {
-		co.Rs.PublicSubnet = co.creator.createSubnet(co.Rs.Vpc, CloudLabPublicSubnet, PublicSubnetCidrBlock)
+		co.Rs.PublicSubnet = co.Creator.createSubnet(co.Rs.Vpc, CloudLabPublicSubnet, PublicSubnetCidrBlock)
 		co.resolvePublicSubnetAttributes()
 	}
 	if co.Rs.PrivateSubnet == nil {
-		co.Rs.PrivateSubnet = co.creator.createSubnet(co.Rs.Vpc, CloudLabPrivateSubnet, PrivateSubnetCidrBlock)
+		co.Rs.PrivateSubnet = co.Creator.createSubnet(co.Rs.Vpc, CloudLabPrivateSubnet, PrivateSubnetCidrBlock)
 	}
 	if co.Rs.PrivateRouteTable == nil {
-		co.Rs.PrivateRouteTable = co.creator.createRouteTable(co.Rs.Vpc, CloudLabPrivateRouteTable)
+		co.Rs.PrivateRouteTable = co.Creator.createRouteTable(co.Rs.Vpc, CloudLabPrivateRouteTable)
 	}
 	if co.Rs.InternetGateway == nil {
-		co.Rs.InternetGateway = co.creator.createInternetGateway(CloudLabInternetGateway)
+		co.Rs.InternetGateway = co.Creator.createInternetGateway(CloudLabInternetGateway)
 	}
 	if !InternetGatewayIsAttachedToVpc(co.Rs.InternetGateway, co.Rs.Vpc) {
 		attachInternetGatewayToVpc(co.Rs.InternetGateway, co.Rs.Vpc)
@@ -119,10 +119,10 @@ func (co *AWSCloudOperator) InitializeCloudLabResources() {
 	if !subnetAssociationExistsOnRouteTable(co.Rs.PublicRouteTable, co.Rs.PublicSubnet) {
 		associateSubnetWithRouteTable(co.Rs.PublicRouteTable, co.Rs.PublicSubnet)
 	}
-	securityGroup22 := co.finder.findSecurityGroupByName(co.Rs.SecurityGroups, "22")
+	securityGroup22 := co.Finder.findSecurityGroupByName(co.Rs.SecurityGroups, "22")
 	if securityGroup22 == nil {
-		CreateSecurityGroup(co.Rs.Vpc, "22", 22)
-		co.Rs.SecurityGroups = co.finder.findSecurityGroups(CloudLabSecutiyGroup)
+		co.Creator.CreateSecurityGroup(co.Rs.Vpc, "22", 22)
+		co.Rs.SecurityGroups = co.Finder.FindSecurityGroups()
 	}
 }
 
@@ -131,37 +131,37 @@ func (co *AWSCloudOperator) InitializeCloudLabResources() {
 // ######################################################################################
 
 func (co *AWSCloudOperator) DestroyCloudLabResources() {
-	if len(co.finder.findNotTerminatedInstances(co.Rs.Instances)) > 0 {
+	if len(co.Finder.findNotTerminatedInstances(co.Rs.Instances)) > 0 {
 		panic("run 'lab delete all' and try again")
 	}
 
 	if len(co.Rs.Instances) > 0 {
-		co.deleter.deleteInstances(co.Rs.Instances)
+		co.Deleter.deleteInstances(co.Rs.Instances)
 	}
 	if co.Rs.InternetGateway != nil {
 		detachInternetGatewayFromVpc(co.Rs.InternetGateway, co.Rs.Vpc)
-		co.deleter.deleteInternetGateway(co.Rs.InternetGateway)
+		co.Deleter.deleteInternetGateway(co.Rs.InternetGateway)
 	}
 
 	if co.Rs.PrivateRouteTable != nil {
 		disassociateSubnetsFromRouteTable(co.Rs.PrivateRouteTable)
-		co.deleter.deleteRouteTable(co.Rs.PrivateRouteTable)
+		co.Deleter.deleteRouteTable(co.Rs.PrivateRouteTable)
 	}
 
 	if co.Rs.PublicSubnet != nil {
-		co.deleter.deleteSubnet(co.Rs.PublicSubnet)
+		co.Deleter.deleteSubnet(co.Rs.PublicSubnet)
 	}
 	if co.Rs.PrivateSubnet != nil {
-		co.deleter.deleteSubnet(co.Rs.PrivateSubnet)
+		co.Deleter.deleteSubnet(co.Rs.PrivateSubnet)
 	}
 
-	co.deleter.deleteSecurityGroups(co.Rs.SecurityGroups)
+	co.Deleter.deleteSecurityGroups(co.Rs.SecurityGroups)
 
 	if co.Rs.Vpc != nil {
-		co.deleter.deleteVpc(co.Rs.Vpc)
+		co.Deleter.deleteVpc(co.Rs.Vpc)
 	}
 
 	if co.Rs.KeyPair != nil {
-		co.deleter.deleteKeyPair(co.Rs.KeyPair)
+		co.Deleter.deleteKeyPair(co.Rs.KeyPair)
 	}
 }

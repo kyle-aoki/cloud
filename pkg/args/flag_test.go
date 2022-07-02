@@ -6,10 +6,10 @@ import (
 )
 
 func TestParseFlags(t *testing.T) {
-	s := "subcommand -v --script=lmao.txt do something -p 3306 -d"
+	s := "command -v --script=lmao.txt do something -p 3306 -d"
 	input := strings.Split(s, " ")
 	t.Log(input)
-	flags, args := ParseFlags(input)
+	flags, args := ExtractFlagsFromArgs(input)
 	t.Log(flags)
 	t.Log(args)
 	if flags[0].Name != "v" {

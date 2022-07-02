@@ -14,12 +14,12 @@ func CreateInstance() {
 
 	defaultName := co.NextInstanceName()
 
-	name := args.StrFlag("name", defaultName)
-	instType := args.StrFlag("type", "t2.nano")
-	ami := args.StrFlag("ami", amazon.UbuntuAmi())
-	gigs := args.StrFlag("gigs", "8")
-	scriptPath := args.StrFlag("script", "")
-	isPrivateSubnet := args.BoolFlag("private")
+	ami := args.StrFlag(amazon.UbuntuAmi(), "ami", "a")
+	instType := args.StrFlag("t2.nano", "type", "t")
+	isPrivateSubnet := args.BoolFlag("private", "p")
+	name := args.StrFlag(defaultName, "name", "n")
+	scriptPath := args.StrFlag("", "script", "s")
+	gigs := args.StrFlag("8", "gigs", "g")
 
 	startUpScript := ReadScriptFile(scriptPath)
 
