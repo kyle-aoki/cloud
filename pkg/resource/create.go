@@ -56,7 +56,6 @@ func (c *ResourceCreator) createRouteTable(vpc *ec2.Vpc, name string) *ec2.Route
 }
 
 func (c *ResourceCreator) ExecuteCreateKeyPairRequest(name string) *string {
-	log.Println("creating string")
 	log.Println("making create key pair request")
 	ckpo, err := amazon.EC2().CreateKeyPair(&ec2.CreateKeyPairInput{
 		KeyName:           util.StrPtr(name),

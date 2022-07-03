@@ -10,57 +10,35 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-// ##############################################################################
-// Key File #####################################################################
-// ##############################################################################
-
 const keyFileName = "key.pem"
 
 func KeyFilePath() string {
 	return fmt.Sprintf("%s/%s", util.ConfigDir(), keyFileName)
 }
 
-// ##############################################################################
-// Main Logic ###################################################################
-// ##############################################################################
-
 func (co *AWSCloudOperator) CreateKeyPair() {
-	log.Print("starting key pair creation process")
+	log.Println("starting key pair creation process")
 
-	if util.ObjectExists(KeyFilePath()) {
-		util.DeleteFile(KeyFilePath())
-	}
-	if !util.ObjectExists(util.ConfigDir()) {
-		util.CreateDir(util.ConfigDir())
-	}
-	if !writable(util.ConfigDir()) {
+	log.Println("attempting to remove everything in config dir")
+	err := os.RemoveAll(util.ConfigDir())
+	util.MustExec(err)
+
+	log.Println("checking if home dir is writable: ", util.HomeDir())
+	if !writable(util.HomeDir()) {
 		fatalInsufficientPermissions()
 	}
-	if !util.ObjectExists(util.ConfigDir()) {
-		util.CreateDir(util.ConfigDir())
-	}
-	if !util.ObjectExists(KeyFilePath()) {
-		util.CreateEmptyFile(KeyFilePath())
-	}
+
+	log.Println("creating config dir: ", util.ConfigDir())
+	util.CreateDir(util.ConfigDir())
 
 	keyMaterial := co.Creator.ExecuteCreateKeyPairRequest(CloudLabKeyPair)
 
-	err := ioutil.WriteFile(KeyFilePath(), []byte(*keyMaterial), 0400)
+	log.Println("writing key material to key file at", KeyFilePath())
+	err = ioutil.WriteFile(KeyFilePath(), []byte(*keyMaterial), 0400)
 	util.MustExec(err)
+
+	log.Println("changing key file permissions to 400")
 	err = os.Chmod(KeyFilePath(), 0400)
-	util.MustExec(err)
-}
-
-// ##############################################################################
-// Key Writing Utils ############################################################
-// ##############################################################################
-
-func setFileContentWith400(path, text string) {
-	log.Println("setting file content")
-	f, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY, 0400)
-	util.MustExec(err)
-	defer f.Close()
-	_, err = f.Write([]byte(text))
 	util.MustExec(err)
 }
 
@@ -69,10 +47,6 @@ func writable(path string) bool {
 	log.Println(path, "isWritable", isWritable)
 	return isWritable
 }
-
-// ##############################################################################
-// Error Message ################################################################
-// ##############################################################################
 
 func fatalInsufficientPermissions() {
 	fmt.Println(fmt.Sprintf("cannot write key file to %s", KeyFilePath()))

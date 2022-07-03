@@ -8,14 +8,8 @@ import (
 )
 
 const InitGuideTemplate = `placed ssh key at <config-dir>/key.pem
-
-create an instance:
-
-lab run
-
-ssh into an instance:
-
-ssh -i <config-dir>/key.pem ubuntu@<public-ip>
+create an instance: lab run
+ssh into an instance: ssh -i <config-dir>/key.pem ubuntu@<public-ip>
 `
 
 func InitializeCloudLabResources() {

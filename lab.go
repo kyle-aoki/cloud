@@ -8,18 +8,6 @@ import (
 	"fmt"
 )
 
-var Syntax = map[string]func(){
-	"version":    cmd.Version,
-	"info":       cmd.Info,
-	"init":       cmd.InitializeCloudLabResources,
-	"destroy":    cmd.DestroyCloudLabResources,
-	"list":       cmd.ListInstances,
-	"run":        cmd.CreateInstance,
-	"delete":     cmd.DeleteInstances,
-	"open-port":  cmd.OpenPort,
-	"close-port": cmd.ClosePort,
-}
-
 func main() {
 	defer util.MainRecover()
 	args.Init()
@@ -30,6 +18,18 @@ func main() {
 	} else {
 		fmt.Print(HelpText)
 	}
+}
+
+var Syntax = map[string]func(){
+	"version":    cmd.Version,
+	"info":       cmd.Info,
+	"init":       cmd.InitializeCloudLabResources,
+	"destroy":    cmd.DestroyCloudLabResources,
+	"list":       cmd.ListInstances,
+	"run":        cmd.CreateInstance,
+	"delete":     cmd.DeleteInstances,
+	"open-port":  cmd.OpenPort,
+	"close-port": cmd.ClosePort,
 }
 
 const HelpText = `command structure:
