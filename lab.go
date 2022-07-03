@@ -10,8 +10,7 @@ import (
 
 func main() {
 	defer util.MainRecover()
-	args.Prepare()
-	args.InitLogging()
+	args.Init()
 	amazon.InitEC2Client()
 
 	if command, ok := Syntax[args.PollOrEmpty()]; ok {

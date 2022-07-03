@@ -7,7 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-func InternetGatewayIsAttachedToVpc(ig *ec2.InternetGateway, vpc *ec2.Vpc) bool {
+func internetGatewayIsAttachedToVpc(ig *ec2.InternetGateway, vpc *ec2.Vpc) bool {
 	for _, attachment := range ig.Attachments {
 		if attachment.VpcId != nil && *attachment.VpcId == *vpc.VpcId {
 			return true

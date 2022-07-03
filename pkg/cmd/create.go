@@ -12,36 +12,29 @@ import (
 func CreateInstance() {
 	co := resource.NewCloudOperator()
 
-	defaultName := co.NextInstanceName()
+	defaultName := args.IsEmpty(*args.Flags.Name, co.NextInstanceName())
 
-	ami := args.StrFlag(amazon.UbuntuAmi(), "ami", "a")
-	instType := args.StrFlag("t2.nano", "type", "t")
-	isPrivateSubnet := args.BoolFlag("private", "p")
-	name := args.StrFlag(defaultName, "name", "n")
-	scriptPath := args.StrFlag("", "script", "s")
-	gigs := args.StrFlag("8", "gigs", "g")
-
-	startUpScript := ReadScriptFile(scriptPath)
+	startUpScript := ReadScriptFile(*args.Flags.Script)
 
 	cii := &resource.CreateInstanceInput{
 		TagSpecifications: resource.CreateTagSpecs("instance", map[string]string{
-			"Name":                            name,
+			"Name":                            defaultName,
 			resource.IsCloudLabInstanceTagKey: resource.IsCloudLabInstanceTagVal,
 		}),
-		SubnetId:         co.UsePrivateSubnet(isPrivateSubnet),
-		InstanceType:     instType,
-		Ami:              ami,
+		SubnetId:         co.UsePrivateSubnet(*args.Flags.Private || *args.Flags.P),
+		InstanceType:     *args.Flags.InstType,
+		Ami:              amazon.UbuntuAmi(),
 		DeviceName:       "/dev/sda1",
 		MinCount:         1,
 		MaxCount:         1,
-		Size:             util.StringToInt(gigs),
+		Size:             util.StringToInt(*args.Flags.Gigs),
 		KeyName:          resource.CloudLabKeyPair,
 		SecurityGroupIds: []*string{co.GetSecurityGroupIdByNameOrPanic("22").GroupId},
 		UserData:         startUpScript,
 	}
 
 	_ = resource.ExecuteCreateInstanceRequest(cii)
-	fmt.Println(name)
+	fmt.Println(defaultName)
 }
 
 func ReadScriptFile(path string) string {

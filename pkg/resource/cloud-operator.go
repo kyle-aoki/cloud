@@ -110,7 +110,7 @@ func (co *AWSCloudOperator) InitializeCloudLabResources() {
 	if co.Rs.InternetGateway == nil {
 		co.Rs.InternetGateway = co.Creator.createInternetGateway(CloudLabInternetGateway)
 	}
-	if !InternetGatewayIsAttachedToVpc(co.Rs.InternetGateway, co.Rs.Vpc) {
+	if !internetGatewayIsAttachedToVpc(co.Rs.InternetGateway, co.Rs.Vpc) {
 		attachInternetGatewayToVpc(co.Rs.InternetGateway, co.Rs.Vpc)
 	}
 	if !internetGatewayRouteExistsOnRouteTable(co.Rs.PublicRouteTable, co.Rs.InternetGateway) {

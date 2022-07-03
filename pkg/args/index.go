@@ -1,51 +1,54 @@
 package args
 
 import (
+	"flag"
 	"io"
 	"log"
 	"os"
 )
 
 var args []string
-var flags []Flag
 
-func Prepare() {
-	rawArgs := os.Args[1:]
-	flgs, argIndicies := ExtractFlagsFromArgs(rawArgs)
-	for _, index := range argIndicies {
-		args = append(args, rawArgs[index])
-	}
-	flags = flgs
+type IFlags struct {
+	Verbose  *bool
+	V        *bool
+	Private  *bool
+	P        *bool
+	Ami      *string
+	InstType *string
+	Name     *string
+	Script   *string
+	Gigs     *string
 }
 
-func InitLogging() {
-	if BoolFlag("v", "verbose") {
+var Flags IFlags
+
+func Init() {
+	Flags = IFlags{
+		Verbose:  flag.Bool("verbose", false, "verbose logging"),
+		V:        flag.Bool("v", false, "verbose logging"),
+		Private:  flag.Bool("private", false, "create a private instance"),
+		P:        flag.Bool("p", false, "create a private instance"),
+		Name:     flag.String("name", "", "name of instance"),
+		InstType: flag.String("type", "t2.nano", "specifiy an instance type (e.g. t2.nano)"),
+		Gigs:     flag.String("gigs", "8", "number of gigabytes of storage"),
+		Script:   flag.String("script", "", "path to bash script file to run on EC2 startup"),
+	}
+	flag.Parse()
+
+	if *Flags.V || *Flags.Verbose {
 		log.SetOutput(os.Stdout)
 	} else {
 		log.SetOutput(io.Discard)
 	}
+	args = flag.Args()
 }
 
-func BoolFlag(names ...string) bool {
-	for _, flag := range flags {
-		for _, name := range names {
-			if flag.Name == name {
-				return true
-			}
-		}
+func IsEmpty(s string, defaulte string) string {
+	if s == "" {
+		return defaulte
 	}
-	return false
-}
-
-func StrFlag(defaultValue string, names ...string) string {
-	for _, flag := range flags {
-		for _, name := range names {
-			if flag.Name == name {
-				return flag.Value
-			}
-		}
-	}
-	return defaultValue
+	return s
 }
 
 func Poll() string {
