@@ -8,18 +8,6 @@ import (
 	"fmt"
 )
 
-func main() {
-	defer util.MainRecover()
-	args.Init()
-	amazon.InitEC2Client()
-
-	if command, ok := Syntax[args.PollOrEmpty()]; ok {
-		command()
-	} else {
-		fmt.Println("help text")
-	}
-}
-
 var Syntax = map[string]func(){
 	"version":    cmd.Version,
 	"info":       cmd.Info,
@@ -30,4 +18,16 @@ var Syntax = map[string]func(){
 	"delete":     cmd.DeleteInstances,
 	"open-port":  cmd.OpenPort,
 	"close-port": cmd.ClosePort,
+}
+
+func main() {
+	defer util.MainRecover()
+	args.Init()
+	amazon.InitEC2Client()
+
+	if command, found := Syntax[args.PollOrEmpty()]; found {
+		command()
+	} else {
+		fmt.Println("help text")
+	}
 }
