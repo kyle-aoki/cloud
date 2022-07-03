@@ -2,14 +2,13 @@ package cmd
 
 import (
 	"cloudlab/pkg/resource"
+	"cloudlab/pkg/util"
 	"fmt"
 )
 
 func DestroyCloudLabResources() {
+	util.Log("destroying cloudlab infrastructure...")
 	co := resource.NewCloudOperatorNoAudit()
-	if len(co.Rs.Instances) != 0 {
-		panic("cloudlab instances still exist\nplease delete them before running 'lab destroy'")
-	}
 	co.DestroyCloudLabResources()
-	fmt.Println("deleted all cloudlab resources")
+	fmt.Println("deleted all cloudlab infrastructure")
 }

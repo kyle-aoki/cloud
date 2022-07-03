@@ -35,7 +35,7 @@ func OpenPort() {
 	}
 
 	instance := co.Finder.FindInstanceByName(instanceName)
-	
+
 	for _, sg := range instance.SecurityGroups {
 		if sg.GroupName != nil && *sg.GroupName == port {
 			fmt.Printf("port %s already open on instance %s\n", port, instanceName)
@@ -43,7 +43,7 @@ func OpenPort() {
 		}
 	}
 
-	securityGroup := co.GetSecurityGroupIdByNameOrPanic(port)
+	securityGroup := co.SecurityGroupOrPanic(port)
 
 	resource.AssignSecurityGroup(instance, securityGroup)
 	fmt.Println(fmt.Sprintf("opened port %s on instance %s", port, instanceName))

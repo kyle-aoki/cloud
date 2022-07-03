@@ -28,6 +28,32 @@ func main() {
 	if command, found := Syntax[args.PollOrEmpty()]; found {
 		command()
 	} else {
-		fmt.Println("help text")
+		fmt.Print(HelpText)
 	}
 }
+
+const HelpText = `command structure:
+  lab [...flags] <command> [...arguments]
+general flags:
+  -v, -verbose    verbose logging
+commands:
+  version          print version
+  info             print cloudlab resource info
+
+  init             create base cloudlab resources (vpc, subnets, etc.)
+                   (base resources cost nothing)
+  destroy          destroy base cloudlab resrouces
+                   (must terminate all instances first)
+
+  list             list active instances
+  run              run a new instance
+                       -name             instance name
+                       -private, -p      create instance in private subnet
+                       -type,            instance type (t2.nano, t2.micro, etc.)
+                       -gigs             gigabytes of storage
+                       -script           path to start up script file
+
+  delete           <instance-name>           terminate an instance
+  open-port        <port> <instance-name>    open a port on an instance (all protocols)
+  close-port       <port> <instance-name>    close a port on an instance
+`

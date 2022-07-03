@@ -3,6 +3,7 @@ package resource
 import (
 	"cloudlab/pkg/util"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 
@@ -15,7 +16,7 @@ import (
 
 const keyFileName = "key.pem"
 
-func keyFilePath() string {
+func KeyFilePath() string {
 	return fmt.Sprintf("%s/%s", util.ConfigDir(), keyFileName)
 }
 
@@ -26,8 +27,8 @@ func keyFilePath() string {
 func (co *AWSCloudOperator) CreateKeyPair() {
 	log.Print("starting key pair creation process")
 
-	if util.ObjectExists(keyFilePath()) {
-		util.DeleteFile(keyFilePath())
+	if util.ObjectExists(KeyFilePath()) {
+		util.DeleteFile(KeyFilePath())
 	}
 	if !util.ObjectExists(util.ConfigDir()) {
 		util.CreateDir(util.ConfigDir())
@@ -38,14 +39,15 @@ func (co *AWSCloudOperator) CreateKeyPair() {
 	if !util.ObjectExists(util.ConfigDir()) {
 		util.CreateDir(util.ConfigDir())
 	}
-	if !util.ObjectExists(keyFilePath()) {
-		util.CreateEmptyFile(keyFilePath())
+	if !util.ObjectExists(KeyFilePath()) {
+		util.CreateEmptyFile(KeyFilePath())
 	}
 
 	keyMaterial := co.Creator.ExecuteCreateKeyPairRequest(CloudLabKeyPair)
 
-	setFileContentWith400(keyFilePath(), *keyMaterial)
-	err := os.Chmod(keyFilePath(), 400)
+	err := ioutil.WriteFile(KeyFilePath(), []byte(*keyMaterial), 0400)
+	util.MustExec(err)
+	err = os.Chmod(KeyFilePath(), 0400)
 	util.MustExec(err)
 }
 
@@ -55,7 +57,7 @@ func (co *AWSCloudOperator) CreateKeyPair() {
 
 func setFileContentWith400(path, text string) {
 	log.Println("setting file content")
-	f, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY, 400)
+	f, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY, 0400)
 	util.MustExec(err)
 	defer f.Close()
 	_, err = f.Write([]byte(text))
@@ -73,7 +75,7 @@ func writable(path string) bool {
 // ##############################################################################
 
 func fatalInsufficientPermissions() {
-	fmt.Println(fmt.Sprintf("cannot write key file to %s", keyFilePath()))
+	fmt.Println(fmt.Sprintf("cannot write key file to %s", KeyFilePath()))
 	fmt.Println("if on MacOS or Linux, try: 'sudo lab create key'")
 	fmt.Println("if on Windows, try running powershell or command prompt as an administrator'")
 	os.Exit(1)

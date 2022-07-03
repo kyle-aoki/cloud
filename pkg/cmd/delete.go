@@ -12,6 +12,7 @@ import (
 
 func DeleteInstances() {
 	var targets []string = args.Collect()
+	util.Log("found delete targets: %v", targets)
 
 	co := resource.NewCloudOperator()
 	var names []string
@@ -26,6 +27,9 @@ func DeleteInstances() {
 			}
 		}
 	}
+
+	util.Log("names %v", names)
+	util.Log("ids %v", ids)
 
 	_, err := amazon.EC2().TerminateInstances(&ec2.TerminateInstancesInput{
 		InstanceIds: ids,

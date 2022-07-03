@@ -1,39 +1,35 @@
 package cmd
 
 import (
-	"cloudlab/pkg/amazon"
 	"cloudlab/pkg/args"
 	"cloudlab/pkg/resource"
 	"cloudlab/pkg/util"
 	"fmt"
 	"io/ioutil"
+	"log"
 )
 
 func CreateInstance() {
+	log.Println("creating instance...")
 	co := resource.NewCloudOperator()
 
 	defaultName := args.IsEmpty(*args.Flags.Name, co.NextInstanceName())
+	util.Log("using instance name: %s", defaultName)
 
 	startUpScript := ReadScriptFile(*args.Flags.Script)
+	util.Log("using script file: %s", *args.Flags.Script)
 
-	cii := &resource.CreateInstanceInput{
-		TagSpecifications: resource.CreateTagSpecs("instance", map[string]string{
-			"Name":                            defaultName,
-			resource.IsCloudLabInstanceTagKey: resource.IsCloudLabInstanceTagVal,
-		}),
-		SubnetId:         co.UsePrivateSubnet(*args.Flags.Private || *args.Flags.P),
+	rii := &resource.RunInstanceInput{
+		Name:             defaultName,
+		SubnetId:         co.SubnetId(*args.Flags.Private || *args.Flags.P),
 		InstanceType:     *args.Flags.InstType,
-		Ami:              amazon.UbuntuAmi(),
-		DeviceName:       "/dev/sda1",
-		MinCount:         1,
-		MaxCount:         1,
 		Size:             util.StringToInt(*args.Flags.Gigs),
-		KeyName:          resource.CloudLabKeyPair,
-		SecurityGroupIds: []*string{co.GetSecurityGroupIdByNameOrPanic("22").GroupId},
+		SecurityGroupIds: []*string{co.SecurityGroupOrPanic("22").GroupId},
 		UserData:         startUpScript,
 	}
+	util.Log("create instance input: %v", *rii)
 
-	_ = resource.ExecuteCreateInstanceRequest(cii)
+	_ = resource.RunInstance(rii)
 	fmt.Println(defaultName)
 }
 

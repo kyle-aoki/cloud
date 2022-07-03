@@ -1,20 +1,20 @@
 package args
 
 import (
+	"cloudlab/pkg/util"
 	"flag"
 	"io"
 	"log"
 	"os"
 )
 
-var args []string
+var Args []string
 
 type IFlags struct {
 	Verbose  *bool
 	V        *bool
 	Private  *bool
 	P        *bool
-	Ami      *string
 	InstType *string
 	Name     *string
 	Script   *string
@@ -41,7 +41,8 @@ func Init() {
 	} else {
 		log.SetOutput(io.Discard)
 	}
-	args = flag.Args()
+	Args = flag.Args()
+	util.Log("program args: %v", Args)
 }
 
 func IsEmpty(s string, defaulte string) string {
@@ -52,28 +53,28 @@ func IsEmpty(s string, defaulte string) string {
 }
 
 func Poll() string {
-	if len(args) == 0 {
+	if len(Args) == 0 {
 		panic("not enough arguments")
 	}
-	next := args[0]
-	args = args[1:]
+	next := Args[0]
+	Args = Args[1:]
 	return next
 }
 
 func PollOrEmpty() string {
-	if len(args) == 0 {
+	if len(Args) == 0 {
 		return ""
 	}
-	next := args[0]
-	args = args[1:]
+	next := Args[0]
+	Args = Args[1:]
 	return next
 }
 
 func Collect() []string {
-	if len(args) == 0 {
+	if len(Args) == 0 {
 		panic("not enough arguments")
 	}
-	collection := args[:]
-	args = nil
+	collection := Args[:]
+	Args = nil
 	return collection
 }

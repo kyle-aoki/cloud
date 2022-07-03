@@ -13,7 +13,7 @@ import (
 func ListInstances() {
 	co := resource.NewCloudOperator()
 
-	util.Print("name\tstate\tprivate-ip\tpublic-ip\tports")
+	util.SetTabPrint("name\tstate\tprivate-ip\tpublic-ip\tports")
 
 	for _, node := range co.Rs.Instances {
 		if *node.State.Name == "terminated" {
@@ -26,10 +26,10 @@ func ListInstances() {
 			PublicIp(node),
 			Ports(node),
 		)
-		util.Print(l)
+		util.SetTabPrint(l)
 	}
 
-	util.Flush()
+	util.TabPrint()
 }
 
 func Ports(inst *ec2.Instance) (portsString string) {

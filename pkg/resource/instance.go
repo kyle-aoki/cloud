@@ -9,76 +9,39 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-type CreateInstanceInput struct {
-	Name              string
-	SubnetId          string
-	InstanceType      string // t2.nano
-	Ami               string
-	DeviceName        string // Ubuntu: /dev/sda1
-	MinCount          int
-	MaxCount          int
-	Size              int
-	KeyName           string
-	SecurityGroupIds  []*string
-	UserData          string
-	TagSpecifications []*ec2.TagSpecification
+type RunInstanceInput struct {
+	Name             string
+	SubnetId         string
+	InstanceType     string // t2.nano
+	Size             int
+	SecurityGroupIds []*string
+	UserData         string
 }
 
-func ExecuteCreateInstanceRequest(cii *CreateInstanceInput) *ec2.Instance {
+func RunInstance(rii *RunInstanceInput) *ec2.Instance {
 	rio, err := amazon.EC2().RunInstances(&ec2.RunInstancesInput{
-		SubnetId: util.StrPtr(cii.SubnetId),
+		SubnetId: util.StrPtr(rii.SubnetId),
 		BlockDeviceMappings: []*ec2.BlockDeviceMapping{{
-			DeviceName: util.StrPtr(cii.DeviceName),
-			Ebs:        &ec2.EbsBlockDevice{VolumeSize: util.IntToInt64Ptr(cii.Size)}},
+			DeviceName: util.StrPtr("/dev/sda1"),
+			Ebs:        &ec2.EbsBlockDevice{VolumeSize: util.IntToInt64Ptr(rii.Size)}},
 		},
-		ImageId:           util.StrPtr(cii.Ami),
-		MinCount:          util.IntToInt64Ptr(cii.MinCount),
-		MaxCount:          util.IntToInt64Ptr(cii.MaxCount),
-		KeyName:           util.StrPtr(cii.KeyName),
-		SecurityGroupIds:  cii.SecurityGroupIds,
-		InstanceType:      util.StrPtr(cii.InstanceType),
-		TagSpecifications: cii.TagSpecifications,
-		UserData:          util.StrPtr(cii.UserData),
+		ImageId:          util.StrPtr(amazon.UbuntuAmi()),
+		MinCount:         util.IntToInt64Ptr(1),
+		MaxCount:         util.IntToInt64Ptr(1),
+		KeyName:          util.StrPtr(CloudLabKeyPair),
+		SecurityGroupIds: rii.SecurityGroupIds,
+		InstanceType:     util.StrPtr(rii.InstanceType),
+		UserData:         util.StrPtr(rii.UserData),
+		TagSpecifications: CreateTagSpecs("instance", map[string]string{
+			"Name":                   rii.Name,
+			IsCloudLabInstanceTagKey: IsCloudLabInstanceTagVal,
+		}),
 	})
 	util.MustExec(err)
 	return rio.Instances[0]
 }
 
-func AssignSecurityGroup(
-	instance *ec2.Instance,
-	securityGroup *ec2.SecurityGroup,
-) {
-	var groupIds []*string
-	for _, sgs := range instance.SecurityGroups {
-		groupIds = append(groupIds, sgs.GroupId)
-	}
-	groupIds = append(groupIds, securityGroup.GroupId)
-	_, err := amazon.EC2().ModifyInstanceAttribute(&ec2.ModifyInstanceAttributeInput{
-		InstanceId: instance.InstanceId,
-		Groups:     groupIds,
-	})
-	util.MustExec(err)
-}
-
-func RemoveSecurityGroup(
-	instance *ec2.Instance,
-	port string,
-) {
-	var newSecurityGroups []*string
-	for _, groupIdentifier := range instance.SecurityGroups {
-		if groupIdentifier.GroupName != nil && *groupIdentifier.GroupName == port {
-			continue
-		}
-		newSecurityGroups = append(newSecurityGroups, groupIdentifier.GroupId)
-	}
-
-	_, err := amazon.EC2().ModifyInstanceAttribute(&ec2.ModifyInstanceAttributeInput{
-		InstanceId: instance.InstanceId,
-		Groups:     newSecurityGroups,
-	})
-	util.MustExec(err)
-}
-
+// i1, i2, i3 ...
 func (co *AWSCloudOperator) NextInstanceName() string {
 	var max int64
 	for _, inst := range co.Rs.Instances {
@@ -93,11 +56,4 @@ func (co *AWSCloudOperator) NextInstanceName() string {
 		}
 	}
 	return fmt.Sprintf("i%v", max+1)
-}
-
-func (co *AWSCloudOperator) UsePrivateSubnet(isPrivateSubnet bool) string {
-	if isPrivateSubnet {
-		return *co.Rs.PrivateSubnet.SubnetId
-	}
-	return *co.Rs.PublicSubnet.SubnetId
 }

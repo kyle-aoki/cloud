@@ -8,6 +8,41 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
+func AssignSecurityGroup(
+	instance *ec2.Instance,
+	securityGroup *ec2.SecurityGroup,
+) {
+	var groupIds []*string
+	for _, sgs := range instance.SecurityGroups {
+		groupIds = append(groupIds, sgs.GroupId)
+	}
+	groupIds = append(groupIds, securityGroup.GroupId)
+	_, err := amazon.EC2().ModifyInstanceAttribute(&ec2.ModifyInstanceAttributeInput{
+		InstanceId: instance.InstanceId,
+		Groups:     groupIds,
+	})
+	util.MustExec(err)
+}
+
+func RemoveSecurityGroup(
+	instance *ec2.Instance,
+	port string,
+) {
+	var newSecurityGroups []*string
+	for _, groupIdentifier := range instance.SecurityGroups {
+		if groupIdentifier.GroupName != nil && *groupIdentifier.GroupName == port {
+			continue
+		}
+		newSecurityGroups = append(newSecurityGroups, groupIdentifier.GroupId)
+	}
+
+	_, err := amazon.EC2().ModifyInstanceAttribute(&ec2.ModifyInstanceAttributeInput{
+		InstanceId: instance.InstanceId,
+		Groups:     newSecurityGroups,
+	})
+	util.MustExec(err)
+}
+
 func assignNameTagToDefaultSecurityGroupIfMissing(cloudlabVpcId string) {
 	err := amazon.EC2().DescribeSecurityGroupsPages(
 		&ec2.DescribeSecurityGroupsInput{},
@@ -46,13 +81,13 @@ func createInboundRule(groupId *string, protocol Protocol, port int) {
 	util.MustExec(err)
 }
 
-func (co *AWSCloudOperator) GetSecurityGroupIdByNameOrPanic(name string) *ec2.SecurityGroup {
+func (co *AWSCloudOperator) SecurityGroupOrPanic(groupName string) *ec2.SecurityGroup {
 	for _, sg := range co.Rs.SecurityGroups {
-		if sg.GroupName != nil && *sg.GroupName == name {
+		if sg.GroupName != nil && *sg.GroupName == groupName {
 			return sg
 		}
 	}
-	panic(fmt.Sprintf("failed to find security group %s", name))
+	panic(fmt.Sprintf("failed to find security group %s", groupName))
 }
 
 func (co *AWSCloudOperator) GetSecurityGroupIdByNameOrNil(name string) *ec2.SecurityGroup {

@@ -131,13 +131,11 @@ func (co *AWSCloudOperator) InitializeCloudLabResources() {
 // ######################################################################################
 
 func (co *AWSCloudOperator) DestroyCloudLabResources() {
-	if len(co.Finder.findNotTerminatedInstances(co.Rs.Instances)) > 0 {
-		panic("run 'lab delete all' and try again")
+	nonTerminatedInstances := co.Finder.FindNonTerminatedInstances()
+	if len(nonTerminatedInstances) > 0 {
+		panic("delete all instances before destroying cloudlab infrastructure")
 	}
 
-	if len(co.Rs.Instances) > 0 {
-		co.Deleter.deleteInstances(co.Rs.Instances)
-	}
 	if co.Rs.InternetGateway != nil {
 		detachInternetGatewayFromVpc(co.Rs.InternetGateway, co.Rs.Vpc)
 		co.Deleter.deleteInternetGateway(co.Rs.InternetGateway)
@@ -163,5 +161,12 @@ func (co *AWSCloudOperator) DestroyCloudLabResources() {
 
 	if co.Rs.KeyPair != nil {
 		co.Deleter.deleteKeyPair(co.Rs.KeyPair)
+	}
+
+	if util.ObjectExists(KeyFilePath()) {
+		err := os.Remove(KeyFilePath())
+		if err != nil {
+			panic("failed to delete key file: " + KeyFilePath())
+		}
 	}
 }

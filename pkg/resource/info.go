@@ -7,64 +7,64 @@ import (
 
 func (co *AWSCloudOperator) Info() {
 	if co.Rs.Vpc == nil {
-		util.Print("missing cloudlab vpc")
+		util.SetTabPrint("missing cloudlab vpc")
 	} else {
-		util.Print("vpc\t" + *co.Rs.Vpc.VpcId)
+		util.SetTabPrint("vpc\t" + *co.Rs.Vpc.VpcId)
 	}
 
 	if co.Rs.PublicSubnet == nil {
-		util.Print("missing cloudlab public subnet")
+		util.SetTabPrint("missing cloudlab public subnet")
 	} else {
-		util.Print("public subnet\t" + *co.Rs.PublicSubnet.SubnetId)
+		util.SetTabPrint("public subnet\t" + *co.Rs.PublicSubnet.SubnetId)
 	}
 
 	if co.Rs.PrivateSubnet == nil {
-		util.Print("missing cloudlab private subnet")
+		util.SetTabPrint("missing cloudlab private subnet")
 	} else {
-		util.Print("private subnet\t" + *co.Rs.PrivateSubnet.SubnetId)
+		util.SetTabPrint("private subnet\t" + *co.Rs.PrivateSubnet.SubnetId)
 	}
 
 	if co.Rs.PublicRouteTable == nil {
-		util.Print("missing public route table")
+		util.SetTabPrint("missing public route table")
 	} else {
-		util.Print("public route table\t" + *co.Rs.PublicRouteTable.RouteTableId)
+		util.SetTabPrint("public route table\t" + *co.Rs.PublicRouteTable.RouteTableId)
 	}
 
 	if co.Rs.PrivateRouteTable == nil {
-		util.Print("missing private route table")
+		util.SetTabPrint("missing private route table")
 	} else {
-		util.Print("private route table\t" + *co.Rs.PrivateRouteTable.RouteTableId)
+		util.SetTabPrint("private route table\t" + *co.Rs.PrivateRouteTable.RouteTableId)
 	}
 
 	if co.Rs.InternetGateway == nil {
-		util.Print("missing cloudlab internet gateway")
+		util.SetTabPrint("missing cloudlab internet gateway")
 	} else {
-		util.Print("internet gateway\t" + *co.Rs.InternetGateway.InternetGatewayId)
+		util.SetTabPrint("internet gateway\t" + *co.Rs.InternetGateway.InternetGatewayId)
 	}
 
 	if co.Rs.KeyPair == nil {
-		util.Print("missing cloudlab key")
+		util.SetTabPrint("missing cloudlab key")
 	} else {
-		util.Print("key\t" + *co.Rs.KeyPair.KeyPairId)
+		util.SetTabPrint("key\t" + *co.Rs.KeyPair.KeyPairId)
 	}
 
-	util.Print("\t")
+	util.SetTabPrint("\t")
 	for _, sg := range co.Rs.SecurityGroups {
-		util.Print("security group " + *sg.GroupName + "\t" + *sg.GroupId)
+		util.SetTabPrint("security group " + *sg.GroupName + "\t" + *sg.GroupId)
 	}
 
 	if len(co.Rs.SecurityGroups) > 0 {
-		util.Print("\t")
+		util.SetTabPrint("\t")
 	}
 
 	for _, inst := range co.Rs.Instances {
-		util.Print(fmt.Sprintf(
+		util.SetTabPrint(fmt.Sprintf(
 			"%s\t%s",
 			*FindNameTagValue(inst.Tags),
 			*inst.State.Name,
 		))
 	}
-	util.Print("\t")
+	util.SetTabPrint("\t")
 
-	util.Flush()
+	util.TabPrint()
 }
