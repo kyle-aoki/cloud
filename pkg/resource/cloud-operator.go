@@ -62,14 +62,14 @@ func (co *AWSCloudOperator) FindAll() {
 
 func (co *AWSCloudOperator) Audit() {
 	bools := []bool{
-		IsMissing(co.Rs.Vpc == nil, "vpc", true),
-		IsMissing(co.Rs.PublicSubnet == nil, "public subnet", true),
-		IsMissing(co.Rs.PrivateSubnet == nil, "private subnet", true),
-		IsMissing(co.Rs.PublicRouteTable == nil, "main route table", true),
-		IsMissing(co.Rs.PrivateRouteTable == nil, "private route table", true),
-		IsMissing(co.Rs.InternetGateway == nil, "internet gateway", true),
-		IsMissing(co.Rs.SecurityGroups == nil, "security groups", true),
-		IsMissing(co.Rs.KeyPair == nil, "key pair", true),
+		IsMissing(co.Rs.Vpc == nil, "vpc"),
+		IsMissing(co.Rs.PublicSubnet == nil, "public subnet"),
+		IsMissing(co.Rs.PrivateSubnet == nil, "private subnet"),
+		IsMissing(co.Rs.PublicRouteTable == nil, "main route table"),
+		IsMissing(co.Rs.PrivateRouteTable == nil, "private route table"),
+		IsMissing(co.Rs.InternetGateway == nil, "internet gateway"),
+		IsMissing(co.Rs.SecurityGroups == nil, "security groups"),
+		IsMissing(co.Rs.KeyPair == nil, "key pair"),
 	}
 	if util.AtLeastOneTrue(bools) {
 		fmt.Println("run 'lab init' to create missing cloudlab resources")
@@ -77,8 +77,8 @@ func (co *AWSCloudOperator) Audit() {
 	}
 }
 
-func IsMissing(missing bool, resourceType string, print bool) bool {
-	if missing && print {
+func IsMissing(missing bool, resourceType string) bool {
+	if missing {
 		fmt.Printf("%s is missing from cloudlab resources\n", resourceType)
 	}
 	return missing
@@ -87,6 +87,18 @@ func IsMissing(missing bool, resourceType string, print bool) bool {
 // ######################################################################################
 // Init #################################################################################
 // ######################################################################################
+
+// 1.  create key pair
+// 2.  create vpc (auto creates public route table)
+// 3.  create public subnet
+// 4.  modify public subnet to enable IPv4 assignment
+// 5.  create private subnet
+// 6.  create private route table
+// 7.  create internet gateway
+// 8.  attach internet gateway to vpc
+// 9.  add internet gateway to public route table
+// 10. associate public route table with public subnet
+// 11. create base security group for port 22 (tcp & udp)
 
 func (co *AWSCloudOperator) InitializeCloudLabResources() {
 	if co.Rs.KeyPair == nil {
