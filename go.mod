@@ -3,8 +3,8 @@ module cloudlab
 go 1.18
 
 require (
-	github.com/aws/aws-sdk-go v1.44.37
-	golang.org/x/sys v0.0.0-20220615213510-4f61da869c0c
+	github.com/aws/aws-sdk-go v1.44.48
+	golang.org/x/sys v0.0.0-20220704084225-05e143d24a9e
 )
 
 require (

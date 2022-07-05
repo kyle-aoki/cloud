@@ -17,10 +17,21 @@ func ListInstances() {
 		panic("run 'lab init' first")
 	}
 
+	if *args.Flags.Quiet {
+		PrintInstanceNames(resource.FindNonTerminatedInstances())
+		return
+	}
+
 	if *args.Flags.All {
 		PrintInstanceList(resource.FindInstances())
 	} else {
 		PrintInstanceList(resource.FindNonTerminatedInstances())
+	}
+}
+
+func PrintInstanceNames(instances []*ec2.Instance) {
+	for _, inst := range instances {
+		fmt.Println(fmt.Sprintf("%v", Name(inst)))
 	}
 }
 

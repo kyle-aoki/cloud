@@ -8,8 +8,6 @@ import (
 	"os"
 )
 
-var Args []string
-
 type IFlags struct {
 	Verbose  *bool
 	V        *bool
@@ -20,21 +18,24 @@ type IFlags struct {
 	Script   *string
 	Gigs     *string
 	All      *bool
+	Quiet    *bool
 }
 
 var Flags IFlags
+var Args []string
 
 func Init() {
 	Flags = IFlags{
 		Verbose:  flag.Bool("verbose", false, "verbose logging"),
 		V:        flag.Bool("v", false, "verbose logging"),
-		Private:  flag.Bool("private", false, "create a private instance"),
-		P:        flag.Bool("p", false, "create a private instance"),
-		Name:     flag.String("name", "", "name of instance"),
-		InstType: flag.String("type", "t2.nano", "specifiy an instance type"),
-		Gigs:     flag.String("gigs", "8", "number of gigabytes of storage"),
-		Script:   flag.String("script", "", "path to bash script file to run on EC2 startup"),
-		All:      flag.Bool("all", false, "show terminated instances"),
+		Private:  flag.Bool("private", false, "(lab run, lab ssh) select private instance"),
+		P:        flag.Bool("p", false, "(lab run, lab ssh) select private instance"),
+		Name:     flag.String("name", "", "(lab run) name of instance"),
+		InstType: flag.String("type", "t2.nano", "(lab run) specifiy an instance type"),
+		Gigs:     flag.String("gigs", "8", "(lab run) number of gigabytes of storage"),
+		Script:   flag.String("script", "", "(lab run) path to bash script file to run on EC2 startup"),
+		All:      flag.Bool("all", false, "(lab list, lab watch) show terminated instances"),
+		Quiet:    flag.Bool("q", false, "(lab list) list names only"),
 	}
 	flag.Parse()
 
@@ -45,13 +46,6 @@ func Init() {
 	}
 	Args = flag.Args()
 	util.Log("program args: %v", Args)
-}
-
-func IsEmpty(s string, defaulte string) string {
-	if s == "" {
-		return defaulte
-	}
-	return s
 }
 
 func FlagExists(s *string) bool {
