@@ -19,6 +19,7 @@ type IFlags struct {
 	Name     *string
 	Script   *string
 	Gigs     *string
+	All      *bool
 }
 
 var Flags IFlags
@@ -33,6 +34,7 @@ func Init() {
 		InstType: flag.String("type", "t2.nano", "specifiy an instance type (e.g. t2.nano)"),
 		Gigs:     flag.String("gigs", "8", "number of gigabytes of storage"),
 		Script:   flag.String("script", "", "path to bash script file to run on EC2 startup"),
+		All:      flag.Bool("all", false, "show terminated instances"),
 	}
 	flag.Parse()
 
@@ -74,6 +76,12 @@ func Collect() []string {
 	if len(Args) == 0 {
 		panic("not enough arguments")
 	}
+	collection := Args[:]
+	Args = nil
+	return collection
+}
+
+func CollectOrEmpty() []string {
 	collection := Args[:]
 	Args = nil
 	return collection

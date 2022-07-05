@@ -9,7 +9,7 @@ import (
 
 type ResourceFinder struct{}
 
-func (a *ResourceFinder) findVpc(name string) (targetVpc *ec2.Vpc) {
+func (a *ResourceFinder) FindVpc(name string) (targetVpc *ec2.Vpc) {
 	err := amazon.EC2().DescribeVpcsPages(
 		&ec2.DescribeVpcsInput{},
 		func(dvo *ec2.DescribeVpcsOutput, b bool) bool {
@@ -27,7 +27,7 @@ func (a *ResourceFinder) findVpc(name string) (targetVpc *ec2.Vpc) {
 	return targetVpc
 }
 
-func (a *ResourceFinder) findInstances() (instances []*ec2.Instance) {
+func (a *ResourceFinder) FindInstances() (instances []*ec2.Instance) {
 	err := amazon.EC2().DescribeInstancesPages(&ec2.DescribeInstancesInput{},
 		func(dio *ec2.DescribeInstancesOutput, b bool) bool {
 			for _, res := range dio.Reservations {
@@ -71,7 +71,7 @@ func (a *ResourceFinder) FindInstanceByName(name string) (instance *ec2.Instance
 		func(dio *ec2.DescribeInstancesOutput, b bool) bool {
 			for _, res := range dio.Reservations {
 				for _, inst := range res.Instances {
-					if TagEquals(inst.Tags, IsCloudLabInstanceTagKey, IsCloudLabInstanceTagVal) {
+					if NameTagEquals(inst.Tags, name) {
 						instance = inst
 						return false
 					}

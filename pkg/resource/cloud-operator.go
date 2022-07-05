@@ -18,7 +18,7 @@ type AWSCloudOperator struct {
 	Rs      *AWSResources
 }
 
-func new() *AWSCloudOperator {
+func New() *AWSCloudOperator {
 	return &AWSCloudOperator{
 		Creator: &ResourceCreator{},
 		Finder:  &ResourceFinder{},
@@ -27,14 +27,14 @@ func new() *AWSCloudOperator {
 }
 
 func NewCloudOperatorNoAudit() *AWSCloudOperator {
-	co := new()
+	co := New()
 	co.FindAll()
 	return co
 }
 
 // Finds all resources and audits them.
 func NewCloudOperator() *AWSCloudOperator {
-	co := new()
+	co := New()
 	co.FindAll()
 	co.Audit()
 	return co
@@ -46,7 +46,7 @@ func NewCloudOperator() *AWSCloudOperator {
 
 func (co *AWSCloudOperator) FindAll() {
 	log.Println("finding cloudlab resources...")
-	co.Rs.Vpc = co.Finder.findVpc(CloudLabVpc)
+	co.Rs.Vpc = co.Finder.FindVpc(CloudLabVpc)
 	if co.Rs.Vpc == nil {
 		return
 	}
@@ -56,7 +56,7 @@ func (co *AWSCloudOperator) FindAll() {
 	co.Rs.PrivateRouteTable = co.Finder.findRouteTable(co.Rs.Vpc, CloudLabPrivateRouteTable)
 	co.Rs.InternetGateway = co.Finder.findInternetGateway(CloudLabInternetGateway)
 	co.Rs.SecurityGroups = co.Finder.FindSecurityGroups()
-	co.Rs.Instances = co.Finder.findInstances()
+	co.Rs.Instances = co.Finder.FindInstances()
 	co.Rs.KeyPair = co.Finder.findKeyPair()
 }
 

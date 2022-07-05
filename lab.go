@@ -27,9 +27,11 @@ var Syntax = map[string]func(){
 	"destroy":    cmd.DestroyCloudLabResources,
 	"list":       cmd.ListInstances,
 	"run":        cmd.CreateInstance,
+	"ssh":        cmd.SSH,
 	"delete":     cmd.DeleteInstances,
 	"open-port":  cmd.OpenPort,
 	"close-port": cmd.ClosePort,
+	"watch":      cmd.Watch,
 }
 
 const HelpText = `command structure:

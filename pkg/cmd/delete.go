@@ -1,42 +1,37 @@
 package cmd
 
 import (
-	"cloudlab/pkg/amazon"
 	"cloudlab/pkg/args"
 	"cloudlab/pkg/resource"
 	"cloudlab/pkg/util"
 	"fmt"
-
-	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
+type NameId struct {
+	Name string
+	Id   string
+}
+
 func DeleteInstances() {
-	var targets []string = args.Collect()
+	targets := args.Collect()
 	util.Log("found delete targets: %v", targets)
 
-	co := resource.NewCloudOperator()
-	var names []string
-	var ids []*string
+	co := resource.New()
+	co.Rs.Instances = co.Finder.FindNonTerminatedInstances()
+
+	var nameIds []NameId
 
 	for _, inst := range co.Rs.Instances {
-		name := resource.FindNameTagValue(inst.Tags)
-		for _, target := range targets {
-			if name != nil && *name == target {
-				names = append(names, *name)
-				ids = append(ids, inst.InstanceId)
-			}
+		instName := resource.FindNameTagValue(inst.Tags)
+		if instName != nil && util.Contains(*instName, targets) {
+			nameIds = append(nameIds, NameId{Name: *instName, Id: *inst.InstanceId})
 		}
 	}
 
-	util.Log("names %v", names)
-	util.Log("ids %v", ids)
+	util.Log("nameIds %v", nameIds)
 
-	_, err := amazon.EC2().TerminateInstances(&ec2.TerminateInstancesInput{
-		InstanceIds: ids,
-	})
-	util.MustExec(err)
-
-	for _, name := range names {
-		fmt.Println(fmt.Sprintf("deleted %s", name))
+	for _, nameId := range nameIds {
+		co.TerminateInstance(&nameId.Id)
+		fmt.Println(fmt.Sprintf("deleted %s", nameId.Name))
 	}
 }

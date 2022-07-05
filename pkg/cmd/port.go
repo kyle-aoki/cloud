@@ -3,6 +3,7 @@ package cmd
 import (
 	"cloudlab/pkg/args"
 	"cloudlab/pkg/resource"
+	"cloudlab/pkg/util"
 	"fmt"
 	"os"
 	"strconv"
@@ -23,6 +24,9 @@ func ValidatePort(portString string) (portInt int) {
 func OpenPort() {
 	port := args.Poll()
 	instanceName := args.Poll()
+
+	util.Log("port %s", port)
+	util.Log("instanceName %s", instanceName)
 
 	co := resource.NewCloudOperator()
 
