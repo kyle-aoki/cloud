@@ -15,7 +15,7 @@ import (
 func ListInstances() {
 	co := resource.New()
 
-	if co.Finder.FindVpc(resource.CloudLabVpc) == nil {
+	if co.Finder.FindCloudLabVpc() == nil {
 		panic("run 'lab init' first")
 	}
 

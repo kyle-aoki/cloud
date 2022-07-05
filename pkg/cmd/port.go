@@ -5,65 +5,66 @@ import (
 	"cloudlab/pkg/resource"
 	"cloudlab/pkg/util"
 	"fmt"
-	"os"
-	"strconv"
 )
 
-func ValidatePort(portString string) (portInt int) {
-	portInt64, err := strconv.ParseInt(portString, 10, 32)
-	if err != nil {
-		panic("invalid port")
+// ####################################################################################
+// ####################################################################################
+// ####################################################################################
+
+func OpenPorts() {
+	instanceName := args.Poll()
+	ports := args.Collect()
+
+	for _, port := range ports {
+		openPort(instanceName, port)
 	}
-	portInt = int(portInt64)
-	if portInt > 65535 || portInt < 1 {
-		panic("invalid port")
-	}
-	return portInt
 }
 
-func OpenPort() {
-	port := args.Poll()
-	instanceName := args.Poll()
-
+func openPort(name string, port string) {
 	util.Log("port %s", port)
-	util.Log("instanceName %s", instanceName)
+	util.Log("instanceName %s", name)
 
-	co := resource.NewCloudOperator()
+	co := resource.New()
+	co.Rs.Vpc = co.Finder.FindCloudLabVpcOrPanic()
+	co.Rs.SecurityGroups = co.Finder.FindAllSecurityGroups()
+	instance := co.Finder.FindInstanceByNameOrPanic(name)
 
-	sg := co.GetSecurityGroupIdByNameOrNil(port)
-
-	if sg == nil {
-		portInt := ValidatePort(port)
-		co.Creator.CreateSecurityGroup(co.Rs.Vpc, port, portInt)
-		co.Rs.SecurityGroups = co.Finder.FindSecurityGroups()
+	if !resource.SecurityGroupExists(co.Rs.SecurityGroups, port) {
+		resource.CreateSecurityGroup(co.Rs.Vpc, port)
+		co.Rs.SecurityGroups = co.Finder.FindAllSecurityGroups()
 	}
 
-	instance := co.Finder.FindInstanceByName(instanceName)
-
-	for _, sg := range instance.SecurityGroups {
-		if sg.GroupName != nil && *sg.GroupName == port {
-			fmt.Printf("port %s already open on instance %s\n", port, instanceName)
-			os.Exit(0)
-		}
+	if resource.InstanceHasPortOpen(instance, port) {
+		panic(fmt.Sprintf("port %s already open on instance %s\n", port, name))
 	}
 
-	securityGroup := co.SecurityGroupOrPanic(port)
+	securityGroup := resource.SecurityGroupByNameOrPanic(co.Rs.SecurityGroups, port)
 
-	resource.AssignSecurityGroup(instance, securityGroup)
-	fmt.Println(fmt.Sprintf("opened port %s on instance %s", port, instanceName))
+	resource.OpenPort(instance, securityGroup)
+	fmt.Println(fmt.Sprintf("opened port %s on instance %s", port, name))
 }
 
-func ClosePort() {
-	co := resource.NewCloudOperator()
+// ####################################################################################
+// ####################################################################################
+// ####################################################################################
 
-	port := args.Poll()
+func ClosePorts() {
 	instanceName := args.Poll()
+	ports := args.Collect()
+	for _, port := range ports {
+		closePort(instanceName, port)
+	}
+}
 
-	_ = ValidatePort(port)
-
+func closePort(instanceName string, port string) {
+	co := resource.New()
+	co.Rs.Instances = co.Finder.FindNonTerminatedInstances()
+	_ = resource.ValidatePort(port)
 	instance := co.Finder.FindInstanceByName(instanceName)
-
-	resource.RemoveSecurityGroup(instance, port)
-
+	resource.ClosePort(instance, port)
 	fmt.Println(fmt.Sprintf("closed port %s on instance %s", port, instanceName))
 }
+
+// ####################################################################################
+// ####################################################################################
+// ####################################################################################

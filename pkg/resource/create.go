@@ -65,14 +65,15 @@ func (c *ResourceCreator) ExecuteCreateKeyPairRequest(name string) *string {
 	return ckpo.KeyMaterial
 }
 
-func (c *ResourceCreator) CreateSecurityGroup(vpc *ec2.Vpc, name string, port int) {
+func CreateSecurityGroup(vpc *ec2.Vpc, port string) {
+	portInt := ValidatePort(port)
 	csgo, err := amazon.EC2().CreateSecurityGroup(&ec2.CreateSecurityGroupInput{
 		VpcId:             vpc.VpcId,
-		GroupName:         util.StrPtr(name),
-		Description:       util.StrPtr(name),
+		GroupName:         util.StrPtr(port),
+		Description:       util.StrPtr(port),
 		TagSpecifications: CreateNameTagSpec("security-group", CloudLabSecutiyGroup),
 	})
 	util.MustExec(err)
-	createInboundRule(csgo.GroupId, "tcp", port)
-	createInboundRule(csgo.GroupId, "udp", port)
+	createInboundRule(csgo.GroupId, "tcp", portInt)
+	createInboundRule(csgo.GroupId, "udp", portInt)
 }

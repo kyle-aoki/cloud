@@ -54,6 +54,10 @@ func IsEmpty(s string, defaulte string) string {
 	return s
 }
 
+func FlagExists(s *string) bool {
+	return s != nil && *s != ""
+}
+
 func Poll() string {
 	if len(Args) == 0 {
 		panic("not enough arguments")

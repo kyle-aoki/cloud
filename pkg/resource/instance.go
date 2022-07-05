@@ -42,9 +42,9 @@ func RunInstance(rii *RunInstanceInput) *ec2.Instance {
 }
 
 // i1, i2, i3 ...
-func (co *AWSCloudOperator) NextInstanceName() string {
+func NextInstanceName(instances []*ec2.Instance) string {
 	var max int64
-	for _, inst := range co.Rs.Instances {
+	for _, inst := range instances {
 		n := *FindNameTagValue(inst.Tags)
 		num := n[1:]
 		i, err := strconv.ParseInt(num, 10, 32)
@@ -67,7 +67,7 @@ func (co *AWSCloudOperator) StartInstance(name string) {
 		InstanceIds: []*string{inst.InstanceId},
 	})
 	util.MustExec(err)
-	fmt.Println("started " + name)
+	fmt.Println(name)
 }
 
 func (co *AWSCloudOperator) StopInstance(name string) {
@@ -79,7 +79,7 @@ func (co *AWSCloudOperator) StopInstance(name string) {
 		InstanceIds: []*string{inst.InstanceId},
 	})
 	util.MustExec(err)
-	fmt.Println("stopped " + name)
+	fmt.Println(name)
 }
 
 func (co *AWSCloudOperator) TerminateInstance(id *string) {
@@ -87,4 +87,22 @@ func (co *AWSCloudOperator) TerminateInstance(id *string) {
 		InstanceIds: []*string{id},
 	})
 	util.MustExec(err)
+}
+
+func NameExists(instances []*ec2.Instance, name string) bool {
+	for _, inst := range instances {
+		if NameTagEquals(inst.Tags, name) {
+			return true
+		}
+	}
+	return false
+}
+
+func InstanceHasPortOpen(instance *ec2.Instance, port string) bool {
+	for _, sg := range instance.SecurityGroups {
+		if sg.GroupName != nil && *sg.GroupName == port {
+			return true
+		}
+	}
+	return false
 }

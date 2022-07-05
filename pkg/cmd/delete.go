@@ -23,6 +23,7 @@ func DeleteInstances() {
 
 	for _, inst := range co.Rs.Instances {
 		instName := resource.FindNameTagValue(inst.Tags)
+		util.Log("found instance '%s'", instName)
 		if instName != nil && util.Contains(*instName, targets) {
 			nameIds = append(nameIds, NameId{Name: *instName, Id: *inst.InstanceId})
 		}
@@ -32,6 +33,6 @@ func DeleteInstances() {
 
 	for _, nameId := range nameIds {
 		co.TerminateInstance(&nameId.Id)
-		fmt.Println(fmt.Sprintf("deleted %s", nameId.Name))
+		fmt.Println(nameId.Name)
 	}
 }

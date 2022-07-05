@@ -46,7 +46,7 @@ func NewCloudOperator() *AWSCloudOperator {
 
 func (co *AWSCloudOperator) FindAll() {
 	log.Println("finding cloudlab resources...")
-	co.Rs.Vpc = co.Finder.FindVpc(CloudLabVpc)
+	co.Rs.Vpc = co.Finder.FindCloudLabVpc()
 	if co.Rs.Vpc == nil {
 		return
 	}
@@ -55,7 +55,7 @@ func (co *AWSCloudOperator) FindAll() {
 	co.Rs.PublicRouteTable = co.Finder.findMainRouteTable(co.Rs.Vpc)
 	co.Rs.PrivateRouteTable = co.Finder.findRouteTable(co.Rs.Vpc, CloudLabPrivateRouteTable)
 	co.Rs.InternetGateway = co.Finder.findInternetGateway(CloudLabInternetGateway)
-	co.Rs.SecurityGroups = co.Finder.FindSecurityGroups()
+	co.Rs.SecurityGroups = co.Finder.FindAllSecurityGroups()
 	co.Rs.Instances = co.Finder.FindInstances()
 	co.Rs.KeyPair = co.Finder.findKeyPair()
 }
@@ -133,8 +133,8 @@ func (co *AWSCloudOperator) InitializeCloudLabResources() {
 	}
 	securityGroup22 := co.Finder.findSecurityGroupByName(co.Rs.SecurityGroups, "22")
 	if securityGroup22 == nil {
-		co.Creator.CreateSecurityGroup(co.Rs.Vpc, "22", 22)
-		co.Rs.SecurityGroups = co.Finder.FindSecurityGroups()
+		CreateSecurityGroup(co.Rs.Vpc, "22")
+		co.Rs.SecurityGroups = co.Finder.FindAllSecurityGroups()
 	}
 }
 

@@ -3,19 +3,20 @@ package resource
 import (
 	"cloudlab/pkg/amazon"
 	"cloudlab/pkg/util"
+	"fmt"
 
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
 type ResourceFinder struct{}
 
-func (a *ResourceFinder) FindVpc(name string) (targetVpc *ec2.Vpc) {
+func (a *ResourceFinder) FindCloudLabVpc() (targetVpc *ec2.Vpc) {
 	err := amazon.EC2().DescribeVpcsPages(
 		&ec2.DescribeVpcsInput{},
 		func(dvo *ec2.DescribeVpcsOutput, b bool) bool {
 			for _, vpc := range dvo.Vpcs {
 				nameTagValue := FindNameTagValue(vpc.Tags)
-				if nameTagValue != nil && *nameTagValue == name {
+				if nameTagValue != nil && *nameTagValue == CloudLabVpc {
 					targetVpc = vpc
 					return false
 				}
@@ -23,7 +24,28 @@ func (a *ResourceFinder) FindVpc(name string) (targetVpc *ec2.Vpc) {
 			return true
 		})
 	util.MustExec(err)
-	util.Log("found vpc %v: %v", name, targetVpc != nil)
+	util.Log("found %v: %v", CloudLabVpc, targetVpc != nil)
+	return targetVpc
+}
+
+func (a *ResourceFinder) FindCloudLabVpcOrPanic() (targetVpc *ec2.Vpc) {
+	err := amazon.EC2().DescribeVpcsPages(
+		&ec2.DescribeVpcsInput{},
+		func(dvo *ec2.DescribeVpcsOutput, b bool) bool {
+			for _, vpc := range dvo.Vpcs {
+				nameTagValue := FindNameTagValue(vpc.Tags)
+				if nameTagValue != nil && *nameTagValue == CloudLabVpc {
+					targetVpc = vpc
+					return false
+				}
+			}
+			return true
+		})
+	util.MustExec(err)
+	if targetVpc == nil {
+		panic("run 'lab init' first")
+	}
+	util.Log("found %v: %v", CloudLabVpc, targetVpc != nil)
 	return targetVpc
 }
 
@@ -81,6 +103,28 @@ func (a *ResourceFinder) FindInstanceByName(name string) (instance *ec2.Instance
 		},
 	)
 	util.MustExec(err)
+	util.Log("found instance %v: %v", name, instance != nil)
+	return instance
+}
+
+func (a *ResourceFinder) FindInstanceByNameOrPanic(name string) (instance *ec2.Instance) {
+	err := amazon.EC2().DescribeInstancesPages(&ec2.DescribeInstancesInput{},
+		func(dio *ec2.DescribeInstancesOutput, b bool) bool {
+			for _, res := range dio.Reservations {
+				for _, inst := range res.Instances {
+					if NameTagEquals(inst.Tags, name) {
+						instance = inst
+						return false
+					}
+				}
+			}
+			return true
+		},
+	)
+	util.MustExec(err)
+	if instance == nil {
+		panic(fmt.Sprintf("instance '%s' not found", name))
+	}
 	util.Log("found instance %v: %v", name, instance != nil)
 	return instance
 }
@@ -172,7 +216,7 @@ func (a *ResourceFinder) findMainRouteTable(vpc *ec2.Vpc) (targetRT *ec2.RouteTa
 	return targetRT
 }
 
-func (a *ResourceFinder) FindSecurityGroups() (sgs []*ec2.SecurityGroup) {
+func (a *ResourceFinder) FindAllSecurityGroups() (sgs []*ec2.SecurityGroup) {
 	err := amazon.EC2().DescribeSecurityGroupsPages(
 		&ec2.DescribeSecurityGroupsInput{},
 		func(dsgo *ec2.DescribeSecurityGroupsOutput, b bool) bool {

@@ -26,11 +26,13 @@ var Syntax = map[string]func(){
 	"init":       cmd.InitializeCloudLabResources,
 	"destroy":    cmd.DestroyCloudLabResources,
 	"list":       cmd.ListInstances,
-	"run":        cmd.CreateInstance,
+	"run":        cmd.Run,
+	"start":      cmd.StartInstance,
+	"stop":       cmd.StopInstance,
 	"ssh":        cmd.SSH,
 	"delete":     cmd.DeleteInstances,
-	"open-port":  cmd.OpenPort,
-	"close-port": cmd.ClosePort,
+	"open-port":  cmd.OpenPorts,
+	"close-port": cmd.ClosePorts,
 	"watch":      cmd.Watch,
 }
 
@@ -48,14 +50,21 @@ commands:
                    (must terminate all instances first)
 
   list             list active instances
+                       -all              show terminated instances
   run              run a new instance
                        -name             instance name
                        -private, -p      create instance in private subnet
-                       -type,            instance type (t2.nano, t2.micro, etc.)
+                       -type             instance type (t2.nano, t2.micro, etc.)
                        -gigs             gigabytes of storage
                        -script           path to start up script file
 
+  start            <instance-name>       start an instance
+  stop             <instance-name>       stop an instance
+
+  ssh              none or <instance-name>   print out SSH command
   delete           <instance-name>           terminate an instance
   open-port        <port> <instance-name>    open a port on an instance (all protocols)
   close-port       <port> <instance-name>    close a port on an instance
+  watch            run 'lab list' continuously
+                       -all              show terminated instances
 `

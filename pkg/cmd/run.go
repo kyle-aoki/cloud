@@ -9,28 +9,40 @@ import (
 	"log"
 )
 
-func CreateInstance() {
+func Run() {
 	log.Println("creating instance...")
-	co := resource.NewCloudOperator()
+	co := resource.New()
+	co.Rs.Instances = co.Finder.FindInstances()
+	co.Rs.SecurityGroups = co.Finder.FindAllSecurityGroups()
 
-	defaultName := args.IsEmpty(*args.Flags.Name, co.NextInstanceName())
-	util.Log("using instance name: %s", defaultName)
+	var name string
+	if args.FlagExists(args.Flags.Name) {
+		if resource.NameExists(co.Rs.Instances, *args.Flags.Name) {
+			panic("name taken")
+		}
+		name = *args.Flags.Name
+	} else {
+		name = resource.NextInstanceName(co.Rs.Instances)
+	}
+	util.Log("using instance name: %s", name)
 
 	startUpScript := ReadScriptFile(*args.Flags.Script)
 	util.Log("using script file: %s", *args.Flags.Script)
 
+	port22 := resource.SecurityGroupByNameOrPanic(co.Rs.SecurityGroups, "22").GroupId
+
 	rii := &resource.RunInstanceInput{
-		Name:             defaultName,
+		Name:             name,
 		SubnetId:         co.SubnetId(*args.Flags.Private || *args.Flags.P),
 		InstanceType:     *args.Flags.InstType,
 		Size:             util.StringToInt(*args.Flags.Gigs),
-		SecurityGroupIds: []*string{co.SecurityGroupOrPanic("22").GroupId},
+		SecurityGroupIds: []*string{port22},
 		UserData:         startUpScript,
 	}
 	util.Log("create instance input: %v", *rii)
 
 	_ = resource.RunInstance(rii)
-	fmt.Println(defaultName)
+	fmt.Println(name)
 }
 
 func ReadScriptFile(path string) string {

@@ -4,11 +4,12 @@ import (
 	"cloudlab/pkg/amazon"
 	"cloudlab/pkg/util"
 	"fmt"
+	"strconv"
 
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-func AssignSecurityGroup(
+func OpenPort(
 	instance *ec2.Instance,
 	securityGroup *ec2.SecurityGroup,
 ) {
@@ -24,7 +25,7 @@ func AssignSecurityGroup(
 	util.MustExec(err)
 }
 
-func RemoveSecurityGroup(
+func ClosePort(
 	instance *ec2.Instance,
 	port string,
 ) {
@@ -35,7 +36,6 @@ func RemoveSecurityGroup(
 		}
 		newSecurityGroups = append(newSecurityGroups, groupIdentifier.GroupId)
 	}
-
 	_, err := amazon.EC2().ModifyInstanceAttribute(&ec2.ModifyInstanceAttributeInput{
 		InstanceId: instance.InstanceId,
 		Groups:     newSecurityGroups,
@@ -81,8 +81,8 @@ func createInboundRule(groupId *string, protocol Protocol, port int) {
 	util.MustExec(err)
 }
 
-func (co *AWSCloudOperator) SecurityGroupOrPanic(groupName string) *ec2.SecurityGroup {
-	for _, sg := range co.Rs.SecurityGroups {
+func SecurityGroupByNameOrPanic(sgs []*ec2.SecurityGroup, groupName string) *ec2.SecurityGroup {
+	for _, sg := range sgs {
 		if sg.GroupName != nil && *sg.GroupName == groupName {
 			return sg
 		}
@@ -97,4 +97,25 @@ func (co *AWSCloudOperator) GetSecurityGroupIdByNameOrNil(name string) *ec2.Secu
 		}
 	}
 	return nil
+}
+
+func SecurityGroupExists(sgs []*ec2.SecurityGroup, name string) bool {
+	for _, sg := range sgs {
+		if sg.GroupName != nil && *sg.GroupName == name {
+			return true
+		}
+	}
+	return false
+}
+
+func ValidatePort(portString string) (portInt int) {
+	portInt64, err := strconv.ParseInt(portString, 10, 32)
+	if err != nil {
+		panic("invalid port")
+	}
+	portInt = int(portInt64)
+	if portInt > 65535 || portInt < 1 {
+		panic("invalid port")
+	}
+	return portInt
 }
