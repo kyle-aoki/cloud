@@ -7,16 +7,14 @@ import (
 
 func StartInstance() {
 	instNames := args.Collect()
-	co := resource.New()
 	for _, name := range instNames {
-		co.StartInstance(name)
+		resource.StartInstance(name)
 	}
 }
 
 func StopInstance() {
 	instNames := args.Collect()
-	co := resource.New()
 	for _, name := range instNames {
-		co.StopInstance(name)
+		resource.StopInstance(name)
 	}
 }

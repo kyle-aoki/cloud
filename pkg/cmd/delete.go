@@ -16,12 +16,12 @@ func DeleteInstances() {
 	targets := args.Collect()
 	util.Log("found delete targets: %v", targets)
 
-	co := resource.New()
-	co.Rs.Instances = co.Finder.FindNonTerminatedInstances()
+	lr := resource.NewLabResources()
+	lr.Instances = resource.FindNonTerminatedInstances()
 
 	var nameIds []NameId
 
-	for _, inst := range co.Rs.Instances {
+	for _, inst := range lr.Instances {
 		instName := resource.FindNameTagValue(inst.Tags)
 		util.Log("found instance '%s'", instName)
 		if instName != nil && util.Contains(*instName, targets) {
@@ -32,7 +32,7 @@ func DeleteInstances() {
 	util.Log("nameIds %v", nameIds)
 
 	for _, nameId := range nameIds {
-		co.TerminateInstance(&nameId.Id)
+		resource.TerminateInstance(&nameId.Id)
 		fmt.Println(nameId.Name)
 	}
 }

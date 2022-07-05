@@ -7,9 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-type ResourceDeleter struct{}
-
-func (a *ResourceDeleter) deleteSubnet(subnet *ec2.Subnet) {
+func deleteSubnet(subnet *ec2.Subnet) {
 	util.Log("deleting subnet %s", *subnet.SubnetId)
 	_, err := amazon.EC2().DeleteSubnet(&ec2.DeleteSubnetInput{
 		SubnetId: subnet.SubnetId,
@@ -17,7 +15,7 @@ func (a *ResourceDeleter) deleteSubnet(subnet *ec2.Subnet) {
 	util.MustExec(err)
 }
 
-func (a *ResourceDeleter) deleteInternetGateway(ig *ec2.InternetGateway) {
+func deleteInternetGateway(ig *ec2.InternetGateway) {
 	util.Log("deleting internet gateway %s", *ig.InternetGatewayId)
 	_, err := amazon.EC2().DeleteInternetGateway(&ec2.DeleteInternetGatewayInput{
 		InternetGatewayId: ig.InternetGatewayId,
@@ -25,7 +23,7 @@ func (a *ResourceDeleter) deleteInternetGateway(ig *ec2.InternetGateway) {
 	util.MustExec(err)
 }
 
-func (a *ResourceDeleter) deleteInstance(instance *ec2.Instance) {
+func deleteInstance(instance *ec2.Instance) {
 	util.Log("deleting instance %s", *instance.InstanceId)
 	_, err := amazon.EC2().TerminateInstances(&ec2.TerminateInstancesInput{
 		InstanceIds: []*string{instance.InstanceId},
@@ -33,13 +31,13 @@ func (a *ResourceDeleter) deleteInstance(instance *ec2.Instance) {
 	util.MustExec(err)
 }
 
-func (a *ResourceDeleter) deleteInstances(instances []*ec2.Instance) {
+func deleteInstances(instances []*ec2.Instance) {
 	for _, instance := range instances {
-		a.deleteInstance(instance)
+		deleteInstance(instance)
 	}
 }
 
-func (a *ResourceDeleter) deleteSecurityGroup(sg *ec2.SecurityGroup) {
+func deleteSecurityGroup(sg *ec2.SecurityGroup) {
 	util.Log("deleting security group %s", *sg.GroupId)
 	if sg.GroupName != nil && *sg.GroupName == "Default" {
 		return
@@ -50,13 +48,13 @@ func (a *ResourceDeleter) deleteSecurityGroup(sg *ec2.SecurityGroup) {
 	util.MustExec(err)
 }
 
-func (a *ResourceDeleter) deleteSecurityGroups(sgs []*ec2.SecurityGroup) {
+func deleteSecurityGroups(sgs []*ec2.SecurityGroup) {
 	for _, sg := range sgs {
-		a.deleteSecurityGroup(sg)
+		deleteSecurityGroup(sg)
 	}
 }
 
-func (a *ResourceDeleter) deleteVpc(vpc *ec2.Vpc) {
+func deleteVpc(vpc *ec2.Vpc) {
 	util.Log("deleting vpc %s", *vpc.VpcId)
 	_, err := amazon.EC2().DeleteVpc(&ec2.DeleteVpcInput{
 		VpcId: vpc.VpcId,
@@ -64,7 +62,7 @@ func (a *ResourceDeleter) deleteVpc(vpc *ec2.Vpc) {
 	util.MustExec(err)
 }
 
-func (a *ResourceDeleter) deleteKeyPair(key *ec2.KeyPairInfo) {
+func deleteKeyPair(key *ec2.KeyPairInfo) {
 	util.Log("deleting key pair info %s", *key.KeyPairId)
 	_, err := amazon.EC2().DeleteKeyPair(&ec2.DeleteKeyPairInput{
 		KeyPairId: key.KeyPairId,
@@ -72,13 +70,13 @@ func (a *ResourceDeleter) deleteKeyPair(key *ec2.KeyPairInfo) {
 	util.MustExec(err)
 }
 
-func (a *ResourceDeleter) deleteKeyPairs(keys []*ec2.KeyPairInfo) {
+func deleteKeyPairs(keys []*ec2.KeyPairInfo) {
 	for _, key := range keys {
-		a.deleteKeyPair(key)
+		deleteKeyPair(key)
 	}
 }
 
-func (a *ResourceDeleter) deleteRouteTable(rt *ec2.RouteTable) {
+func deleteRouteTable(rt *ec2.RouteTable) {
 	util.Log("deleting route table %s", *rt.RouteTableId)
 	_, err := amazon.EC2().DeleteRouteTable(&ec2.DeleteRouteTableInput{
 		RouteTableId: rt.RouteTableId,

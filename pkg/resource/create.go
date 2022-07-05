@@ -8,9 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-type ResourceCreator struct{}
-
-func (c *ResourceCreator) createVpc(cidrBlock string, name string) *ec2.Vpc {
+func createVpc(cidrBlock string, name string) *ec2.Vpc {
 	log.Println("creating vpc")
 	cvo, err := amazon.EC2().CreateVpc(&ec2.CreateVpcInput{
 		CidrBlock: util.StrPtr(cidrBlock),
@@ -23,7 +21,7 @@ func (c *ResourceCreator) createVpc(cidrBlock string, name string) *ec2.Vpc {
 	return cvo.Vpc
 }
 
-func (c *ResourceCreator) createSubnet(vpc *ec2.Vpc, name string, cidr string) *ec2.Subnet {
+func createSubnet(vpc *ec2.Vpc, name string, cidr string) *ec2.Subnet {
 	log.Println("creating subnet")
 	cso, err := amazon.EC2().CreateSubnet(&ec2.CreateSubnetInput{
 		VpcId:             vpc.VpcId,
@@ -34,7 +32,7 @@ func (c *ResourceCreator) createSubnet(vpc *ec2.Vpc, name string, cidr string) *
 	return cso.Subnet
 }
 
-func (c *ResourceCreator) createInternetGateway(name string) *ec2.InternetGateway {
+func createInternetGateway(name string) *ec2.InternetGateway {
 	log.Println("creating internet gateway")
 	cigo, err := amazon.EC2().CreateInternetGateway(&ec2.CreateInternetGatewayInput{
 		TagSpecifications: CreateNameTagSpec("internet-gateway", name),
@@ -43,7 +41,7 @@ func (c *ResourceCreator) createInternetGateway(name string) *ec2.InternetGatewa
 	return cigo.InternetGateway
 }
 
-func (c *ResourceCreator) createRouteTable(vpc *ec2.Vpc, name string) *ec2.RouteTable {
+func createRouteTable(vpc *ec2.Vpc, name string) *ec2.RouteTable {
 	log.Println("creating route table")
 	crto, err := amazon.EC2().CreateRouteTable(&ec2.CreateRouteTableInput{
 		VpcId: vpc.VpcId,
@@ -55,7 +53,7 @@ func (c *ResourceCreator) createRouteTable(vpc *ec2.Vpc, name string) *ec2.Route
 	return crto.RouteTable
 }
 
-func (c *ResourceCreator) ExecuteCreateKeyPairRequest(name string) *string {
+func executeCreateKeyPairRequest(name string) *string {
 	log.Println("making create key pair request")
 	ckpo, err := amazon.EC2().CreateKeyPair(&ec2.CreateKeyPairInput{
 		KeyName:           util.StrPtr(name),

@@ -16,7 +16,7 @@ func KeyFilePath() string {
 	return fmt.Sprintf("%s/%s", util.ConfigDir(), keyFileName)
 }
 
-func (co *AWSCloudOperator) CreateKeyPair() {
+func CreateKeyPair() {
 	log.Println("starting key pair creation process")
 
 	log.Println("attempting to remove everything in config dir")
@@ -31,7 +31,7 @@ func (co *AWSCloudOperator) CreateKeyPair() {
 	log.Println("creating config dir: ", util.ConfigDir())
 	util.CreateDir(util.ConfigDir())
 
-	keyMaterial := co.Creator.ExecuteCreateKeyPairRequest(CloudLabKeyPair)
+	keyMaterial := executeCreateKeyPairRequest(CloudLabKeyPair)
 
 	log.Println("writing key material to key file at", KeyFilePath())
 	err = ioutil.WriteFile(KeyFilePath(), []byte(*keyMaterial), 0400)

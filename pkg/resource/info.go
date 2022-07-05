@@ -4,50 +4,50 @@ import (
 	"cloudlab/pkg/util"
 )
 
-func (co *AWSCloudOperator) Info() {
-	if co.Rs.Vpc == nil {
+func (lr *LabResources) Info() {
+	if lr.Vpc == nil {
 		util.Tab("missing cloudlab vpc")
 	} else {
-		util.Tab("vpc\t" + *co.Rs.Vpc.VpcId)
+		util.Tab("vpc\t" + *lr.Vpc.VpcId)
 	}
 
-	if co.Rs.PublicSubnet == nil {
+	if lr.PublicSubnet == nil {
 		util.Tab("missing cloudlab public subnet")
 	} else {
-		util.Tab("public subnet\t" + *co.Rs.PublicSubnet.SubnetId)
+		util.Tab("public subnet\t" + *lr.PublicSubnet.SubnetId)
 	}
 
-	if co.Rs.PrivateSubnet == nil {
+	if lr.PrivateSubnet == nil {
 		util.Tab("missing cloudlab private subnet")
 	} else {
-		util.Tab("private subnet\t" + *co.Rs.PrivateSubnet.SubnetId)
+		util.Tab("private subnet\t" + *lr.PrivateSubnet.SubnetId)
 	}
 
-	if co.Rs.PublicRouteTable == nil {
+	if lr.PublicRouteTable == nil {
 		util.Tab("missing public route table")
 	} else {
-		util.Tab("public route table\t" + *co.Rs.PublicRouteTable.RouteTableId)
+		util.Tab("public route table\t" + *lr.PublicRouteTable.RouteTableId)
 	}
 
-	if co.Rs.PrivateRouteTable == nil {
+	if lr.PrivateRouteTable == nil {
 		util.Tab("missing private route table")
 	} else {
-		util.Tab("private route table\t" + *co.Rs.PrivateRouteTable.RouteTableId)
+		util.Tab("private route table\t" + *lr.PrivateRouteTable.RouteTableId)
 	}
 
-	if co.Rs.InternetGateway == nil {
+	if lr.InternetGateway == nil {
 		util.Tab("missing cloudlab internet gateway")
 	} else {
-		util.Tab("internet gateway\t" + *co.Rs.InternetGateway.InternetGatewayId)
+		util.Tab("internet gateway\t" + *lr.InternetGateway.InternetGatewayId)
 	}
 
-	if co.Rs.KeyPair == nil {
+	if lr.KeyPair == nil {
 		util.Tab("missing cloudlab key")
 	} else {
-		util.Tab("key\t" + *co.Rs.KeyPair.KeyPairId)
+		util.Tab("key\t" + *lr.KeyPair.KeyPairId)
 	}
 
-	for _, sg := range co.Rs.SecurityGroups {
+	for _, sg := range lr.SecurityGroups {
 		util.Tab("security group " + *sg.GroupName + "\t" + *sg.GroupId)
 	}
 

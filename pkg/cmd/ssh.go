@@ -11,10 +11,10 @@ func SSH() {
 	names := args.CollectOrEmpty()
 	allInstances := len(names) == 0
 
-	co := resource.New()
-	co.Rs.Instances = co.Finder.FindNonTerminatedInstances()
+	lr := resource.NewLabResources()
+	lr.Instances = resource.FindNonTerminatedInstances()
 
-	for _, inst := range co.Rs.Instances {
+	for _, inst := range lr.Instances {
 		instName := resource.FindNameTagValue(inst.Tags)
 		var ip string
 		if *args.Flags.P || *args.Flags.Private {

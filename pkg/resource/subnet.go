@@ -7,17 +7,17 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-func (co *AWSCloudOperator) SubnetId(isPrivateSubnet bool) string {
+func SelectSubnet(lr *LabResources, isPrivateSubnet bool) string {
 	if isPrivateSubnet {
-		return *co.Rs.PrivateSubnet.SubnetId
+		return *lr.PrivateSubnet.SubnetId
 	}
-	return *co.Rs.PublicSubnet.SubnetId
+	return *lr.PublicSubnet.SubnetId
 }
 
-func (co *AWSCloudOperator) resolvePublicSubnetAttributes() {
-	if !*co.Rs.PublicSubnet.MapPublicIpOnLaunch {
+func resolvePublicSubnetAttributes(publicSubnet *ec2.Subnet) {
+	if !*publicSubnet.MapPublicIpOnLaunch {
 		_, err := amazon.EC2().ModifySubnetAttribute(&ec2.ModifySubnetAttributeInput{
-			SubnetId:            co.Rs.PublicSubnet.SubnetId,
+			SubnetId:            publicSubnet.SubnetId,
 			MapPublicIpOnLaunch: &ec2.AttributeBooleanValue{Value: util.BoolPtr(true)},
 		})
 		util.MustExec(err)

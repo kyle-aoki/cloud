@@ -58,8 +58,8 @@ func NextInstanceName(instances []*ec2.Instance) string {
 	return fmt.Sprintf("i%v", max+1)
 }
 
-func (co *AWSCloudOperator) StartInstance(name string) {
-	inst := co.Finder.FindInstanceByName(name)
+func StartInstance(name string) {
+	inst := FindInstanceByName(name)
 	if inst == nil {
 		panic("instance not found")
 	}
@@ -70,8 +70,8 @@ func (co *AWSCloudOperator) StartInstance(name string) {
 	fmt.Println(name)
 }
 
-func (co *AWSCloudOperator) StopInstance(name string) {
-	inst := co.Finder.FindInstanceByName(name)
+func StopInstance(name string) {
+	inst := FindInstanceByName(name)
 	if inst == nil {
 		panic("instance not found")
 	}
@@ -82,7 +82,7 @@ func (co *AWSCloudOperator) StopInstance(name string) {
 	fmt.Println(name)
 }
 
-func (co *AWSCloudOperator) TerminateInstance(id *string) {
+func TerminateInstance(id *string) {
 	_, err := amazon.EC2().TerminateInstances(&ec2.TerminateInstancesInput{
 		InstanceIds: []*string{id},
 	})

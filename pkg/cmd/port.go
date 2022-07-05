@@ -24,21 +24,21 @@ func openPort(name string, port string) {
 	util.Log("port %s", port)
 	util.Log("instanceName %s", name)
 
-	co := resource.New()
-	co.Rs.Vpc = co.Finder.FindCloudLabVpcOrPanic()
-	co.Rs.SecurityGroups = co.Finder.FindAllSecurityGroups()
-	instance := co.Finder.FindInstanceByNameOrPanic(name)
+	lr := resource.NewLabResources()
+	lr.Vpc = resource.FindCloudLabVpcOrPanic()
+	lr.SecurityGroups = resource.FindAllSecurityGroups()
+	instance := resource.FindInstanceByNameOrPanic(name)
 
-	if !resource.SecurityGroupExists(co.Rs.SecurityGroups, port) {
-		resource.CreateSecurityGroup(co.Rs.Vpc, port)
-		co.Rs.SecurityGroups = co.Finder.FindAllSecurityGroups()
+	if !resource.SecurityGroupExists(lr.SecurityGroups, port) {
+		resource.CreateSecurityGroup(lr.Vpc, port)
+		lr.SecurityGroups = resource.FindAllSecurityGroups()
 	}
 
 	if resource.InstanceHasPortOpen(instance, port) {
 		panic(fmt.Sprintf("port %s already open on instance %s\n", port, name))
 	}
 
-	securityGroup := resource.SecurityGroupByNameOrPanic(co.Rs.SecurityGroups, port)
+	securityGroup := resource.SecurityGroupByNameOrPanic(lr.SecurityGroups, port)
 
 	resource.OpenPort(instance, securityGroup)
 	fmt.Println(fmt.Sprintf("opened port %s on instance %s", port, name))
@@ -57,10 +57,10 @@ func ClosePorts() {
 }
 
 func closePort(instanceName string, port string) {
-	co := resource.New()
-	co.Rs.Instances = co.Finder.FindNonTerminatedInstances()
+	lr := resource.NewLabResources()
+	lr.Instances = resource.FindNonTerminatedInstances()
 	_ = resource.ValidatePort(port)
-	instance := co.Finder.FindInstanceByName(instanceName)
+	instance := resource.FindInstanceByName(instanceName)
 	resource.ClosePort(instance, port)
 	fmt.Println(fmt.Sprintf("closed port %s on instance %s", port, instanceName))
 }

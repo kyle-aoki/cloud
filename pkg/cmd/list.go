@@ -13,16 +13,14 @@ import (
 )
 
 func ListInstances() {
-	co := resource.New()
-
-	if co.Finder.FindCloudLabVpc() == nil {
+	if resource.FindCloudLabVpc() == nil {
 		panic("run 'lab init' first")
 	}
 
 	if *args.Flags.All {
-		PrintInstanceList(co.Finder.FindInstances())
+		PrintInstanceList(resource.FindInstances())
 	} else {
-		PrintInstanceList(co.Finder.FindNonTerminatedInstances())
+		PrintInstanceList(resource.FindNonTerminatedInstances())
 	}
 }
 

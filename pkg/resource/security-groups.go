@@ -82,6 +82,7 @@ func createInboundRule(groupId *string, protocol Protocol, port int) {
 }
 
 func SecurityGroupByNameOrPanic(sgs []*ec2.SecurityGroup, groupName string) *ec2.SecurityGroup {
+	util.Log("searching for security group: %s", groupName)
 	for _, sg := range sgs {
 		if sg.GroupName != nil && *sg.GroupName == groupName {
 			return sg
@@ -90,8 +91,8 @@ func SecurityGroupByNameOrPanic(sgs []*ec2.SecurityGroup, groupName string) *ec2
 	panic(fmt.Sprintf("failed to find security group %s", groupName))
 }
 
-func (co *AWSCloudOperator) GetSecurityGroupIdByNameOrNil(name string) *ec2.SecurityGroup {
-	for _, sg := range co.Rs.SecurityGroups {
+func GetSecurityGroupIdByNameOrNil(lr *LabResources, name string) *ec2.SecurityGroup {
+	for _, sg := range lr.SecurityGroups {
 		if sg.GroupName != nil && *sg.GroupName == name {
 			return sg
 		}

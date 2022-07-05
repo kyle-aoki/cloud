@@ -23,13 +23,11 @@ func Watch() {
 }
 
 func WatchLoop(interval int) {
-	co := resource.New()
-
 	var instances []*ec2.Instance
 	if *args.Flags.All {
-		instances = co.Finder.FindInstances()
+		instances = resource.FindInstances()
 	} else {
-		instances = co.Finder.FindNonTerminatedInstances()
+		instances = resource.FindNonTerminatedInstances()
 	}
 
 	time.Sleep(time.Second * time.Duration(interval))

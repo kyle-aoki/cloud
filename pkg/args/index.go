@@ -31,7 +31,7 @@ func Init() {
 		Private:  flag.Bool("private", false, "create a private instance"),
 		P:        flag.Bool("p", false, "create a private instance"),
 		Name:     flag.String("name", "", "name of instance"),
-		InstType: flag.String("type", "t2.nano", "specifiy an instance type (e.g. t2.nano)"),
+		InstType: flag.String("type", "t2.nano", "specifiy an instance type"),
 		Gigs:     flag.String("gigs", "8", "number of gigabytes of storage"),
 		Script:   flag.String("script", "", "path to bash script file to run on EC2 startup"),
 		All:      flag.Bool("all", false, "show terminated instances"),

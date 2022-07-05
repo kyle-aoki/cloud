@@ -4,12 +4,11 @@ import (
 	"cloudlab/pkg/amazon"
 	"cloudlab/pkg/args"
 	"cloudlab/pkg/cmd"
-	"cloudlab/pkg/util"
 	"fmt"
 )
 
 func main() {
-	defer util.MainRecover()
+	// defer util.MainRecover()
 	args.Init()
 	amazon.InitEC2Client()
 
