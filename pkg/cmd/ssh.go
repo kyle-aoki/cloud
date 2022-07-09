@@ -20,7 +20,11 @@ func SSH() {
 		if *args.Flags.P || *args.Flags.Private {
 			ip = *inst.PrivateIpAddress
 		} else {
-			ip = *inst.PublicIpAddress
+			if inst.PublicIpAddress == nil {
+				ip = *inst.PrivateIpAddress
+			} else {
+				ip = *inst.PublicIpAddress
+			}
 		}
 		if !allInstances && instName != nil && util.Contains(*instName, names) {
 			printSSHCommand(ip)
