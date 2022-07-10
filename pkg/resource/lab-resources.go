@@ -50,30 +50,6 @@ func FindAllLabResources() *LabResources {
 	return lr
 }
 
-// func Audit(lr *LabResources) {
-// 	bools := []bool{
-// 		IsMissing(lr.Vpc == nil, "vpc"),
-// 		IsMissing(lr.PublicSubnet == nil, "public subnet"),
-// 		IsMissing(lr.PrivateSubnet == nil, "private subnet"),
-// 		IsMissing(lr.PublicRouteTable == nil, "main route table"),
-// 		IsMissing(lr.PrivateRouteTable == nil, "private route table"),
-// 		IsMissing(lr.InternetGateway == nil, "internet gateway"),
-// 		IsMissing(lr.SecurityGroups == nil, "security groups"),
-// 		IsMissing(lr.KeyPair == nil, "key pair"),
-// 	}
-// 	if util.AtLeastOneTrue(bools) {
-// 		fmt.Println("run 'lab init' to create missing cloudlab resources")
-// 		os.Exit(1)
-// 	}
-// }
-
-// func IsMissing(missing bool, resourceType string) bool {
-// 	if missing {
-// 		fmt.Printf("%s is missing from cloudlab resources\n", resourceType)
-// 	}
-// 	return missing
-// }
-
 // ######################################################################################
 // Init #################################################################################
 // ######################################################################################
