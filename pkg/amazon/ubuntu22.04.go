@@ -27,9 +27,9 @@ var UbuntuAmiRegionMap = map[string]string{
 	"af-south-1":     "ami-0df5b771d6e8bfdf9",
 }
 
-// Gets correct Ubuntu 22 Ami based on user's aws config region
+// gets correct ubuntu 22 ami based on user's aws config region
 func UbuntuAmi() string {
-	if val, ok := UbuntuAmiRegionMap[Region]; ok {
+	if val, ok := UbuntuAmiRegionMap[userRegion]; ok {
 		return val
 	}
 	panic(`did not find an Ubuntu 22.04 ami in your region.

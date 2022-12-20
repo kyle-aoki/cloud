@@ -8,7 +8,7 @@ import (
 )
 
 var ec2Session *ec2.EC2
-var Region string
+var userRegion string
 
 func InitEC2Client() {
 	util.Log("initializing EC2 client...")
@@ -24,7 +24,7 @@ func setRegion(region *string) {
 		panic("missing region aws configuration")
 	}
 	util.Log("using region %s", *region)
-	Region = *region
+	userRegion = *region
 }
 
 func EC2() *ec2.EC2 {
