@@ -24,7 +24,7 @@ func Watch() {
 
 func WatchLoop(interval int) {
 	var instances []*ec2.Instance
-	if *args.Flags.All {
+	if args.Flags.ShowTerminated {
 		instances = resource.FindInstances()
 	} else {
 		instances = resource.FindNonTerminatedInstances()

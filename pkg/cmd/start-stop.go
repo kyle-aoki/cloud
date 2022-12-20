@@ -6,14 +6,14 @@ import (
 )
 
 func StartInstance() {
-	instNames := args.Collect()
+	instNames := args.CollectOrPanic()
 	for _, name := range instNames {
 		resource.StartInstance(name)
 	}
 }
 
 func StopInstance() {
-	instNames := args.Collect()
+	instNames := args.CollectOrPanic()
 	for _, name := range instNames {
 		resource.StopInstance(name)
 	}

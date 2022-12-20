@@ -13,7 +13,7 @@ type NameId struct {
 }
 
 func DeleteInstances() {
-	targets := args.Collect()
+	targets := args.CollectOrPanic()
 	util.Log("found delete targets: %v", targets)
 
 	lr := resource.NewLabResources()

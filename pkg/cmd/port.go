@@ -12,8 +12,8 @@ import (
 // ####################################################################################
 
 func OpenPorts() {
-	instanceName := args.Poll()
-	ports := args.Collect()
+	instanceName := args.PollOrPanic()
+	ports := args.CollectOrPanic()
 
 	for _, port := range ports {
 		openPort(instanceName, port)
@@ -49,8 +49,8 @@ func openPort(name string, port string) {
 // ####################################################################################
 
 func ClosePorts() {
-	instanceName := args.Poll()
-	ports := args.Collect()
+	instanceName := args.PollOrPanic()
+	ports := args.CollectOrPanic()
 	for _, port := range ports {
 		closePort(instanceName, port)
 	}

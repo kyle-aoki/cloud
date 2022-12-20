@@ -24,7 +24,7 @@ func CreateTagSpecs(resourceType string, tags map[string]string) []*ec2.TagSpeci
 
 func FindNameTagValue(tags []*ec2.Tag) *string {
 	for _, tag := range tags {
-		if tag.Key != nil && *tag.Key == "Name" {
+		if tag.Key != nil && *tag.Key == "Name"{
 			return tag.Value
 		}
 	}

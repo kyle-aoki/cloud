@@ -18,28 +18,24 @@ func Run() {
 	lr.SecurityGroups = resource.FindAllSecurityGroups()
 
 	var name string
-	if args.FlagExists(args.Flags.Name) {
-		if resource.NameExists(lr.Instances, *args.Flags.Name) {
-			panic("name taken")
+	if args.Flags.InstanceName != nil && *args.Flags.InstanceName != "" {
+		if resource.NameExists(lr.Instances, *args.Flags.InstanceName) {
+			panic(fmt.Sprintf("cannot name instance '%s': name already taken", *args.Flags.InstanceName))
 		}
-		name = *args.Flags.Name
+		name = *args.Flags.InstanceName
 	} else {
 		name = resource.NextInstanceName(lr.Instances)
 	}
 	util.Log("using instance name: %s", name)
 
-	startUpScript := ReadScriptFile(*args.Flags.Script)
-	util.Log("using script file: %s", *args.Flags.Script)
-
 	port22 := resource.SecurityGroupByNameOrPanic(lr.SecurityGroups, "22").GroupId
 
 	rii := &resource.RunInstanceInput{
 		Name:             name,
-		SubnetId:         resource.SelectSubnet(lr, *args.Flags.Private || *args.Flags.P),
-		InstanceType:     *args.Flags.InstType,
-		Size:             util.StringToInt(*args.Flags.Gigs),
+		SubnetId:         resource.SelectSubnet(lr, args.Flags.Private),
+		InstanceType:     args.Flags.InstanceType,
+		Size:             util.StringToInt(args.Flags.Gigabytes),
 		SecurityGroupIds: []*string{port22},
-		UserData:         startUpScript,
 	}
 	util.Log("create instance input: %v", *rii)
 

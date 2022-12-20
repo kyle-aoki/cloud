@@ -17,7 +17,7 @@ func SSH() {
 	for _, inst := range lr.Instances {
 		instName := resource.FindNameTagValue(inst.Tags)
 		var ip string
-		if *args.Flags.P || *args.Flags.Private {
+		if args.Flags.Private {
 			ip = *inst.PrivateIpAddress
 		} else {
 			if inst.PublicIpAddress == nil {

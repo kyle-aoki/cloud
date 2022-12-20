@@ -17,12 +17,12 @@ func ListInstances() {
 		panic("run 'lab init' first")
 	}
 
-	if *args.Flags.Quiet {
+	if args.Flags.Quiet {
 		PrintInstanceNames(resource.FindNonTerminatedInstances())
 		return
 	}
 
-	if *args.Flags.All {
+	if args.Flags.ShowTerminated {
 		PrintInstanceList(resource.FindInstances())
 	} else {
 		PrintInstanceList(resource.FindNonTerminatedInstances())

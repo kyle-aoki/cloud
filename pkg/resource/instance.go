@@ -15,7 +15,6 @@ type RunInstanceInput struct {
 	InstanceType     string // t2.nano
 	Size             int
 	SecurityGroupIds []*string
-	UserData         string
 }
 
 func RunInstance(rii *RunInstanceInput) *ec2.Instance {
@@ -31,7 +30,6 @@ func RunInstance(rii *RunInstanceInput) *ec2.Instance {
 		KeyName:          util.StrPtr(CloudLabKeyPair),
 		SecurityGroupIds: rii.SecurityGroupIds,
 		InstanceType:     util.StrPtr(rii.InstanceType),
-		UserData:         util.StrPtr(rii.UserData),
 		TagSpecifications: CreateTagSpecs("instance", map[string]string{
 			"Name":                   rii.Name,
 			IsCloudLabInstanceTagKey: IsCloudLabInstanceTagVal,
@@ -45,8 +43,11 @@ func RunInstance(rii *RunInstanceInput) *ec2.Instance {
 func NextInstanceName(instances []*ec2.Instance) string {
 	var max int64
 	for _, inst := range instances {
-		n := *FindNameTagValue(inst.Tags)
-		num := n[1:]
+		n := FindNameTagValue(inst.Tags)
+		if n == nil {
+			continue
+		}
+		num := (*n)[1:]
 		i, err := strconv.ParseInt(num, 10, 32)
 		if err != nil {
 			continue
