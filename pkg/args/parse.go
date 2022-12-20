@@ -12,7 +12,11 @@ func parseCloudlabFlags(args []string) (*CloudlabFlags, []string) {
 		// -------------------------------------------------------------------------
 		// ---- valueless flags ----------------------------------------------------
 		// -------------------------------------------------------------------------
-		if args[i] == "-v" || args[i] == "--verbose" {
+		if args[i] == "-v" || args[i] == "--version" {
+			flags.PrintVersion = true
+			continue
+		}
+		if args[i] == "--verbose" {
 			flags.Verbose = true
 			continue
 		}

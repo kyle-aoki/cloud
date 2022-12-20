@@ -5,6 +5,7 @@ import (
 )
 
 type CloudlabFlags struct {
+	PrintVersion   bool
 	Verbose        bool
 	Quiet          bool
 	ShowHelp       bool
@@ -17,9 +18,9 @@ type CloudlabFlags struct {
 
 func cloudlabFlagDefaults() *CloudlabFlags {
 	return &CloudlabFlags{
-		InstanceType:   "t2.micro",
-		Gigabytes:      "8",
-		InstanceName:   nil,
+		InstanceType: "t2.micro",
+		Gigabytes:    "8",
+		InstanceName: nil,
 	}
 }
 
