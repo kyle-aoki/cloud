@@ -6,17 +6,29 @@ import (
 	"cloudlab/pkg/cmd"
 	"cloudlab/pkg/util"
 	"fmt"
+	"io"
+	"log"
+	"os"
 )
 
 func main() {
 	defer util.MainRecover()
 	args.ParseProgramInput()
-	amazon.InitEC2Client()
+
+	if args.Flags.Verbose {
+		log.SetOutput(os.Stdout)
+	} else {
+		log.SetOutput(io.Discard)
+	}
+	if args.Flags.ShowHelp {
+		PrintHelpAndExit()
+	}
 
 	if command, found := Syntax[args.PollOrEmpty()]; found {
+		amazon.InitEC2Client()
 		command()
 	} else {
-		fmt.Print(HelpText)
+		PrintHelpAndExit()
 	}
 }
 
@@ -36,37 +48,39 @@ var Syntax = map[string]func(){
 	"close-port": cmd.ClosePorts,
 }
 
-const HelpText = `command structure:
-  lab [...flags] <command> [...arguments]
-general flags:
-  -v, -verbose    verbose logging
+func PrintHelpAndExit() {
+	fmt.Print(HelpText)
+	os.Exit(0)
+}
+
+const HelpText = `general flags:
+  -v, --verbose    verbose logging
+  -h, --help       print this help text
 commands:
-  version          print version
-  info             print cloudlab resource info
+  version       print version
+  info          print cloudlab resource info
 
-  init             create base cloudlab resources (vpc, subnets, etc.)
-                   (base resources cost nothing)
-  destroy          destroy base cloudlab resrouces
-                   (must terminate all instances first)
+  init          create base cloudlab resources (vpc, subnets, etc.)
+                (base resources cost nothing)
+  destroy       destroy base cloudlab resrouces
+                (must terminate all instances first)
 
-  list             list active instances
-                       --all, -a                  show terminated instances
-                       --quiet, -q                print names only
-  watch            run 'lab list' continuously
-                       --all, -a                  show terminated instances
+  list          list active instances
+                    --all    -a                show terminated instances
+                    --quiet  -q                print names only
+  watch         run 'lab list' continuously
+                    --all    -a                show terminated instances
 
-  run              run a new instance
-                       --name, -n                 instance name
-                       --private, -p              create instance in private subnet
-                       --type, -t                 instance type (t2.nano, t2.micro, etc.)
-                       --gigabytes, -g            gigabytes of storage
+  run           run a new instance
+                    --name       -n   instance name
+                    --private    -p   create instance in private subnet
+                    --type       -t   instance type (t2.nano, t2.micro, etc.)
+                    --gigabytes  -g   gigabytes of storage
 
-  start            <instance-name>                start an instance
-  stop             <instance-name>                stop an instance
-
-  ssh              <instance-name>                print out SSH command
-  delete           <instance-name>                terminate an instance
-
-  open-port        <instance-name> <ports...>     open a port on an instance (all protocols)
-  close-port       <instance-name> <ports...>     close a port on an instance
+  start         <names...>            start instance(s)
+  stop          <names...>            stop instance(s)
+  ssh           <names...>            print out SSH command(s)
+  delete        <names...>            terminate instance(s)
+  open-port     <name> <ports...>     open one or more ports on an instance (all protocols)
+  close-port    <name> <ports...>     close one or more ports on an instance
 `

@@ -28,6 +28,10 @@ func parseCloudlabFlags(args []string) (*CloudlabFlags, []string) {
 			flags.ShowTerminated = true
 			continue
 		}
+		if args[i] == "-h" || args[i] == "--help" {
+			flags.ShowHelp = true
+			continue
+		}
 		// -------------------------------------------------------------------------
 		// ---- instance type ------------------------------------------------------
 		// -------------------------------------------------------------------------

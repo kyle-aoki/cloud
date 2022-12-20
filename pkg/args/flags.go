@@ -7,6 +7,7 @@ import (
 type CloudlabFlags struct {
 	Verbose        bool
 	Quiet          bool
+	ShowHelp       bool
 	Private        bool
 	ShowTerminated bool
 	InstanceType   string
@@ -16,12 +17,8 @@ type CloudlabFlags struct {
 
 func cloudlabFlagDefaults() *CloudlabFlags {
 	return &CloudlabFlags{
-		Verbose:        false,
-		Quiet:          false,
-		Private:        false,
-		ShowTerminated: false,
 		InstanceType:   "t2.micro",
-		Gigabytes:      "8gb",
+		Gigabytes:      "8",
 		InstanceName:   nil,
 	}
 }
