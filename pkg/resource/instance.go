@@ -39,7 +39,7 @@ func RunInstance(rii *RunInstanceInput) *ec2.Instance {
 	return rio.Instances[0]
 }
 
-// i1, i2, i3 ...
+// i1, i2, i3...
 func NextInstanceName(instances []*ec2.Instance) string {
 	var max int64
 	for _, inst := range instances {

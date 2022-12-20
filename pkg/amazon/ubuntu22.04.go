@@ -1,5 +1,6 @@
 package amazon
 
+// ubuntu 22.04
 var UbuntuAmiRegionMap = map[string]string{
 	"us-gov-west-1":  "ami-04e77113f128920b2",
 	"us-gov-east-1":  "ami-08fcbec75b43330b7",
@@ -27,7 +28,7 @@ var UbuntuAmiRegionMap = map[string]string{
 	"af-south-1":     "ami-0df5b771d6e8bfdf9",
 }
 
-// gets correct ubuntu 22 ami based on user's aws config region
+// gets correct ubuntu 22.04 ami based on user's aws config region
 func UbuntuAmi() string {
 	if val, ok := UbuntuAmiRegionMap[userRegion]; ok {
 		return val

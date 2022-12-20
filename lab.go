@@ -11,20 +11,20 @@ import (
   "os"
 )
 
-const cloudlabVersion = "1.1.0"
+const cloudlabVersion = "1.0.0"
 
 func main() {
   defer util.MainRecover()
   args.ParseProgramInput()
 
-  if args.Flags.PrintVersion {
-    fmt.Println(cloudlabVersion)
-    os.Exit(0)
-  }
   if args.Flags.Verbose {
     log.SetOutput(os.Stdout)
   } else {
     log.SetOutput(io.Discard)
+  }
+  if args.Flags.PrintVersion {
+    fmt.Println(cloudlabVersion)
+    os.Exit(0)
   }
   if args.Flags.ShowHelp {
     fmt.Print(helpText)
@@ -77,7 +77,7 @@ commands:
   run           run a new instance
                     --name       -n   instance name
                     --private    -p   create instance in private subnet
-                    --type       -t   instance type (t2.micro, t2.medium, ...) (default t2.nano)
+                    --type       -t   instance type (t2.micro, t2.medium...) (default t2.nano)
                     --gigabytes  -g   gigabytes of storage (integer) (default 8)
 
   start         <names...>            start instance(s)

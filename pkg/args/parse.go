@@ -39,20 +39,20 @@ func parseCloudlabFlags(args []string) (*CloudlabFlags, []string) {
 		// -------------------------------------------------------------------------
 		// ---- instance type ------------------------------------------------------
 		// -------------------------------------------------------------------------
-		if strings.Contains(args[i], "--type=") {
-			typeParts := strings.SplitN(args[i], "=", 2)
-			if len(typeParts) < 2 {
-				panic("invalid instance type. try -t <type> or --type=<type>")
-			}
-			flags.InstanceType = typeParts[1]
-			continue
-		}
 		if args[i] == "-t" {
 			if isLastArg(args, i) {
 				panic("no argument supplied for instance type. try -t <type> or --type=<type>")
 			}
 			flags.InstanceType = args[i+1]
 			i += 1
+			continue
+		}
+		if strings.Contains(args[i], "--type=") {
+			typeParts := strings.SplitN(args[i], "=", 2)
+			if len(typeParts) < 2 {
+				panic("invalid instance type. try -t <type> or --type=<type>")
+			}
+			flags.InstanceType = typeParts[1]
 			continue
 		}
 		// -------------------------------------------------------------------------
