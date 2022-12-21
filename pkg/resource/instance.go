@@ -107,3 +107,10 @@ func InstanceHasPortOpen(instance *ec2.Instance, port string) bool {
 	}
 	return false
 }
+
+func InstanceInPrivateSubnet(instance *ec2.Instance, lr *LabResources) bool {
+	if *lr.PrivateSubnet.SubnetId == *instance.SubnetId {
+		return true
+	}
+	return false
+}

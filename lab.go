@@ -48,7 +48,6 @@ var syntax = map[string]func(){
   "run":        cmd.Run,
   "start":      cmd.StartInstance,
   "stop":       cmd.StopInstance,
-  "ssh":        cmd.SSH,
   "delete":     cmd.DeleteInstances,
   "open-port":  cmd.OpenPorts,
   "close-port": cmd.ClosePorts,

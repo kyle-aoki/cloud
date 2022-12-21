@@ -5,7 +5,6 @@ import (
 	"cloudlab/pkg/resource"
 	"cloudlab/pkg/util"
 	"fmt"
-	"io/ioutil"
 	"log"
 )
 
@@ -40,14 +39,12 @@ func Run() {
 	util.Log("create instance input: %v", *rii)
 
 	_ = resource.RunInstance(rii)
-	fmt.Println(name)
-}
 
-func ReadScriptFile(path string) string {
-	if path == "" {
-		return ""
+	hostConfig := addInstanceToSshConfig(name, lr)
+
+	if args.Flags.Quiet {
+		fmt.Println(name)
+	} else {
+		fmt.Println(hostConfig)
 	}
-	bytes, err := ioutil.ReadFile(path)
-	util.MustExec(err)
-	return string(bytes)
 }

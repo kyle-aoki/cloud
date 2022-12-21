@@ -31,7 +31,7 @@ func ListInstances() {
 
 func PrintInstanceNames(instances []*ec2.Instance) {
 	for _, inst := range instances {
-		fmt.Println(fmt.Sprintf("%v", Name(inst)))
+		fmt.Printf("%v\n", Name(inst))
 	}
 }
 
