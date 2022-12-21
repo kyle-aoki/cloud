@@ -5,34 +5,54 @@ import (
 	"cloudlab/pkg/resource"
 	"cloudlab/pkg/util"
 	"fmt"
-)
+	"os"
 
-type NameId struct {
-	Name string
-	Id   string
-}
+	"github.com/aws/aws-sdk-go/service/ec2"
+)
 
 func DeleteInstances() {
 	targets := args.CollectOrPanic()
 	util.Log("found delete targets: %v", targets)
 
 	lr := resource.NewLabResources()
+	lr.PublicSubnet = resource.FindPublicSubnet()
+	lr.PrivateSubnet = resource.FindPrivateSubnet()
 	lr.Instances = resource.FindNonTerminatedInstances()
 
-	var nameIds []NameId
+	var targetInstances []*ec2.Instance
 
-	for _, inst := range lr.Instances {
-		instName := resource.FindNameTagValue(inst.Tags)
-		util.Log("found instance '%s'", instName)
+	for i := 0; i < len(lr.Instances); i++ {
+		instName := resource.FindNameTagValue(lr.Instances[i].Tags)
+		util.Log("found instance: ", lr.Instances[i].InstanceId)
 		if instName != nil && util.Contains(*instName, targets) {
-			nameIds = append(nameIds, NameId{Name: *instName, Id: *inst.InstanceId})
+			targetInstances = append(targetInstances, lr.Instances[i])
 		}
 	}
 
-	util.Log("nameIds %v", nameIds)
+	if len(targetInstances) == 0 {
+		os.Exit(0)
+	}
 
-	for _, nameId := range nameIds {
-		resource.TerminateInstance(&nameId.Id)
-		fmt.Println(nameId.Name)
+	for i := 0; i < len(targetInstances); i++ {
+		util.Log("attempting to delete instance: %v", targetInstances[i].InstanceId)
+	}
+
+	resource.TerminateInstances(targetInstances)
+
+	for i := 0; i < len(targetInstances); i++ {
+		var ip *string
+		if resource.InstanceInPrivateSubnet(targetInstances[i], lr) {
+			ip = targetInstances[i].PrivateIpAddress
+		} else {
+			ip = targetInstances[i].PublicIpAddress
+		}
+		RemoveInstanceFromSshConfig(resource.FindNameTagValue(targetInstances[i].Tags), ip)
+	}
+
+	for i := 0; i < len(targetInstances); i++ {
+		v := resource.FindNameTagValue(targetInstances[i].Tags)
+		if v != nil {
+			fmt.Println(*v)
+		}
 	}
 }

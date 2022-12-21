@@ -83,9 +83,13 @@ func StopInstance(name string) {
 	fmt.Println(name)
 }
 
-func TerminateInstance(id *string) {
+func TerminateInstances(instances []*ec2.Instance) {
+	var instanceIds []*string
+	for i := 0; i < len(instances); i++ {
+		instanceIds = append(instanceIds, instances[i].InstanceId)
+	}
 	_, err := amazon.EC2().TerminateInstances(&ec2.TerminateInstancesInput{
-		InstanceIds: []*string{id},
+		InstanceIds: instanceIds,
 	})
 	util.MustExec(err)
 }

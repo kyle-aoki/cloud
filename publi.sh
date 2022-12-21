@@ -1,3 +1,3 @@
 #!/bin/bash
-go build lab.go
+go build cmd/lab/lab.go
 mv lab ~/bin/lab

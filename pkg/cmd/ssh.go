@@ -1,46 +1,14 @@
 package cmd
 
 import (
-	"cloudlab/pkg/args"
 	"cloudlab/pkg/resource"
 	"cloudlab/pkg/util"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strings"
 	"time"
 )
-
-func SSH() {
-	names := args.CollectOrEmpty()
-	allInstances := len(names) == 0
-
-	lr := resource.NewLabResources()
-	lr.Instances = resource.FindNonTerminatedInstances()
-
-	for _, inst := range lr.Instances {
-		instName := resource.FindNameTagValue(inst.Tags)
-		var ip string
-		if args.Flags.Private {
-			ip = *inst.PrivateIpAddress
-		} else {
-			if inst.PublicIpAddress == nil {
-				ip = *inst.PrivateIpAddress
-			} else {
-				ip = *inst.PublicIpAddress
-			}
-		}
-		if !allInstances && instName != nil && util.Contains(*instName, names) {
-			printSSHCommand(ip)
-		}
-		if allInstances {
-			printSSHCommand(ip)
-		}
-	}
-}
-
-func printSSHCommand(ip string) {
-	fmt.Printf("ssh -i %s ubuntu@%s\n", resource.KeyFilePath(), ip)
-}
 
 const SshConfigHost = `
 Host $Host
@@ -50,6 +18,11 @@ Host $Host
     StrictHostKeyChecking no
 `
 
+// Host i1
+//     HostName 3.16.38.82
+//     User ubuntu
+//     IdentityFile /Users/kyle/.cloudlab/key.pem
+//     StrictHostKeyChecking no
 func formatHost(host, hostname string) string {
 	sshConfig := strings.Replace(SshConfigHost, "$Host", host, 1)
 	sshConfig = strings.Replace(sshConfig, "$HostName", hostname, 1)
@@ -57,6 +30,7 @@ func formatHost(host, hostname string) string {
 	return sshConfig
 }
 
+// /Users/kyle/.cloudlab/key.pem
 func sshConfigFile() string {
 	home := util.Must(os.UserHomeDir())
 	return home + "/.ssh/config"
@@ -92,4 +66,16 @@ func addInstanceToSshConfig(name string, lr *resource.LabResources) string {
 	}
 	hostConfig := writeInstanceToSshConfig(name, *ip)
 	return hostConfig
+}
+
+func RemoveInstanceFromSshConfig(instName, ipAddress *string) {
+	if instName == nil || ipAddress == nil {
+		return
+	}
+	sshConfig := formatHost(*instName, *ipAddress)
+	sshConfig = strings.Trim(sshConfig, "\n")
+	sshConfigFileContent := string(util.Must(ioutil.ReadFile(sshConfigFile())))
+	sshConfigFileContent = strings.Replace(string(sshConfigFileContent), sshConfig, "", -1)
+	sshConfigFileContent = strings.Trim(sshConfigFileContent, "\n")
+	util.MustExec(ioutil.WriteFile(sshConfigFile(), []byte(sshConfigFileContent), os.ModePerm))
 }

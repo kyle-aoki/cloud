@@ -1,14 +1,14 @@
 package main
 
 import (
-  "cloudlab/pkg/amazon"
-  "cloudlab/pkg/args"
-  "cloudlab/pkg/cmd"
-  "cloudlab/pkg/util"
-  "fmt"
-  "io"
-  "log"
-  "os"
+	"cloudlab/pkg/amazon"
+	"cloudlab/pkg/args"
+	"cloudlab/pkg/cmd"
+	"cloudlab/pkg/util"
+	"fmt"
+	"io"
+	"log"
+	"os"
 )
 
 const cloudlabVersion = "1.0.0"
