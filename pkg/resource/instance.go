@@ -19,23 +19,23 @@ type RunInstanceInput struct {
 
 func RunInstance(rii *RunInstanceInput) *ec2.Instance {
 	rio, err := amazon.EC2().RunInstances(&ec2.RunInstancesInput{
-		SubnetId: util.StrPtr(rii.SubnetId),
+		SubnetId: &rii.SubnetId,
 		BlockDeviceMappings: []*ec2.BlockDeviceMapping{{
-			DeviceName: util.StrPtr("/dev/sda1"),
-			Ebs:        &ec2.EbsBlockDevice{VolumeSize: util.IntToInt64Ptr(rii.Size)}},
+			DeviceName: util.Ptr("/dev/sda1"),
+			Ebs:        &ec2.EbsBlockDevice{VolumeSize: util.Ptr(int64(rii.Size))}},
 		},
-		ImageId:          util.StrPtr(amazon.UbuntuAmi()),
-		MinCount:         util.IntToInt64Ptr(1),
-		MaxCount:         util.IntToInt64Ptr(1),
-		KeyName:          util.StrPtr(CloudLabKeyPair),
+		ImageId:          util.Ptr(amazon.Ubuntu2204Ami()),
+		MinCount:         util.Ptr(int64(1)),
+		MaxCount:         util.Ptr(int64(1)),
+		KeyName:          util.Ptr(CloudLabKeyPair),
 		SecurityGroupIds: rii.SecurityGroupIds,
-		InstanceType:     util.StrPtr(rii.InstanceType),
+		InstanceType:     &rii.InstanceType,
 		TagSpecifications: CreateTagSpecs("instance", map[string]string{
 			"Name":                   rii.Name,
 			IsCloudLabInstanceTagKey: IsCloudLabInstanceTagVal,
 		}),
 	})
-	util.MustExec(err)
+	util.Check(err)
 	return rio.Instances[0]
 }
 
@@ -67,7 +67,7 @@ func StartInstance(name string) {
 	_, err := amazon.EC2().StartInstances(&ec2.StartInstancesInput{
 		InstanceIds: []*string{inst.InstanceId},
 	})
-	util.MustExec(err)
+	util.Check(err)
 	fmt.Println(name)
 }
 
@@ -79,7 +79,7 @@ func StopInstance(name string) {
 	_, err := amazon.EC2().StopInstances(&ec2.StopInstancesInput{
 		InstanceIds: []*string{inst.InstanceId},
 	})
-	util.MustExec(err)
+	util.Check(err)
 	fmt.Println(name)
 }
 
@@ -91,7 +91,7 @@ func TerminateInstances(instances []*ec2.Instance) {
 	_, err := amazon.EC2().TerminateInstances(&ec2.TerminateInstancesInput{
 		InstanceIds: instanceIds,
 	})
-	util.MustExec(err)
+	util.Check(err)
 }
 
 func NameExists(instances []*ec2.Instance, name string) bool {
@@ -103,7 +103,7 @@ func NameExists(instances []*ec2.Instance, name string) bool {
 	return false
 }
 
-func InstanceHasPortOpen(instance *ec2.Instance, port string) bool {
+func HasPortOpen(instance *ec2.Instance, port string) bool {
 	for _, sg := range instance.SecurityGroups {
 		if sg.GroupName != nil && *sg.GroupName == port {
 			return true
@@ -112,9 +112,6 @@ func InstanceHasPortOpen(instance *ec2.Instance, port string) bool {
 	return false
 }
 
-func InstanceInPrivateSubnet(instance *ec2.Instance, lr *LabResources) bool {
-	if *lr.PrivateSubnet.SubnetId == *instance.SubnetId {
-		return true
-	}
-	return false
+func InPrivateSubnet(instance *ec2.Instance, lr *LabResources) bool {
+	return *lr.PrivateSubnet.SubnetId == *instance.SubnetId
 }

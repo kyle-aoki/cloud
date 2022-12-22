@@ -21,7 +21,7 @@ func attachInternetGatewayToVpc(ig *ec2.InternetGateway, vpc *ec2.Vpc) {
 		InternetGatewayId: ig.InternetGatewayId,
 		VpcId:             vpc.VpcId,
 	})
-	util.MustExec(err)
+	util.Check(err)
 }
 
 func detachInternetGatewayFromVpc(ig *ec2.InternetGateway, vpc *ec2.Vpc) {
@@ -29,5 +29,5 @@ func detachInternetGatewayFromVpc(ig *ec2.InternetGateway, vpc *ec2.Vpc) {
 		InternetGatewayId: ig.InternetGatewayId,
 		VpcId:             vpc.VpcId,
 	})
-	util.MustExec(err)
+	util.Check(err)
 }

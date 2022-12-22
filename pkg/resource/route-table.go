@@ -22,7 +22,7 @@ func addInternetGatewayRoute(rt *ec2.RouteTable, ig *ec2.InternetGateway, cidr s
 		GatewayId:            ig.InternetGatewayId,
 		DestinationCidrBlock: util.StrPtr(cidr),
 	})
-	util.MustExec(err)
+	util.Check(err)
 }
 
 func subnetAssociationExistsOnRouteTable(rt *ec2.RouteTable, subnet *ec2.Subnet) bool {
@@ -39,7 +39,7 @@ func associateSubnetWithRouteTable(rt *ec2.RouteTable, subnet *ec2.Subnet) {
 		RouteTableId: rt.RouteTableId,
 		SubnetId:     subnet.SubnetId,
 	})
-	util.MustExec(err)
+	util.Check(err)
 }
 
 func disassociateSubnetsFromRouteTable(rt *ec2.RouteTable) {
@@ -54,5 +54,5 @@ func disassociateRouteTable(assocId *string) {
 	_, err := amazon.EC2().DisassociateRouteTable(&ec2.DisassociateRouteTableInput{
 		AssociationId: assocId,
 	})
-	util.MustExec(err)
+	util.Check(err)
 }

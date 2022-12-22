@@ -41,7 +41,7 @@ func DeleteInstances() {
 
 	for i := 0; i < len(targetInstances); i++ {
 		var ip *string
-		if resource.InstanceInPrivateSubnet(targetInstances[i], lr) {
+		if resource.InPrivateSubnet(targetInstances[i], lr) {
 			ip = targetInstances[i].PrivateIpAddress
 		} else {
 			ip = targetInstances[i].PublicIpAddress

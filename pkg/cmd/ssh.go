@@ -18,10 +18,11 @@ Host $Host
 `
 
 // Host i1
-//     HostName 3.16.38.82
-//     User ubuntu
-//     IdentityFile /Users/kyle/.cloudlab/key.pem
-//     StrictHostKeyChecking no
+//
+//	HostName 3.16.38.82
+//	User ubuntu
+//	IdentityFile /Users/kyle/.cloudlab/key.pem
+//	StrictHostKeyChecking no
 func formatHost(host, hostname string) string {
 	sshConfig := strings.Replace(SshConfigHost, "$Host", host, 1)
 	sshConfig = strings.Replace(sshConfig, "$HostName", hostname, 1)
@@ -52,7 +53,7 @@ func addInstanceToSshConfig(name string, lr *resource.LabResources) string {
 		time.Sleep(2 * time.Second)
 		lr.Instances = resource.FindNonTerminatedInstances()
 		inst := resource.FindInstanceByName(name)
-		if resource.InstanceInPrivateSubnet(inst, lr) {
+		if resource.InPrivateSubnet(inst, lr) {
 			ip = resource.FindInstanceByName(name).PrivateIpAddress
 		} else {
 			ip = resource.FindInstanceByName(name).PublicIpAddress
@@ -76,5 +77,5 @@ func RemoveInstanceFromSshConfig(instName, ipAddress *string) {
 	sshConfigFileContent := string(util.Must(os.ReadFile(sshConfigFile())))
 	sshConfigFileContent = strings.Replace(string(sshConfigFileContent), sshConfig, "", -1)
 	sshConfigFileContent = strings.Trim(sshConfigFileContent, "\n")
-	util.MustExec(os.WriteFile(sshConfigFile(), []byte(sshConfigFileContent), os.ModePerm))
+	util.Check(os.WriteFile(sshConfigFile(), []byte(sshConfigFileContent), os.ModePerm))
 }

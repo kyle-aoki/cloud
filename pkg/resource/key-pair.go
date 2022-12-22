@@ -21,7 +21,7 @@ func CreateKeyPair() {
 
 	log.Println("attempting to remove everything in config dir")
 	err := os.RemoveAll(util.ConfigDir())
-	util.MustExec(err)
+	util.Check(err)
 
 	log.Println("checking if home dir is writable: ", util.HomeDir())
 	if !writable(util.HomeDir()) {
@@ -35,11 +35,11 @@ func CreateKeyPair() {
 
 	log.Println("writing key material to key file at", KeyFilePath())
 	err = ioutil.WriteFile(KeyFilePath(), []byte(*keyMaterial), 0400)
-	util.MustExec(err)
+	util.Check(err)
 
 	log.Println("changing key file permissions to 400")
 	err = os.Chmod(KeyFilePath(), 0400)
-	util.MustExec(err)
+	util.Check(err)
 }
 
 func writable(path string) bool {

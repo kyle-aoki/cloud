@@ -22,7 +22,7 @@ func OpenPort(
 		InstanceId: instance.InstanceId,
 		Groups:     groupIds,
 	})
-	util.MustExec(err)
+	util.Check(err)
 }
 
 func ClosePort(
@@ -40,7 +40,7 @@ func ClosePort(
 		InstanceId: instance.InstanceId,
 		Groups:     newSecurityGroups,
 	})
-	util.MustExec(err)
+	util.Check(err)
 }
 
 func assignNameTagToDefaultSecurityGroupIfMissing(cloudlabVpcId string) {
@@ -58,7 +58,7 @@ func assignNameTagToDefaultSecurityGroupIfMissing(cloudlabVpcId string) {
 			return true
 		},
 	)
-	util.MustExec(err)
+	util.Check(err)
 }
 
 // assign name tag to default sg if name tag is missing
@@ -67,7 +67,7 @@ func nameDefaultSecutiyGroup(securityGroupId *string, name string) {
 		Resources: []*string{securityGroupId},
 		Tags:      CreateNameTagArray(name),
 	})
-	util.MustExec(err)
+	util.Check(err)
 }
 
 func createInboundRule(groupId *string, protocol Protocol, port int) {
@@ -78,7 +78,7 @@ func createInboundRule(groupId *string, protocol Protocol, port int) {
 		IpProtocol: util.StrPtr(string(protocol)),
 		CidrIp:     util.StrPtr(AllIpsCidr),
 	})
-	util.MustExec(err)
+	util.Check(err)
 }
 
 func SecurityGroupByNameOrPanic(sgs []*ec2.SecurityGroup, groupName string) *ec2.SecurityGroup {

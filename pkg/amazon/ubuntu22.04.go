@@ -1,7 +1,7 @@
 package amazon
 
 // ubuntu 22.04
-var UbuntuAmiRegionMap = map[string]string{
+var Ubuntu2204AmiRegionMap = map[string]string{
 	"us-gov-west-1":  "ami-04e77113f128920b2",
 	"us-gov-east-1":  "ami-08fcbec75b43330b7",
 	"us-west-2":      "ami-0ee8244746ec5d6d4",
@@ -29,8 +29,8 @@ var UbuntuAmiRegionMap = map[string]string{
 }
 
 // gets correct ubuntu 22.04 ami based on user's aws config region
-func UbuntuAmi() string {
-	if val, ok := UbuntuAmiRegionMap[userRegion]; ok {
+func Ubuntu2204Ami() string {
+	if val, ok := Ubuntu2204AmiRegionMap[userRegion]; ok {
 		return val
 	}
 	panic(`did not find an Ubuntu 22.04 ami in your region.

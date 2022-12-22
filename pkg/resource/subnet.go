@@ -20,6 +20,6 @@ func resolvePublicSubnetAttributes(publicSubnet *ec2.Subnet) {
 			SubnetId:            publicSubnet.SubnetId,
 			MapPublicIpOnLaunch: &ec2.AttributeBooleanValue{Value: util.BoolPtr(true)},
 		})
-		util.MustExec(err)
+		util.Check(err)
 	}
 }

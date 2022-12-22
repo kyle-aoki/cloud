@@ -21,7 +21,7 @@ func FindCloudLabVpc() (targetVpc *ec2.Vpc) {
 			}
 			return true
 		})
-	util.MustExec(err)
+	util.Check(err)
 	util.Log("found %v: %v", CloudLabVpc, targetVpc != nil)
 	return targetVpc
 }
@@ -39,7 +39,7 @@ func FindCloudLabVpcOrPanic() (targetVpc *ec2.Vpc) {
 			}
 			return true
 		})
-	util.MustExec(err)
+	util.Check(err)
 	if targetVpc == nil {
 		panic("run 'lab init' first")
 	}
@@ -60,7 +60,7 @@ func FindInstances() (instances []*ec2.Instance) {
 			return true
 		},
 	)
-	util.MustExec(err)
+	util.Check(err)
 	util.Log("found %v cl instances", len(instances))
 	return instances
 }
@@ -81,7 +81,7 @@ func FindNonTerminatedInstances() (instances []*ec2.Instance) {
 			return true
 		},
 	)
-	util.MustExec(err)
+	util.Check(err)
 	util.Log("found %v cl instances", len(instances))
 	return instances
 }
@@ -100,7 +100,7 @@ func FindInstanceByName(name string) (instance *ec2.Instance) {
 			return true
 		},
 	)
-	util.MustExec(err)
+	util.Check(err)
 	util.Log("found instance %v: %v", name, instance != nil)
 	return instance
 }
@@ -119,7 +119,7 @@ func FindInstanceByNameOrPanic(name string) (instance *ec2.Instance) {
 			return true
 		},
 	)
-	util.MustExec(err)
+	util.Check(err)
 	if instance == nil {
 		panic(fmt.Sprintf("instance '%s' not found", name))
 	}
@@ -140,14 +140,14 @@ func findInternetGateway(name string) (targetIg *ec2.InternetGateway) {
 			return true
 		},
 	)
-	util.MustExec(err)
+	util.Check(err)
 	util.Log("found internet gateway %v: %v", name, targetIg != nil)
 	return targetIg
 }
 
 func findAllCloudLabKeyPairs() (kps []*ec2.KeyPairInfo) {
 	dkpo, err := amazon.EC2().DescribeKeyPairs(&ec2.DescribeKeyPairsInput{})
-	util.MustExec(err)
+	util.Check(err)
 
 	for _, kp := range dkpo.KeyPairs {
 		if NameTagEquals(kp.Tags, CloudLabKeyPair) {
@@ -160,7 +160,7 @@ func findAllCloudLabKeyPairs() (kps []*ec2.KeyPairInfo) {
 
 func findKeyPair() (keypair *ec2.KeyPairInfo) {
 	dkpo, err := amazon.EC2().DescribeKeyPairs(&ec2.DescribeKeyPairsInput{})
-	util.MustExec(err)
+	util.Check(err)
 
 	for _, kp := range dkpo.KeyPairs {
 		if NameTagEquals(kp.Tags, CloudLabKeyPair) {
@@ -187,7 +187,7 @@ func findRouteTable(vpc *ec2.Vpc, name string) (targetRT *ec2.RouteTable) {
 			return true
 		},
 	)
-	util.MustExec(err)
+	util.Check(err)
 	util.Log("found route table %v: %v", name, targetRT == nil)
 	return targetRT
 }
@@ -209,7 +209,7 @@ func findMainRouteTable(vpc *ec2.Vpc) (targetRT *ec2.RouteTable) {
 			return true
 		},
 	)
-	util.MustExec(err)
+	util.Check(err)
 	util.Log("found main route table: %v", targetRT != nil)
 	return targetRT
 }
@@ -227,7 +227,7 @@ func FindAllSecurityGroups() (sgs []*ec2.SecurityGroup) {
 			return true
 		},
 	)
-	util.MustExec(err)
+	util.Check(err)
 	util.Log("found %v cl security groups", len(sgs))
 	return sgs
 }
@@ -254,7 +254,7 @@ func FindSubnet(name string) (targetSubnet *ec2.Subnet) {
 			}
 			return true
 		})
-	util.MustExec(err)
+	util.Check(err)
 	util.Log("found subnet %v: %v", name, targetSubnet != nil)
 	return targetSubnet
 }

@@ -34,7 +34,7 @@ func openPort(name string, port string) {
 		lr.SecurityGroups = resource.FindAllSecurityGroups()
 	}
 
-	if resource.InstanceHasPortOpen(instance, port) {
+	if resource.HasPortOpen(instance, port) {
 		panic(fmt.Sprintf("port %s already open on instance %s\n", port, name))
 	}
 

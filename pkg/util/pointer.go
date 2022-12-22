@@ -5,6 +5,10 @@ import (
 	"strconv"
 )
 
+func Ptr[T any](t T) *T {
+	return &t
+}
+
 func StrPtr(s string) *string {
 	return &s
 }
@@ -24,7 +28,7 @@ func IntToString(i int) string {
 
 func StringToInt(s string) int {
 	i, err := strconv.ParseInt(s, 10, 32)
-	MustExec(err)
+	Check(err)
 	return int(i)
 }
 

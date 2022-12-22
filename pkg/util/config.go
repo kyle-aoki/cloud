@@ -9,7 +9,7 @@ const ConfigDirName = ".cloudlab"
 
 func HomeDir() string {
 	hd, err := os.UserHomeDir()
-	MustExec(err)
+	Check(err)
 	return hd
 }
 

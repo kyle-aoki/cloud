@@ -12,7 +12,7 @@ func deleteSubnet(subnet *ec2.Subnet) {
 	_, err := amazon.EC2().DeleteSubnet(&ec2.DeleteSubnetInput{
 		SubnetId: subnet.SubnetId,
 	})
-	util.MustExec(err)
+	util.Check(err)
 }
 
 func deleteInternetGateway(ig *ec2.InternetGateway) {
@@ -20,7 +20,7 @@ func deleteInternetGateway(ig *ec2.InternetGateway) {
 	_, err := amazon.EC2().DeleteInternetGateway(&ec2.DeleteInternetGatewayInput{
 		InternetGatewayId: ig.InternetGatewayId,
 	})
-	util.MustExec(err)
+	util.Check(err)
 }
 
 func deleteInstance(instance *ec2.Instance) {
@@ -28,7 +28,7 @@ func deleteInstance(instance *ec2.Instance) {
 	_, err := amazon.EC2().TerminateInstances(&ec2.TerminateInstancesInput{
 		InstanceIds: []*string{instance.InstanceId},
 	})
-	util.MustExec(err)
+	util.Check(err)
 }
 
 func deleteInstances(instances []*ec2.Instance) {
@@ -45,7 +45,7 @@ func deleteSecurityGroup(sg *ec2.SecurityGroup) {
 	_, err := amazon.EC2().DeleteSecurityGroup(&ec2.DeleteSecurityGroupInput{
 		GroupId: sg.GroupId,
 	})
-	util.MustExec(err)
+	util.Check(err)
 }
 
 func deleteSecurityGroups(sgs []*ec2.SecurityGroup) {
@@ -59,7 +59,7 @@ func deleteVpc(vpc *ec2.Vpc) {
 	_, err := amazon.EC2().DeleteVpc(&ec2.DeleteVpcInput{
 		VpcId: vpc.VpcId,
 	})
-	util.MustExec(err)
+	util.Check(err)
 }
 
 func deleteKeyPair(key *ec2.KeyPairInfo) {
@@ -67,7 +67,7 @@ func deleteKeyPair(key *ec2.KeyPairInfo) {
 	_, err := amazon.EC2().DeleteKeyPair(&ec2.DeleteKeyPairInput{
 		KeyPairId: key.KeyPairId,
 	})
-	util.MustExec(err)
+	util.Check(err)
 }
 
 func deleteKeyPairs(keys []*ec2.KeyPairInfo) {
@@ -81,5 +81,5 @@ func deleteRouteTable(rt *ec2.RouteTable) {
 	_, err := amazon.EC2().DeleteRouteTable(&ec2.DeleteRouteTableInput{
 		RouteTableId: rt.RouteTableId,
 	})
-	util.MustExec(err)
+	util.Check(err)
 }

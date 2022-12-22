@@ -17,7 +17,7 @@ func createVpc(cidrBlock string, name string) *ec2.Vpc {
 			"Name": name,
 		}),
 	})
-	util.MustExec(err)
+	util.Check(err)
 	return cvo.Vpc
 }
 
@@ -28,7 +28,7 @@ func createSubnet(vpc *ec2.Vpc, name string, cidr string) *ec2.Subnet {
 		CidrBlock:         util.StrPtr(cidr),
 		TagSpecifications: CreateNameTagSpec("subnet", name),
 	})
-	util.MustExec(err)
+	util.Check(err)
 	return cso.Subnet
 }
 
@@ -37,7 +37,7 @@ func createInternetGateway(name string) *ec2.InternetGateway {
 	cigo, err := amazon.EC2().CreateInternetGateway(&ec2.CreateInternetGatewayInput{
 		TagSpecifications: CreateNameTagSpec("internet-gateway", name),
 	})
-	util.MustExec(err)
+	util.Check(err)
 	return cigo.InternetGateway
 }
 
@@ -49,7 +49,7 @@ func createRouteTable(vpc *ec2.Vpc, name string) *ec2.RouteTable {
 			"Name": name,
 		}),
 	})
-	util.MustExec(err)
+	util.Check(err)
 	return crto.RouteTable
 }
 
@@ -59,7 +59,7 @@ func executeCreateKeyPairRequest(name string) *string {
 		KeyName:           util.StrPtr(name),
 		TagSpecifications: CreateNameTagSpec("key-pair", name),
 	})
-	util.MustExec(err)
+	util.Check(err)
 	return ckpo.KeyMaterial
 }
 
@@ -71,7 +71,7 @@ func CreateSecurityGroup(vpc *ec2.Vpc, port string) {
 		Description:       util.StrPtr(port),
 		TagSpecifications: CreateNameTagSpec("security-group", CloudLabSecutiyGroup),
 	})
-	util.MustExec(err)
+	util.Check(err)
 	createInboundRule(csgo.GroupId, "tcp", portInt)
 	createInboundRule(csgo.GroupId, "udp", portInt)
 }

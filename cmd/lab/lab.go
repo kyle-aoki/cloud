@@ -17,15 +17,15 @@ func main() {
   defer util.MainRecover()
   args.ParseProgramInput()
 
-  if args.Flags.Verbose {
-    log.SetOutput(os.Stdout)
-  } else {
+  if !args.Flags.Verbose {
     log.SetOutput(io.Discard)
   }
+
   if args.Flags.PrintVersion {
     fmt.Println(cloudlabVersion)
     os.Exit(0)
   }
+  
   if args.Flags.ShowHelp {
     fmt.Print(helpText)
     os.Exit(0)
