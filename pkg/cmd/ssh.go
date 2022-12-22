@@ -4,7 +4,6 @@ import (
 	"cloudlab/pkg/resource"
 	"cloudlab/pkg/util"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 	"time"
@@ -74,8 +73,8 @@ func RemoveInstanceFromSshConfig(instName, ipAddress *string) {
 	}
 	sshConfig := formatHost(*instName, *ipAddress)
 	sshConfig = strings.Trim(sshConfig, "\n")
-	sshConfigFileContent := string(util.Must(ioutil.ReadFile(sshConfigFile())))
+	sshConfigFileContent := string(util.Must(os.ReadFile(sshConfigFile())))
 	sshConfigFileContent = strings.Replace(string(sshConfigFileContent), sshConfig, "", -1)
 	sshConfigFileContent = strings.Trim(sshConfigFileContent, "\n")
-	util.MustExec(ioutil.WriteFile(sshConfigFile(), []byte(sshConfigFileContent), os.ModePerm))
+	util.MustExec(os.WriteFile(sshConfigFile(), []byte(sshConfigFileContent), os.ModePerm))
 }
