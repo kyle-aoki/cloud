@@ -32,7 +32,7 @@ func RunInstance(rii *RunInstanceInput) *ec2.Instance {
 		InstanceType:     &rii.InstanceType,
 		TagSpecifications: CreateTagSpecs("instance", map[string]string{
 			"Name":                   rii.Name,
-			IsCloudLabInstanceTagKey: IsCloudLabInstanceTagVal,
+			isCloudLabInstanceTagKey: isCloudLabInstanceTagVal,
 		}),
 	})
 	util.Check(err)

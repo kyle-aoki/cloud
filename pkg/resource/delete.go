@@ -23,20 +23,6 @@ func deleteInternetGateway(ig *ec2.InternetGateway) {
 	util.Check(err)
 }
 
-func deleteInstance(instance *ec2.Instance) {
-	util.Log("deleting instance %s", *instance.InstanceId)
-	_, err := amazon.EC2().TerminateInstances(&ec2.TerminateInstancesInput{
-		InstanceIds: []*string{instance.InstanceId},
-	})
-	util.Check(err)
-}
-
-func deleteInstances(instances []*ec2.Instance) {
-	for _, instance := range instances {
-		deleteInstance(instance)
-	}
-}
-
 func deleteSecurityGroup(sg *ec2.SecurityGroup) {
 	util.Log("deleting security group %s", *sg.GroupId)
 	if sg.GroupName != nil && *sg.GroupName == "Default" {
@@ -68,12 +54,6 @@ func deleteKeyPair(key *ec2.KeyPairInfo) {
 		KeyPairId: key.KeyPairId,
 	})
 	util.Check(err)
-}
-
-func deleteKeyPairs(keys []*ec2.KeyPairInfo) {
-	for _, key := range keys {
-		deleteKeyPair(key)
-	}
 }
 
 func deleteRouteTable(rt *ec2.RouteTable) {

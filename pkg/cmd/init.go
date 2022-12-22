@@ -9,14 +9,14 @@ import (
 
 const InitGuideTemplate = `placed ssh key at <config-dir>/key.pem
 create an instance: lab run
-ssh into an instance: lab ssh <instance-name>
+ssh into an instance: ssh <instance-name>
 `
 
 func InitializeCloudLabResources() {
 	lr := resource.NewLabResources()
 	createdKeyPair := lr.KeyPair == nil
-	lr.CreateMissingResources()
-	lr.Info()
+	resource.CreateMissingResources(lr)
+	resource.PrintInfo(lr)
 
 	if createdKeyPair {
 		initGuide := strings.ReplaceAll(InitGuideTemplate, "<config-dir>", util.ConfigDir())

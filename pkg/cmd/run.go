@@ -12,8 +12,8 @@ func Run() {
 	log.Println("creating instance...")
 	lr := resource.NewLabResources()
 	lr.Instances = resource.FindInstances()
-	lr.PublicSubnet = resource.FindSubnet(resource.CloudLabPublicSubnet)
-	lr.PrivateSubnet = resource.FindSubnet(resource.CloudLabPrivateSubnet)
+	lr.PublicSubnet = resource.FindPublicSubnet()
+	lr.PrivateSubnet = resource.FindPrivateSubnet()
 	lr.SecurityGroups = resource.FindAllSecurityGroups()
 
 	var name string

@@ -13,18 +13,18 @@ func CreateTagSpecs(resourceType string, tags map[string]string) []*ec2.TagSpeci
 	var tagSlice []*ec2.Tag
 	for key := range tags {
 		tagSlice = append(tagSlice, &ec2.Tag{
-			Key: util.StrPtr(key), Value: util.StrPtr(tags[key]),
+			Key: &key, Value: util.Ptr(tags[key]),
 		})
 	}
 	return []*ec2.TagSpecification{{
-		ResourceType: util.StrPtr(resourceType),
+		ResourceType: &resourceType,
 		Tags:         tagSlice,
 	}}
 }
 
 func FindNameTagValue(tags []*ec2.Tag) *string {
 	for _, tag := range tags {
-		if tag.Key != nil && *tag.Key == "Name"{
+		if tag.Key != nil && *tag.Key == "Name" {
 			return tag.Value
 		}
 	}

@@ -3,7 +3,6 @@ package resource
 import (
 	"cloudlab/pkg/util"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 
@@ -16,7 +15,7 @@ func KeyFilePath() string {
 	return fmt.Sprintf("%s/%s", util.ConfigDir(), keyFileName)
 }
 
-func CreateKeyPair() {
+func ExecuteKeyPairCreationProcess() {
 	log.Println("starting key pair creation process")
 
 	log.Println("attempting to remove everything in config dir")
@@ -24,17 +23,17 @@ func CreateKeyPair() {
 	util.Check(err)
 
 	log.Println("checking if home dir is writable: ", util.HomeDir())
-	if !writable(util.HomeDir()) {
+	if !isWritable(util.HomeDir()) {
 		fatalInsufficientPermissions()
 	}
 
 	log.Println("creating config dir: ", util.ConfigDir())
 	util.CreateDir(util.ConfigDir())
 
-	keyMaterial := executeCreateKeyPairRequest(CloudLabKeyPair)
+	keyMaterial := createKeyPair(CloudLabKeyPair)
 
 	log.Println("writing key material to key file at", KeyFilePath())
-	err = ioutil.WriteFile(KeyFilePath(), []byte(*keyMaterial), 0400)
+	err = os.WriteFile(KeyFilePath(), []byte(*keyMaterial), 0400)
 	util.Check(err)
 
 	log.Println("changing key file permissions to 400")
@@ -42,15 +41,15 @@ func CreateKeyPair() {
 	util.Check(err)
 }
 
-func writable(path string) bool {
-	isWritable := unix.Access(path, unix.W_OK) == nil
-	log.Println(path, "isWritable", isWritable)
-	return isWritable
+func isWritable(path string) (b bool) {
+	b = unix.Access(path, unix.W_OK) == nil
+	log.Println(path, "isWritable", b)
+	return b
 }
 
 func fatalInsufficientPermissions() {
-	fmt.Println(fmt.Sprintf("cannot write key file to %s", KeyFilePath()))
-	fmt.Println("if on MacOS or Linux, try: 'sudo lab create key'")
+	fmt.Printf("cannot write key file to %s", KeyFilePath())
+	fmt.Println("if on MacOS or Linux, try: 'sudo lab init'")
 	fmt.Println("if on Windows, try running powershell or command prompt as an administrator'")
 	os.Exit(1)
 }

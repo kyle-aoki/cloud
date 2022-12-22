@@ -13,7 +13,7 @@ import (
 )
 
 func ListInstances() {
-	if resource.FindCloudLabVpc() == nil {
+	if resource.FindVpc() == nil {
 		panic("run 'lab init' first")
 	}
 

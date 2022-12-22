@@ -1,9 +1,0 @@
-// Create cloudlab VPC if not exists
-// Create Public Subnet if not exists
-// Modify Public Subnet Attributes
-
-// Create Route Table ON a VPC
-// Create Internet Gateway
-// Attach Internet Gateway to VPC
-// Set up 0.0.0.0/0 --> IGW on Route Table
-// Set up Route Table Subnet Association

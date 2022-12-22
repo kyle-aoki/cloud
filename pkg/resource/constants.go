@@ -8,8 +8,8 @@ const CloudLabInternetGateway = "cloudlab-internet-gateway"
 const CloudLabSecutiyGroup = "cloudlab-security-group"
 const CloudLabKeyPair = "cloudlab-key-pair"
 
-const IsCloudLabInstanceTagKey = "is-cloudlab-instance"
-const IsCloudLabInstanceTagVal = "true"
+const isCloudLabInstanceTagKey = "is-cloudlab-instance"
+const isCloudLabInstanceTagVal = "true"
 
 const CloudLabMainRouteTable = "cloudlab-public-route-table"
 const CloudLabPrivateRouteTable = "cloudlab-private-route-table"

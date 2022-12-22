@@ -12,7 +12,6 @@ func createVpc(cidrBlock string, name string) *ec2.Vpc {
 	log.Println("creating vpc")
 	cvo, err := amazon.EC2().CreateVpc(&ec2.CreateVpcInput{
 		CidrBlock: util.StrPtr(cidrBlock),
-
 		TagSpecifications: CreateTagSpecs("vpc", map[string]string{
 			"Name": name,
 		}),
@@ -25,7 +24,7 @@ func createSubnet(vpc *ec2.Vpc, name string, cidr string) *ec2.Subnet {
 	log.Println("creating subnet")
 	cso, err := amazon.EC2().CreateSubnet(&ec2.CreateSubnetInput{
 		VpcId:             vpc.VpcId,
-		CidrBlock:         util.StrPtr(cidr),
+		CidrBlock:         &cidr,
 		TagSpecifications: CreateNameTagSpec("subnet", name),
 	})
 	util.Check(err)
@@ -53,22 +52,33 @@ func createRouteTable(vpc *ec2.Vpc, name string) *ec2.RouteTable {
 	return crto.RouteTable
 }
 
-func executeCreateKeyPairRequest(name string) *string {
+func createKeyPair(name string) *string {
 	log.Println("making create key pair request")
 	ckpo, err := amazon.EC2().CreateKeyPair(&ec2.CreateKeyPairInput{
-		KeyName:           util.StrPtr(name),
+		KeyName:           &name,
 		TagSpecifications: CreateNameTagSpec("key-pair", name),
 	})
 	util.Check(err)
 	return ckpo.KeyMaterial
 }
 
+func createInboundRule(groupId *string, protocol Protocol, port int) {
+	_, err := amazon.EC2().AuthorizeSecurityGroupIngress(&ec2.AuthorizeSecurityGroupIngressInput{
+		GroupId:    groupId,
+		FromPort:   util.Ptr(int64(port)),
+		ToPort:     util.Ptr(int64(port)),
+		IpProtocol: util.Ptr(string(protocol)),
+		CidrIp:     util.Ptr(AllIpsCidr),
+	})
+	util.Check(err)
+}
+
 func CreateSecurityGroup(vpc *ec2.Vpc, port string) {
 	portInt := ValidatePort(port)
 	csgo, err := amazon.EC2().CreateSecurityGroup(&ec2.CreateSecurityGroupInput{
 		VpcId:             vpc.VpcId,
-		GroupName:         util.StrPtr(port),
-		Description:       util.StrPtr(port),
+		GroupName:         &port,
+		Description:       &port,
 		TagSpecifications: CreateNameTagSpec("security-group", CloudLabSecutiyGroup),
 	})
 	util.Check(err)

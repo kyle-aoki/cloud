@@ -43,44 +43,6 @@ func ClosePort(
 	util.Check(err)
 }
 
-func assignNameTagToDefaultSecurityGroupIfMissing(cloudlabVpcId string) {
-	err := amazon.EC2().DescribeSecurityGroupsPages(
-		&ec2.DescribeSecurityGroupsInput{},
-		func(dsgo *ec2.DescribeSecurityGroupsOutput, b bool) bool {
-			for _, sg := range dsgo.SecurityGroups {
-				if cloudlabVpcId == *sg.VpcId {
-					if !NameTagEquals(sg.Tags, CloudLabSecutiyGroup) {
-						nameDefaultSecutiyGroup(sg.GroupId, CloudLabSecutiyGroup)
-					}
-					return false
-				}
-			}
-			return true
-		},
-	)
-	util.Check(err)
-}
-
-// assign name tag to default sg if name tag is missing
-func nameDefaultSecutiyGroup(securityGroupId *string, name string) {
-	_, err := amazon.EC2().CreateTags(&ec2.CreateTagsInput{
-		Resources: []*string{securityGroupId},
-		Tags:      CreateNameTagArray(name),
-	})
-	util.Check(err)
-}
-
-func createInboundRule(groupId *string, protocol Protocol, port int) {
-	_, err := amazon.EC2().AuthorizeSecurityGroupIngress(&ec2.AuthorizeSecurityGroupIngressInput{
-		GroupId:    groupId,
-		FromPort:   util.IntToInt64Ptr(port),
-		ToPort:     util.IntToInt64Ptr(port),
-		IpProtocol: util.StrPtr(string(protocol)),
-		CidrIp:     util.StrPtr(AllIpsCidr),
-	})
-	util.Check(err)
-}
-
 func SecurityGroupByNameOrPanic(sgs []*ec2.SecurityGroup, groupName string) *ec2.SecurityGroup {
 	util.Log("searching for security group: %s", groupName)
 	for _, sg := range sgs {

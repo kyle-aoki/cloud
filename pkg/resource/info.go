@@ -4,7 +4,7 @@ import (
 	"cloudlab/pkg/util"
 )
 
-func (lr *LabResources) Info() {
+func PrintInfo(lr *LabResources) {
 	if lr.Vpc == nil {
 		util.Tab("missing cloudlab vpc")
 	} else {
