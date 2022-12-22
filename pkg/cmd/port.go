@@ -41,7 +41,7 @@ func openPort(name string, port string) {
 	securityGroup := resource.SecurityGroupByNameOrPanic(lr.SecurityGroups, port)
 
 	resource.OpenPort(instance, securityGroup)
-	fmt.Println(fmt.Sprintf("opened port %s on instance %s", port, name))
+	fmt.Printf("opened port %s on instance %s\n", port, name)
 }
 
 // ####################################################################################
@@ -62,7 +62,7 @@ func closePort(instanceName string, port string) {
 	_ = resource.ValidatePort(port)
 	instance := resource.FindInstanceByName(instanceName)
 	resource.ClosePort(instance, port)
-	fmt.Println(fmt.Sprintf("closed port %s on instance %s", port, instanceName))
+	fmt.Printf("closed port %s on instance %s\n", port, instanceName)
 }
 
 // ####################################################################################
