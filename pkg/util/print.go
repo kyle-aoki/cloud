@@ -14,6 +14,17 @@ func init() { tWriter = tabwriter.NewWriter(os.Stdout, 1, 1, 4, ' ', 0) }
 
 func Tab(a ...any) { fmt.Fprintln(tWriter, a...) }
 
+func TabPrint(strs ...string) {
+	var tabstr string
+	for i := 0; i < len(strs); i++ {
+		tabstr += strs[i]
+		if i != len(strs)-1 {
+			tabstr += "\t"
+		}
+	}
+	Tab(tabstr)
+}
+
 func ExecPrint() { tWriter.Flush() }
 
 func runCmd(name string, arg ...string) {

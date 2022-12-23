@@ -3,6 +3,7 @@ package resource
 import (
 	"cloudlab/pkg/amazon"
 	"cloudlab/pkg/util"
+	"errors"
 	"fmt"
 	"strconv"
 
@@ -112,6 +113,13 @@ func HasPortOpen(instance *ec2.Instance, port string) bool {
 	return false
 }
 
-func InPrivateSubnet(instance *ec2.Instance, lr *LabResources) bool {
-	return *lr.PrivateSubnet.SubnetId == *instance.SubnetId
+func InPrivateSubnet(instance *ec2.Instance, lr *LabResources) (bool, error) {
+	if instance == nil ||
+		instance.SubnetId == nil ||
+		lr == nil ||
+		lr.PrivateSubnet == nil ||
+		lr.PrivateSubnet.SubnetId == nil {
+		return false, errors.New("undefined")
+	}
+	return *lr.PrivateSubnet.SubnetId == *instance.SubnetId, nil
 }

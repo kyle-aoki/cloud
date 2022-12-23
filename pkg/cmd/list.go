@@ -18,42 +18,39 @@ func ListInstances() {
 	}
 
 	if args.Flags.Quiet {
-		PrintInstanceNames(resource.FindNonTerminatedInstances())
+		printNamesOnly(resource.FindNonTerminatedInstances())
 		return
 	}
 
 	if args.Flags.ShowTerminated {
-		PrintInstanceList(resource.FindInstances())
+		printInstanceList(resource.FindInstances())
 	} else {
-		PrintInstanceList(resource.FindNonTerminatedInstances())
+		printInstanceList(resource.FindNonTerminatedInstances())
 	}
 }
 
-func PrintInstanceNames(instances []*ec2.Instance) {
+func printNamesOnly(instances []*ec2.Instance) {
 	for _, inst := range instances {
-		fmt.Printf("%v\n", Name(inst))
+		fmt.Printf("%v\n", name(inst))
 	}
 }
 
-func PrintInstanceList(instances []*ec2.Instance) {
-	util.Tab("name\tstate\tprivate-ip\tpublic-ip\tports\tuptime")
-
-	for _, inst := range instances {
-		l := fmt.Sprintf("%v\t%v\t%v\t%v\t%s\t%s",
-			Name(inst),
-			State(inst),
-			PrivateIp(inst),
-			PublicIp(inst),
-			Ports(inst),
-			TimeElapsed(inst),
+func printInstanceList(instances []*ec2.Instance) {
+	util.TabPrint("name", "state", "private-ip", "public-ip", "ports", "uptime")
+	for i := 0; i < len(instances); i++ {
+		util.TabPrint(
+			name(instances[i]),
+			state(instances[i]),
+			privateIp(instances[i]),
+			publicIp(instances[i]),
+			ports(instances[i]),
+			timeElapsed(instances[i]),
 		)
-		util.Tab(l)
 	}
-
 	util.ExecPrint()
 }
 
-func Ports(inst *ec2.Instance) (portsString string) {
+func ports(inst *ec2.Instance) (portsString string) {
 	var ports []string
 	for _, sg := range inst.SecurityGroups {
 		if sg.GroupName == nil {
@@ -65,7 +62,7 @@ func Ports(inst *ec2.Instance) (portsString string) {
 	return strings.Join(ports, ", ")
 }
 
-func Name(inst *ec2.Instance) string {
+func name(inst *ec2.Instance) string {
 	n := resource.FindNameTagValue(inst.Tags)
 	if n != nil {
 		return *n
@@ -73,28 +70,28 @@ func Name(inst *ec2.Instance) string {
 	return ""
 }
 
-func State(inst *ec2.Instance) string {
+func state(inst *ec2.Instance) string {
 	if inst.State.Name != nil {
 		return *inst.State.Name
 	}
 	return ""
 }
 
-func PublicIp(inst *ec2.Instance) string {
+func publicIp(inst *ec2.Instance) string {
 	if inst.PublicIpAddress != nil {
 		return *inst.PublicIpAddress
 	}
 	return ""
 }
 
-func PrivateIp(inst *ec2.Instance) string {
+func privateIp(inst *ec2.Instance) string {
 	if inst.PrivateIpAddress != nil {
 		return *inst.PrivateIpAddress
 	}
 	return ""
 }
 
-func TimeElapsed(inst *ec2.Instance) string {
+func timeElapsed(inst *ec2.Instance) string {
 	if inst.State.Name != nil && *inst.State.Name == "terminated" {
 		return ""
 	}

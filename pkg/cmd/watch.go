@@ -32,5 +32,5 @@ func WatchLoop(interval int) {
 
 	time.Sleep(time.Second * time.Duration(interval))
 	util.ClearTerminal()
-	PrintInstanceList(instances)
+	printInstanceList(instances)
 }

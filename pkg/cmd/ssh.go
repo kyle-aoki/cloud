@@ -53,7 +53,11 @@ func addInstanceToSshConfig(name string, lr *resource.LabResources) string {
 		time.Sleep(2 * time.Second)
 		lr.Instances = resource.FindNonTerminatedInstances()
 		inst := resource.FindInstanceByName(name)
-		if resource.InPrivateSubnet(inst, lr) {
+		inPrivSubnet, err := resource.InPrivateSubnet(inst, lr)
+		if err != nil {
+			continue
+		}
+		if inPrivSubnet {
 			ip = resource.FindInstanceByName(name).PrivateIpAddress
 		} else {
 			ip = resource.FindInstanceByName(name).PublicIpAddress

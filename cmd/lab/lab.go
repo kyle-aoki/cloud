@@ -4,7 +4,6 @@ import (
 	"cloudlab/pkg/amazon"
 	"cloudlab/pkg/args"
 	"cloudlab/pkg/cmd"
-	"cloudlab/pkg/util"
 	"fmt"
 	"io"
 	"log"
@@ -14,7 +13,7 @@ import (
 const cloudlabVersion = "1.0.0"
 
 func main() {
-  defer util.MainRecover()
+  // defer util.MainRecover()
   args.ParseProgramInput()
 
   if !args.Flags.Verbose {

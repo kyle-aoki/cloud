@@ -6,14 +6,14 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-const CloudLabResource = "cloudlab-resource"
+const cloudLabResource = "cloudlab-resource"
 
-func CreateTagSpecs(resourceType string, tags map[string]string) []*ec2.TagSpecification {
-	tags[CloudLabResource] = "true"
+func CreateTagSpecs(resourceType string, kvs map[string]string) []*ec2.TagSpecification {
+	kvs[cloudLabResource] = "true"
 	var tagSlice []*ec2.Tag
-	for key := range tags {
+	for key := range kvs {
 		tagSlice = append(tagSlice, &ec2.Tag{
-			Key: &key, Value: util.Ptr(tags[key]),
+			Key: util.Ptr(key), Value: util.Ptr(kvs[key]),
 		})
 	}
 	return []*ec2.TagSpecification{{
