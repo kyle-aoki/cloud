@@ -4,6 +4,7 @@ import (
 	"cloudlab/pkg/amazon"
 	"cloudlab/pkg/args"
 	"cloudlab/pkg/cmd"
+	"cloudlab/pkg/util"
 	"fmt"
 	"io"
 	"log"
@@ -13,43 +14,43 @@ import (
 const cloudlabVersion = "1.0.0"
 
 func main() {
-  // defer util.MainRecover()
-  args.ParseProgramInput()
+	defer util.MainRecover()
+	args.ParseProgramInput()
 
-  if !args.Flags.Verbose {
-    log.SetOutput(io.Discard)
-  }
+	if !args.Flags.Verbose {
+		log.SetOutput(io.Discard)
+	}
 
-  if args.Flags.PrintVersion {
-    fmt.Println(cloudlabVersion)
-    os.Exit(0)
-  }
-  
-  if args.Flags.ShowHelp {
-    fmt.Print(helpText)
-    os.Exit(0)
-  }
+	if args.Flags.PrintVersion {
+		fmt.Println(cloudlabVersion)
+		os.Exit(0)
+	}
 
-  if command, found := syntax[args.PollOrEmpty()]; found {
-    amazon.InitEC2Client()
-    command()
-  } else {
-    fmt.Print(helpText)
-  }
+	if args.Flags.ShowHelp {
+		fmt.Print(helpText)
+		os.Exit(0)
+	}
+
+	if command, found := syntax[args.PollOrEmpty()]; found {
+		amazon.InitEC2Client()
+		command()
+	} else {
+		fmt.Print(helpText)
+	}
 }
 
 var syntax = map[string]func(){
-  "info":       cmd.Info,
-  "init":       cmd.InitializeCloudLabResources,
-  "destroy":    cmd.DestroyCloudLabResources,
-  "list":       cmd.ListInstances,
-  "watch":      cmd.Watch,
-  "run":        cmd.Run,
-  "start":      cmd.StartInstance,
-  "stop":       cmd.StopInstance,
-  "delete":     cmd.DeleteInstances,
-  "open-port":  cmd.OpenPorts,
-  "close-port": cmd.ClosePorts,
+	"info":       cmd.Info,
+	"init":       cmd.InitializeCloudLabResources,
+	"destroy":    cmd.DestroyCloudLabResources,
+	"list":       cmd.ListInstances,
+	"watch":      cmd.Watch,
+	"run":        cmd.Run,
+	"start":      cmd.StartInstance,
+	"stop":       cmd.StopInstance,
+	"delete":     cmd.DeleteInstances,
+	"open-port":  cmd.OpenPorts,
+	"close-port": cmd.ClosePorts,
 }
 
 const helpText = `general flags:
