@@ -81,7 +81,7 @@ commands:
 
   start         <names...>            start instance(s)
   stop          <names...>            stop instance(s)
-  ssh           <names...>            print out SSH command(s)
+
   delete        <names...>            terminate instance(s)
   open-port     <name> <ports...>     open one or more ports on an instance (all protocols)
   close-port    <name> <ports...>     close one or more ports on an instance
